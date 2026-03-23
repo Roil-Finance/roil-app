@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   ArrowUpRight, ArrowDownLeft, Repeat, Repeat2, RefreshCw, Gift,
-  Search, Filter,
+  Search, Filter, Download, Loader2,
 } from 'lucide-react';
-import { TOKEN_LOGOS } from '@/config';
+import { TOKEN_LOGOS, config } from '@/config';
+import { useQuery, getAuthToken } from '@/hooks/useApi';
+import { useParty } from '@/context/PartyContext';
 
 type TxType = 'Deposit' | 'Withdraw' | 'Swap' | 'DCA Buy' | 'Rebalance' | 'Reward';
 
@@ -15,6 +17,16 @@ interface HistoryEntry {
   usd: string;
   date: string;
   status: 'Completed' | 'Pending';
+}
+
+/** Shape returned by GET /api/transfers/:party/history */
+interface ApiHistoryEntry {
+  type: string;
+  timestamp: string;
+  details: string;
+  amount: number;
+  asset: string;
+  status: string;
 }
 
 const TX_ICON: Record<TxType, React.ComponentType<{ className?: string; color?: string }>> = {
@@ -35,7 +47,11 @@ const TX_COLOR: Record<TxType, { bg: string; text: string }> = {
   'Reward': { bg: '#EDE9FE', text: '#7C3AED' },
 };
 
-const ALL_HISTORY: HistoryEntry[] = [
+// ---------------------------------------------------------------------------
+// Fallback demo data — used when backend is unavailable
+// ---------------------------------------------------------------------------
+
+const DEMO_HISTORY: HistoryEntry[] = [
   { id: 1, type: 'DCA Buy', token: 'CBTC', amount: '+0.0023 CBTC', usd: '$200.00', date: 'Mar 22, 2026 09:15', status: 'Completed' },
   { id: 2, type: 'Rebalance', token: 'ETHx → CC', amount: '0.8 ETHx → 412 CC', usd: '$1,840.00', date: 'Mar 21, 2026 14:30', status: 'Completed' },
   { id: 3, type: 'Reward', token: 'USDCx', amount: '+32.10 USDCx', usd: '$32.10', date: 'Mar 20, 2026 00:00', status: 'Completed' },
@@ -58,18 +74,127 @@ const ALL_HISTORY: HistoryEntry[] = [
   { id: 20, type: 'Deposit', token: 'USDCx', amount: '+20,000 USDCx', usd: '$20,000.00', date: 'Feb 1, 2026 09:00', status: 'Completed' },
 ];
 
-const FILTER_TYPES: TxType[] = ['Deposit', 'Withdraw', 'Swap', 'DCA Buy', 'Rebalance', 'Reward'];
+const VALID_TX_TYPES: TxType[] = ['Deposit', 'Withdraw', 'Swap', 'DCA Buy', 'Rebalance', 'Reward'];
+const FILTER_TYPES: TxType[] = VALID_TX_TYPES;
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function isTxType(s: string): s is TxType {
+  return (VALID_TX_TYPES as string[]).includes(s);
+}
+
+function formatDate(iso: string): string {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }) + ' ' + d.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function formatUsd(n: number): string {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function mapApiToHistory(items: ApiHistoryEntry[]): HistoryEntry[] {
+  return items.map((item, idx) => {
+    const type: TxType = isTxType(item.type) ? item.type : 'Swap';
+    return {
+      id: idx + 1,
+      type,
+      token: item.asset,
+      amount: item.details,
+      usd: formatUsd(item.amount),
+      date: formatDate(item.timestamp),
+      status: item.status === 'Pending' ? 'Pending' : 'Completed',
+    };
+  });
+}
 
 function getTokenLogo(token: string): string | null {
   const symbol = token.split(' → ')[0].split(' ')[0];
   return TOKEN_LOGOS[symbol] || null;
 }
 
+// ---------------------------------------------------------------------------
+// Skeleton row for loading state
+// ---------------------------------------------------------------------------
+
+function SkeletonRow() {
+  return (
+    <tr className="border-b border-[#D6D9E3]/50 last:border-0">
+      <td className="py-3.5 pr-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-lg bg-[#E5E7EB] animate-pulse" />
+          <div className="w-16 h-4 rounded bg-[#E5E7EB] animate-pulse" />
+        </div>
+      </td>
+      <td className="py-3.5 pr-4">
+        <div className="w-14 h-4 rounded bg-[#E5E7EB] animate-pulse" />
+      </td>
+      <td className="py-3.5 pr-4">
+        <div className="w-32 h-4 rounded bg-[#E5E7EB] animate-pulse" />
+      </td>
+      <td className="py-3.5 pr-4 text-right">
+        <div className="w-20 h-4 rounded bg-[#E5E7EB] animate-pulse ml-auto" />
+      </td>
+      <td className="py-3.5 pr-4 text-right">
+        <div className="w-28 h-4 rounded bg-[#E5E7EB] animate-pulse ml-auto" />
+      </td>
+      <td className="py-3.5 text-right">
+        <div className="w-16 h-4 rounded-full bg-[#E5E7EB] animate-pulse ml-auto" />
+      </td>
+    </tr>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
+      <div className="w-24 h-4 rounded bg-[#E5E7EB] animate-pulse" />
+      <div className="w-16 h-8 rounded bg-[#E5E7EB] animate-pulse mt-2" />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export default function History() {
+  const { party } = useParty();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<TxType | 'All'>('All');
+  const [isExporting, setIsExporting] = useState(false);
 
-  const filtered = ALL_HISTORY.filter((tx) => {
+  // Fetch transaction history from backend
+  const {
+    data: apiData,
+    isLoading,
+    error,
+    isFromBackend,
+  } = useQuery<ApiHistoryEntry[]>(
+    party ? `/api/transfers/${encodeURIComponent(party)}/history` : null,
+    [party],
+  );
+
+  // Map API data or fall back to demo data
+  const allHistory: HistoryEntry[] = isFromBackend && apiData
+    ? mapApiToHistory(apiData)
+    : DEMO_HISTORY;
+
+  // Filter + search
+  const filtered = allHistory.filter((tx) => {
     if (activeFilter !== 'All' && tx.type !== activeFilter) return false;
     if (search) {
       const q = search.toLowerCase();
@@ -84,11 +209,64 @@ export default function History() {
     return true;
   });
 
-  // Summary stats
-  const totalDeposits = ALL_HISTORY.filter((t) => t.type === 'Deposit').length;
-  const totalSwaps = ALL_HISTORY.filter((t) => t.type === 'Swap' || t.type === 'DCA Buy').length;
-  const totalRewards = ALL_HISTORY.filter((t) => t.type === 'Reward')
+  // Summary stats — computed from active dataset
+  const totalDeposits = allHistory.filter((t) => t.type === 'Deposit').length;
+  const totalSwaps = allHistory.filter((t) => t.type === 'Swap' || t.type === 'DCA Buy').length;
+  const totalRewards = allHistory.filter((t) => t.type === 'Reward')
     .reduce((s, t) => s + parseFloat(t.usd.replace(/[$,]/g, '')), 0);
+
+  // CSV export handler
+  const handleExportCsv = useCallback(async () => {
+    if (!party || isExporting) return;
+    setIsExporting(true);
+    try {
+      const url = `${config.backendUrl}/api/transfers/${encodeURIComponent(party)}/export`;
+      const token = getAuthToken();
+      const res = await fetch(url, {
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (!res.ok) {
+        // If backend export fails, generate CSV from current data as fallback
+        const csvHeader = 'Type,Token,Details,Amount (USD),Date,Status\n';
+        const csvRows = allHistory.map((tx) =>
+          `"${tx.type}","${tx.token}","${tx.amount}","${tx.usd}","${tx.date}","${tx.status}"`
+        ).join('\n');
+        const csvContent = csvHeader + csvRows;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `roil-history-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        return;
+      }
+
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `roil-history-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch {
+      // Network error — generate CSV from local data as fallback
+      const csvHeader = 'Type,Token,Details,Amount (USD),Date,Status\n';
+      const csvRows = allHistory.map((tx) =>
+        `"${tx.type}","${tx.token}","${tx.amount}","${tx.usd}","${tx.date}","${tx.status}"`
+      ).join('\n');
+      const csvContent = csvHeader + csvRows;
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `roil-history-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [party, isExporting, allHistory]);
 
   return (
     <div className="space-y-6">
@@ -102,19 +280,37 @@ export default function History() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-          <p className="text-sm text-[#6B7280]">Total Transactions</p>
-          <p className="text-[28px] font-bold text-[#111827] mt-1">{ALL_HISTORY.length}</p>
-        </div>
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-          <p className="text-sm text-[#6B7280]">Deposits & Swaps</p>
-          <p className="text-[28px] font-bold text-[#111827] mt-1">{totalDeposits + totalSwaps}</p>
-        </div>
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-          <p className="text-sm text-[#6B7280]">Total Rewards Earned</p>
-          <p className="text-[28px] font-bold text-[#059669] mt-1">${totalRewards.toFixed(2)}</p>
-        </div>
+        {isLoading ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : (
+          <>
+            <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
+              <p className="text-sm text-[#6B7280]">Total Transactions</p>
+              <p className="text-[28px] font-bold text-[#111827] mt-1">{allHistory.length}</p>
+            </div>
+            <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
+              <p className="text-sm text-[#6B7280]">Deposits & Swaps</p>
+              <p className="text-[28px] font-bold text-[#111827] mt-1">{totalDeposits + totalSwaps}</p>
+            </div>
+            <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
+              <p className="text-sm text-[#6B7280]">Total Rewards Earned</p>
+              <p className="text-[28px] font-bold text-[#059669] mt-1">${totalRewards.toFixed(2)}</p>
+            </div>
+          </>
+        )}
       </div>
+
+      {/* Backend status indicator */}
+      {!isLoading && error && !isFromBackend && (
+        <div className="flex items-center gap-2 text-[13px] text-[#9CA3AF]">
+          <div className="w-2 h-2 rounded-full bg-[#F59E0B]" />
+          Showing demo data — backend unavailable
+        </div>
+      )}
 
       {/* Search + Filter bar */}
       <div className="flex items-center gap-3">
@@ -129,6 +325,21 @@ export default function History() {
             className="w-full rounded-xl border border-[#D6D9E3] bg-white py-2.5 pl-10 pr-4 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669]"
           />
         </div>
+
+        {/* CSV Export button */}
+        <button
+          onClick={handleExportCsv}
+          disabled={isExporting || isLoading}
+          className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-[#D6D9E3] bg-white text-[13px] font-medium text-[#6B7280] hover:border-[#059669] hover:text-[#059669] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Export CSV"
+        >
+          {isExporting ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Download className="w-4 h-4" />
+          )}
+          <span className="hidden sm:inline">Export</span>
+        </button>
 
         {/* Type filters */}
         <div className="flex items-center gap-1.5">
@@ -178,10 +389,35 @@ export default function History() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {isLoading ? (
+                <>
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                  <SkeletonRow />
+                </>
+              ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-[#9CA3AF] text-sm">
-                    No transactions found.
+                  <td colSpan={6} className="py-16 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center">
+                        <Search className="w-5 h-5 text-[#9CA3AF]" />
+                      </div>
+                      <div>
+                        <p className="text-[15px] font-medium text-[#6B7280]">
+                          {allHistory.length === 0 ? 'No transactions yet' : 'No transactions found'}
+                        </p>
+                        <p className="text-[13px] text-[#9CA3AF] mt-0.5">
+                          {allHistory.length === 0
+                            ? 'Your transaction history will appear here once you make your first deposit.'
+                            : 'Try adjusting your search or filters.'}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -232,7 +468,13 @@ export default function History() {
                         <span className="text-[13px] text-[#6B7280]">{tx.date}</span>
                       </td>
                       <td className="py-3.5 text-right">
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#E0F5EA] text-[#059669]">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${
+                            tx.status === 'Pending'
+                              ? 'bg-[#FEF3C7] text-[#D97706]'
+                              : 'bg-[#E0F5EA] text-[#059669]'
+                          }`}
+                        >
                           {tx.status}
                         </span>
                       </td>

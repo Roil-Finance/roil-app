@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Calendar, Check } from 'lucide-react';
+import { ChevronDown, Calendar, Check, Loader2, AlertCircle } from 'lucide-react';
+import { useCreateDCA } from '@/hooks/useDCA';
+import { useParty } from '@/context/PartyContext';
 
 type Frequency = 'Hourly' | 'Daily' | 'Weekly' | 'Monthly';
 type DayOfWeek = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri';
@@ -67,6 +69,8 @@ function getFirstExecutionDate(day: DayOfWeek): string {
 
 export default function NewDCA() {
   const navigate = useNavigate();
+  const { party } = useParty();
+  const { mutate: createDCA, isLoading: isSubmitting, error: submitError } = useCreateDCA();
 
   const [fromToken] = useState('USDCx');
   const [toToken] = useState('CBTC');
@@ -75,9 +79,27 @@ export default function NewDCA() {
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>('Mon');
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const projected = getProjected(amount, frequency);
   const firstExecution = getFirstExecutionDate(selectedDay);
+
+  const handleSubmit = async () => {
+    setSuccessMessage(null);
+    try {
+      await createDCA({
+        party,
+        sourceAsset: { symbol: fromToken, admin: 'Canton::Admin' },
+        targetAsset: { symbol: toToken, admin: 'Canton::Admin' },
+        amountPerBuy: amount,
+        frequency,
+      });
+      setSuccessMessage('DCA schedule created successfully!');
+      setTimeout(() => navigate('/dca'), 1500);
+    } catch {
+      // error is already captured via submitError from the hook
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -90,6 +112,22 @@ export default function NewDCA() {
           Set up automated recurring purchases on Canton Network
         </p>
       </div>
+
+      {/* Success message */}
+      {successMessage && (
+        <div className="flex items-center gap-2 bg-[#E0F5EA] border border-[#059669]/30 text-[#059669] px-4 py-3 rounded-xl text-sm font-medium">
+          <Check className="w-4 h-4 shrink-0" />
+          {successMessage}
+        </div>
+      )}
+
+      {/* Error message */}
+      {submitError && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm font-medium">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          {submitError}
+        </div>
+      )}
 
       {/* Two column layout */}
       <div className="flex flex-col lg:flex-row gap-6">
@@ -281,18 +319,27 @@ export default function NewDCA() {
           <div className="flex gap-3">
             <button
               onClick={() => navigate('/dca')}
-              className="flex-1 py-3 rounded-xl border border-[#D6D9E3] text-sm font-medium text-[#6B7280] hover:bg-white transition-colors"
+              disabled={isSubmitting}
+              className="flex-1 py-3 rounded-xl border border-[#D6D9E3] text-sm font-medium text-[#6B7280] hover:bg-white transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
-              onClick={() => navigate('/dca')}
-              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-colors"
+              onClick={handleSubmit}
+              disabled={isSubmitting || amount <= 0}
+              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               style={{
                 background: 'linear-gradient(135deg, #059669, #10B981)',
               }}
             >
-              Create Schedule
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Schedule'
+              )}
             </button>
           </div>
         </div>

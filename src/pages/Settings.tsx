@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { ShieldCheck, Key, Timer } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { ShieldCheck, Key, Timer, Loader2, Check, AlertCircle } from 'lucide-react';
+import { useQuery, useMutation } from '@/hooks/useApi';
+import { useParty } from '@/context/PartyContext';
 
 // ---------------------------------------------------------------------------
 // Toggle Component
@@ -66,24 +68,116 @@ const NOTIFICATION_DEFAULTS: { label: string; defaultOn: boolean }[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Backend config type
+// ---------------------------------------------------------------------------
+
+interface CompoundConfig {
+  enabled: boolean;
+  minAmount: number;
+  frequency: string;
+  reinvestStrategy: string;
+}
+
+// ---------------------------------------------------------------------------
+// localStorage cache helpers
+// ---------------------------------------------------------------------------
+
+const LS_KEY = 'roil-settings';
+
+interface CachedSettings {
+  autoRebalance: boolean;
+  driftThreshold: number;
+  slippage: number;
+  compoundStrategy: string;
+  notifications: boolean[];
+}
+
+function loadCachedSettings(): CachedSettings | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as CachedSettings;
+  } catch {
+    return null;
+  }
+}
+
+function saveCachedSettings(s: CachedSettings) {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(s));
+  } catch {
+    // localStorage full or disabled — ignore
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main Component
 // ---------------------------------------------------------------------------
 
 export default function Settings() {
+  const { party } = useParty();
+
+  // Fetch compound config from backend
+  const configPath = party
+    ? `/api/compound/${encodeURIComponent(party)}/config`
+    : null;
+  const {
+    data: backendConfig,
+    isLoading: isLoadingConfig,
+  } = useQuery<CompoundConfig>(configPath, [party]);
+
+  // Save mutation
+  const {
+    mutate: saveConfig,
+    isLoading: isSaving,
+    error: saveError,
+  } = useMutation<CompoundConfig, CompoundConfig>(
+    `/api/compound/${encodeURIComponent(party)}/config`,
+    'PUT',
+  );
+
+  // Load initial state from localStorage cache
+  const cached = useRef(loadCachedSettings());
+
   // Auto-Rebalance
-  const [autoRebalance, setAutoRebalance] = useState(true);
-  const [driftThreshold, setDriftThreshold] = useState(5);
+  const [autoRebalance, setAutoRebalance] = useState(
+    cached.current?.autoRebalance ?? true,
+  );
+  const [driftThreshold, setDriftThreshold] = useState(
+    cached.current?.driftThreshold ?? 5,
+  );
 
   // Max Slippage
-  const [slippage, setSlippage] = useState(0.5);
+  const [slippage, setSlippage] = useState(cached.current?.slippage ?? 0.5);
 
   // Auto-Compound Strategy
-  const [compoundStrategy, setCompoundStrategy] = useState('portfolio-targets');
+  const [compoundStrategy, setCompoundStrategy] = useState(
+    cached.current?.compoundStrategy ?? 'portfolio-targets',
+  );
 
   // Notifications
   const [notifications, setNotifications] = useState<boolean[]>(
-    NOTIFICATION_DEFAULTS.map((n) => n.defaultOn),
+    cached.current?.notifications ?? NOTIFICATION_DEFAULTS.map((n) => n.defaultOn),
   );
+
+  // Save feedback
+  const [showSaved, setShowSaved] = useState(false);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // When backend config arrives, hydrate local state
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (backendConfig && !hydratedRef.current) {
+      hydratedRef.current = true;
+      setAutoRebalance(backendConfig.enabled);
+      if (backendConfig.reinvestStrategy) {
+        setCompoundStrategy(backendConfig.reinvestStrategy);
+      }
+      // minAmount can map to driftThreshold if backend uses it that way
+      // frequency from backend could inform slippage or other settings
+      // For now we sync what the backend provides
+    }
+  }, [backendConfig]);
 
   const toggleNotification = (index: number) => {
     setNotifications((prev) => {
@@ -93,10 +187,90 @@ export default function Settings() {
     });
   };
 
+  // Gather current settings snapshot
+  const gatherSettings = useCallback(
+    (): CachedSettings => ({
+      autoRebalance,
+      driftThreshold,
+      slippage,
+      compoundStrategy,
+      notifications,
+    }),
+    [autoRebalance, driftThreshold, slippage, compoundStrategy, notifications],
+  );
+
+  // Keep localStorage cache in sync on every change
+  useEffect(() => {
+    saveCachedSettings(gatherSettings());
+  }, [gatherSettings]);
+
+  // Handle explicit save
+  const handleSave = async () => {
+    setShowSaved(false);
+
+    const payload: CompoundConfig = {
+      enabled: autoRebalance,
+      minAmount: driftThreshold,
+      frequency: `${slippage}`,
+      reinvestStrategy: compoundStrategy,
+    };
+
+    try {
+      await saveConfig(payload);
+      // Also persist to localStorage
+      saveCachedSettings(gatherSettings());
+      setShowSaved(true);
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      savedTimerRef.current = setTimeout(() => setShowSaved(false), 3000);
+    } catch {
+      // error captured via saveError from the hook
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <h1 className="text-[26px] font-bold text-ink">Settings</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-[26px] font-bold text-ink">Settings</h1>
+        <div className="flex items-center gap-3">
+          {/* Save confirmation */}
+          {showSaved && (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-[#059669]">
+              <Check className="w-4 h-4" />
+              Saved
+            </span>
+          )}
+          {saveError && (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-red-500">
+              <AlertCircle className="w-4 h-4" />
+              Save failed
+            </span>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50"
+            style={{ background: 'linear-gradient(135deg, #059669, #10B981)' }}
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Settings'
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Loading overlay */}
+      {isLoadingConfig && (
+        <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Loading settings...
+        </div>
+      )}
 
       <div className="flex gap-6">
       {/* ==================== LEFT COLUMN ==================== */}

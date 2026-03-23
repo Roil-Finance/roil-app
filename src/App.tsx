@@ -14,10 +14,12 @@ import Rewards from '@/pages/Rewards';
 import Settings from '@/pages/Settings';
 import History from '@/pages/History';
 import Portfolio from '@/pages/Portfolio';
+import AdminDashboard from '@/pages/AdminDashboard';
 import Slides from '@/pages/Slides';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ToastProvider } from '@/components/Toast';
 import { PartyProvider } from '@/context/PartyContext';
+import { AuthProvider } from '@/context/AuthContext';
 
 function ReferralRedirect() {
   const { code } = useParams();
@@ -52,6 +54,7 @@ function AuthenticatedApp() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/history" element={<History />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/ref/:code" element={<ReferralRedirect />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -62,17 +65,19 @@ function AuthenticatedApp() {
 
 export default function App() {
   return (
-    <PartyProvider>
-      <ToastProvider>
-        <Routes>
-          <Route path="/home" element={<Landing />} />
-          <Route path="/v2" element={<LandingV2 />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/slides" element={<Slides />} />
-          <Route path="/*" element={<AuthenticatedApp />} />
-        </Routes>
-      </ToastProvider>
-    </PartyProvider>
+    <AuthProvider>
+      <PartyProvider>
+        <ToastProvider>
+          <Routes>
+            <Route path="/home" element={<Landing />} />
+            <Route path="/v2" element={<LandingV2 />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/slides" element={<Slides />} />
+            <Route path="/*" element={<AuthenticatedApp />} />
+          </Routes>
+        </ToastProvider>
+      </PartyProvider>
+    </AuthProvider>
   );
 }
