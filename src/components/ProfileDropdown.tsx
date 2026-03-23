@@ -58,8 +58,8 @@ export default function ProfileDropdown() {
           </div>
 
           {/* Menu items */}
-          <DropdownItem icon={LayoutGrid} label="Dashboard" onClick={() => handleNavigate('/app')} />
-          <DropdownItem icon={Settings} label="Settings" onClick={() => handleNavigate('/app/settings')} />
+          <DropdownItem icon={LayoutGrid} label="Dashboard" onClick={() => handleNavigate('/')} />
+          <DropdownItem icon={Settings} label="Settings" onClick={() => handleNavigate('/settings')} />
           <DropdownItem icon={Moon} label="Dark Mode" />
 
           {/* Divider */}

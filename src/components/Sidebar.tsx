@@ -2,11 +2,11 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Wallet, Repeat2, Trophy, Clock, PieChart, HelpCircle } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/app/create', icon: Wallet },
-  { to: '/app/portfolio', icon: PieChart },
-  { to: '/app/dca', icon: Repeat2 },
-  { to: '/app/rewards', icon: Trophy },
-  { to: '/app/history', icon: Clock },
+  { to: '/create', icon: Wallet },
+  { to: '/portfolio', icon: PieChart },
+  { to: '/dca', icon: Repeat2 },
+  { to: '/rewards', icon: Trophy },
+  { to: '/history', icon: Clock },
 ] as const;
 
 function XIcon({ className }: { className?: string }) {
@@ -26,7 +26,7 @@ export default function Sidebar() {
       style={{ width: 72 }}
     >
       {/* Logo — click to go home */}
-      <NavLink to="/app">
+      <NavLink to="/">
         <img
           src="/logo.jpg"
           alt="Roil"

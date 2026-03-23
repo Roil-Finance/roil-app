@@ -22,7 +22,7 @@ import { PartyProvider } from '@/context/PartyContext';
 function ReferralRedirect() {
   const { code } = useParams();
   if (code) localStorage.setItem('referralCode', code);
-  return <Navigate to="/app/rewards" replace />;
+  return <Navigate to="/rewards" replace />;
 }
 
 function NotFound() {
@@ -30,7 +30,7 @@ function NotFound() {
     <div className="flex flex-col items-center justify-center py-20">
       <h1 className="text-4xl font-bold text-ink mb-2">404</h1>
       <p className="text-ink-secondary mb-6">Page not found</p>
-      <Link to="/app" className="btn-primary">
+      <Link to="/" className="btn-primary">
         Return to Dashboard
       </Link>
     </div>
@@ -65,12 +65,12 @@ export default function App() {
     <PartyProvider>
       <ToastProvider>
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route path="/home" element={<Landing />} />
           <Route path="/v2" element={<LandingV2 />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/slides" element={<Slides />} />
-          <Route path="/app/*" element={<AuthenticatedApp />} />
+          <Route path="/*" element={<AuthenticatedApp />} />
         </Routes>
       </ToastProvider>
     </PartyProvider>
