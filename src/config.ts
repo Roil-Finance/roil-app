@@ -155,6 +155,9 @@ export const TOKEN_LOGOS: Record<string, string> = {
   MMF: '/tokens/usdcx.png',
 };
 
+/** Quick-select amounts for DCA schedule creation */
+export const QUICK_AMOUNTS = [50, 100, 200, 500];
+
 /** Fee rebate percentages matching Daml getFeeRebatePct */
 export const FEE_REBATE_PCT: Record<string, number> = {
   Bronze: 0.5,

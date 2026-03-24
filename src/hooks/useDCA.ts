@@ -14,8 +14,8 @@ import type {
 
 const DEMO_SCHEDULES: DCASchedule[] = [
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'USDCx', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },
     amountPerBuy: 100,
@@ -25,8 +25,8 @@ const DEMO_SCHEDULES: DCASchedule[] = [
     createdAt: '2025-12-01T00:00:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'USDCx', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CC', admin: 'Canton::Admin' },
     amountPerBuy: 50,
@@ -36,8 +36,8 @@ const DEMO_SCHEDULES: DCASchedule[] = [
     createdAt: '2026-01-15T00:00:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'CC', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },
     amountPerBuy: 200,
@@ -50,8 +50,8 @@ const DEMO_SCHEDULES: DCASchedule[] = [
 
 const DEMO_DCA_LOGS: DCALog[] = [
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'USDCx', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },
     sourceAmount: 100,
@@ -60,8 +60,8 @@ const DEMO_DCA_LOGS: DCALog[] = [
     timestamp: '2026-03-14T12:00:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'USDCx', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CC', admin: 'Canton::Admin' },
     sourceAmount: 50,
@@ -70,8 +70,8 @@ const DEMO_DCA_LOGS: DCALog[] = [
     timestamp: '2026-03-15T00:00:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'USDCx', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },
     sourceAmount: 100,
@@ -80,8 +80,8 @@ const DEMO_DCA_LOGS: DCALog[] = [
     timestamp: '2026-03-07T12:00:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'USDCx', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },
     sourceAmount: 100,
@@ -90,8 +90,8 @@ const DEMO_DCA_LOGS: DCALog[] = [
     timestamp: '2026-02-28T12:00:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     sourceAsset: { symbol: 'CC', admin: 'Canton::Admin' },
     targetAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },
     sourceAmount: 200,

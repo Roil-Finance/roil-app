@@ -10,12 +10,18 @@ import { useParty } from '@/context/PartyContext';
 function Toggle({
   checked,
   onChange,
+  'aria-label': ariaLabel,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
+  'aria-label'?: string;
 }) {
   return (
-    <div
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={ariaLabel}
       onClick={() => onChange(!checked)}
       className="relative w-[48px] h-[28px] rounded-full cursor-pointer transition-all duration-200"
       style={{ backgroundColor: checked ? '#059669' : '#E5E7EB' }}
@@ -24,7 +30,7 @@ function Toggle({
         className="absolute top-[2px] left-[2px] w-[24px] h-[24px] bg-white rounded-full shadow transition-transform duration-200"
         style={{ transform: checked ? 'translateX(20px)' : 'translateX(0)' }}
       />
-    </div>
+    </button>
   );
 }
 
@@ -279,7 +285,7 @@ export default function Settings() {
         <div className="bg-[#F3F4F9] border border-surface-border rounded-2xl p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-lg font-semibold text-ink">Auto-Rebalance</span>
-            <Toggle checked={autoRebalance} onChange={setAutoRebalance} />
+            <Toggle checked={autoRebalance} onChange={setAutoRebalance} aria-label="Toggle auto-rebalance" />
           </div>
           <p className="text-sm text-ink-secondary mb-5">
             Automatically rebalance your portfolio when allocation drifts beyond
@@ -395,6 +401,7 @@ export default function Settings() {
                 <Toggle
                   checked={notifications[idx]}
                   onChange={() => toggleNotification(idx)}
+                  aria-label={`Toggle ${item.label}`}
                 />
               </div>
             ))}

@@ -13,8 +13,8 @@ import type {
 // ---------------------------------------------------------------------------
 
 const DEMO_PORTFOLIO: Portfolio = {
-  platform: 'Canton::Platform',
-  user: 'Canton::Alice',
+  platform: 'demo-platform',
+  user: 'demo-user',
   targets: [
     { asset: { symbol: 'CC', admin: 'Canton::Admin' }, targetPct: 50 },
     { asset: { symbol: 'USDCx', admin: 'Canton::Admin' }, targetPct: 30 },
@@ -32,8 +32,8 @@ const DEMO_PORTFOLIO: Portfolio = {
 
 const DEMO_LOGS: RebalanceLog[] = [
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     swapLegs: [
       {
         fromAsset: { symbol: 'CC', admin: 'Canton::Admin' },
@@ -46,8 +46,8 @@ const DEMO_LOGS: RebalanceLog[] = [
     timestamp: '2026-03-15T10:30:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     swapLegs: [
       {
         fromAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },
@@ -66,8 +66,8 @@ const DEMO_LOGS: RebalanceLog[] = [
     timestamp: '2026-03-13T14:15:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     swapLegs: [
       {
         fromAsset: { symbol: 'CC', admin: 'Canton::Admin' },
@@ -80,8 +80,8 @@ const DEMO_LOGS: RebalanceLog[] = [
     timestamp: '2026-03-10T09:45:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     swapLegs: [
       {
         fromAsset: { symbol: 'USDCx', admin: 'Canton::Admin' },
@@ -94,8 +94,8 @@ const DEMO_LOGS: RebalanceLog[] = [
     timestamp: '2026-03-07T16:20:00Z',
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     swapLegs: [
       {
         fromAsset: { symbol: 'CBTC', admin: 'Canton::Admin' },

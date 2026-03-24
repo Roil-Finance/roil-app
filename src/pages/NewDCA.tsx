@@ -3,20 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Calendar, Check, Loader2, AlertCircle } from 'lucide-react';
 import { useCreateDCA } from '@/hooks/useDCA';
 import { useParty } from '@/context/PartyContext';
+import { TOKEN_LOGOS, QUICK_AMOUNTS } from '@/config';
 
 type Frequency = 'Hourly' | 'Daily' | 'Weekly' | 'Monthly';
 type DayOfWeek = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri';
 
-const QUICK_AMOUNTS = [50, 100, 200, 500];
 const FREQUENCIES: Frequency[] = ['Hourly', 'Daily', 'Weekly', 'Monthly'];
 const DAYS: DayOfWeek[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-
-const TOKEN_LOGOS: Record<string, string> = {
-  USDCx: '/tokens/usdcx.png',
-  CBTC: '/tokens/cbtc.png',
-  ETHx: '/tokens/ethx.png',
-  SOLx: '/tokens/solx.png',
-};
 
 const TOKEN_PRICES: Record<string, string> = {
   CBTC: '$87,432.10',

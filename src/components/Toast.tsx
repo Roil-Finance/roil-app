@@ -26,6 +26,8 @@ const TOAST_DURATIONS: Record<ToastType, number> = {
   error: 8000,
 };
 
+// Monotonically increasing counter for toast IDs. This is local to the module
+// and never persisted, so unbounded growth is not a practical concern.
 let nextId = 0;
 
 export function ToastProvider({ children }: { children: ReactNode }) {

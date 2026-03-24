@@ -24,9 +24,14 @@ const TOKEN_ACCENT: Record<string, string> = {
 /* ------------------------------------------------------------------ */
 /* Toggle component                                                    */
 /* ------------------------------------------------------------------ */
-function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
+function Toggle({ checked, onChange, disabled, 'aria-label': ariaLabel }: { checked: boolean; onChange: (v: boolean) => void; disabled?: boolean; 'aria-label'?: string }) {
   return (
-    <div
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={ariaLabel}
+      disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
       className={`relative w-[44px] h-[26px] rounded-full transition-all duration-200 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       style={{ backgroundColor: checked ? '#059669' : '#E5E7EB' }}
@@ -35,7 +40,7 @@ function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (
         className="absolute top-[2px] left-[2px] w-[22px] h-[22px] bg-white rounded-full shadow transition-transform duration-200"
         style={{ transform: checked ? 'translateX(18px)' : 'translateX(0)' }}
       />
-    </div>
+    </button>
   );
 }
 
@@ -439,6 +444,7 @@ export default function Portfolio() {
                 }
               }}
               disabled={triggerModeMutation.isLoading}
+              aria-label="Toggle auto-trigger mode"
             />
           </div>
         </div>

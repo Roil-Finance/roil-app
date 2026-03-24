@@ -24,7 +24,7 @@ export function getAuthToken(): string | null {
 type BackendStatus = 'connected' | 'disconnected' | 'checking';
 
 let _backendStatus: BackendStatus = 'checking';
-let _statusListeners: Array<() => void> = [];
+const _statusListeners = new Set<() => void>();
 
 function notifyStatusListeners() {
   for (const fn of _statusListeners) fn();
@@ -239,9 +239,9 @@ export function useBackendStatus(pollIntervalMs: number = 10_000): BackendStatus
   // Subscribe to global status changes
   useEffect(() => {
     const handler = () => setStatus(_backendStatus);
-    _statusListeners.push(handler);
+    _statusListeners.add(handler);
     return () => {
-      _statusListeners = _statusListeners.filter((fn) => fn !== handler);
+      _statusListeners.delete(handler);
     };
   }, []);
 

@@ -46,7 +46,11 @@ const TOKEN_INSTRUMENT_IDS: Record<string, string> = {
   MMF: 'splice-api-token-holding-v1:MMF',
 };
 
-/** Get the Canton Scan API base URL for the current network */
+/**
+ * Get the Canton Scan API base URL for the current network.
+ * Set VITE_CANTON_NETWORK in .env for non-devnet deployments
+ * (valid values: localnet, devnet, testnet, mainnet).
+ */
 export function getCantonScanUrl(): string {
   const network = import.meta.env.VITE_CANTON_NETWORK || 'devnet';
   return CANTON_EXPLORERS[network]?.scan || CANTON_EXPLORERS.devnet.scan;

@@ -7,8 +7,8 @@ import { TIER_THRESHOLDS, FEE_REBATE_PCT } from '@/config';
 // ---------------------------------------------------------------------------
 
 const DEMO_TRACKER: RewardTracker = {
-  platform: 'Canton::Platform',
-  user: 'Canton::Alice',
+  platform: 'demo-platform',
+  user: 'demo-user',
   monthId: '2026-03',
   txCount: 87,
   tier: 'Silver',
@@ -18,32 +18,32 @@ const DEMO_TRACKER: RewardTracker = {
 
 const DEMO_PAYOUTS: RewardPayout[] = [
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     amount: 45.0,
     tier: 'Silver',
     monthId: '2026-02',
     txCount: 112,
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     amount: 38.5,
     tier: 'Silver',
     monthId: '2026-01',
     txCount: 98,
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     amount: 32.0,
     tier: 'Bronze',
     monthId: '2025-12',
     txCount: 45,
   },
   {
-    platform: 'Canton::Platform',
-    user: 'Canton::Alice',
+    platform: 'demo-platform',
+    user: 'demo-user',
     amount: 27.0,
     tier: 'Bronze',
     monthId: '2025-11',

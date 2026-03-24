@@ -98,7 +98,7 @@ export class CantonWallet {
   private devToken: string | null = null;
 
   constructor(options?: { jsonApiUrl?: string }) {
-    this.jsonApiUrl = options?.jsonApiUrl || 'http://localhost:3975';
+    this.jsonApiUrl = options?.jsonApiUrl || import.meta.env.VITE_CANTON_JSON_API_URL || 'http://localhost:3975';
   }
 
   // -----------------------------------------------------------------------

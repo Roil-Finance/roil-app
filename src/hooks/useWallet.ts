@@ -56,8 +56,8 @@ export function useWallet(): UseWalletReturn {
     });
 
     return () => {
-      unsubWallet();
-      unsubSDK();
+      try { unsubWallet(); } catch (e) { console.warn('[useWallet] Error unsubscribing wallet:', e); }
+      try { unsubSDK(); } catch (e) { console.warn('[useWallet] Error unsubscribing SDK:', e); }
     };
   }, []);
 
