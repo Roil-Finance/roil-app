@@ -13,11 +13,8 @@ function ProgressBar({ filled }: { filled: number }) {
       {[0, 1, 2, 3, 4].map((i) => (
         <div
           key={i}
-          className="flex-1 h-1.5 rounded-full"
-          style={{
-            backgroundColor: i < filled ? undefined : '#D6D9E3',
-            background: i < filled ? 'linear-gradient(90deg, #059669, #10B981)' : undefined,
-          }}
+          className={`flex-1 h-1.5 rounded-full ${i < filled ? '' : 'bg-[#D6D9E3] dark:bg-slate-600'}`}
+          style={i < filled ? { background: 'linear-gradient(90deg, #059669, #10B981)' } : undefined}
         />
       ))}
     </div>
@@ -101,8 +98,7 @@ function ColoredSlider({
   return (
     <div
       ref={trackRef}
-      className="relative h-[10px] rounded-full cursor-pointer flex-1"
-      style={{ backgroundColor: '#E5E7EB' }}
+      className="relative h-[10px] rounded-full cursor-pointer flex-1 bg-[#E5E7EB] dark:bg-slate-600"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -114,7 +110,7 @@ function ColoredSlider({
       />
       {/* Thumb */}
       <div
-        className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full bg-white border-[2.5px] shadow-md transition-[left] duration-75"
+        className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full bg-white dark:bg-slate-200 border-[2.5px] shadow-md transition-[left] duration-75"
         style={{ left: `calc(${value}% - 9px)`, borderColor: color }}
       />
     </div>
@@ -154,7 +150,7 @@ function PctInput({
       <button
         type="button"
         onClick={() => setEditing(true)}
-        className="w-[56px] h-[38px] flex items-center justify-center border border-[#D6D9E3] rounded-lg bg-white text-[15px] font-bold text-[#111827] shrink-0 hover:border-[#059669] transition-colors cursor-text"
+        className="w-[56px] h-[38px] flex items-center justify-center border border-[#D6D9E3] dark:border-slate-700 rounded-lg bg-white dark:bg-slate-700 text-[15px] font-bold text-[#111827] dark:text-slate-100 shrink-0 hover:border-[#059669] transition-colors cursor-text"
       >
         {value}%
       </button>
@@ -172,7 +168,7 @@ function PctInput({
         onChange={(e) => setDraft(e.target.value)}
         onBlur={commit}
         onKeyDown={(e) => { if (e.key === 'Enter') commit(); }}
-        className="w-full h-full text-center border-2 border-[#059669] rounded-lg bg-white text-[15px] font-bold text-[#111827] focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-full h-full text-center border-2 border-[#059669] rounded-lg bg-white dark:bg-slate-700 text-[15px] font-bold text-[#111827] dark:text-slate-100 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
     </div>
   );
@@ -248,15 +244,15 @@ function DonutChart({
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {hoveredToken ? (
           <div className="text-center">
-            <span className="text-[22px] font-bold text-[#111827]">
+            <span className="text-[22px] font-bold text-[#111827] dark:text-slate-100">
               {allocations.find((a) => a.symbol === hoveredToken)?.pct}%
             </span>
-            <p className="text-[11px] text-[#6B7280] -mt-0.5">{hoveredToken}</p>
+            <p className="text-[11px] text-[#6B7280] dark:text-slate-400 -mt-0.5">{hoveredToken}</p>
           </div>
         ) : (
           <div className="text-center">
-            <span className="text-[28px] font-bold text-[#111827]">{allocations.length}</span>
-            <p className="text-[12px] text-[#6B7280] -mt-0.5">Tokens</p>
+            <span className="text-[28px] font-bold text-[#111827] dark:text-slate-100">{allocations.length}</span>
+            <p className="text-[12px] text-[#6B7280] dark:text-slate-400 -mt-0.5">Tokens</p>
           </div>
         )}
       </div>
@@ -336,10 +332,10 @@ export default function BuildYourOwn() {
       {/* Header */}
       <div className="mb-5">
         <p className="text-[14px] font-semibold text-[#059669] mb-1">Step 2 of 5</p>
-        <h1 className="text-[30px] font-bold text-[#111827] leading-tight">
+        <h1 className="text-[30px] font-bold text-[#111827] dark:text-slate-100 leading-tight">
           Configure Your Portfolio
         </h1>
-        <p className="text-[15px] text-[#6B7280] mt-1">
+        <p className="text-[15px] text-[#6B7280] dark:text-slate-400 mt-1">
           {routeState?.templateName
             ? `Starting from "${routeState.templateName}" template. Adjust allocations to your preference.`
             : 'Set token weights and drift threshold for automatic rebalancing.'}
@@ -353,10 +349,10 @@ export default function BuildYourOwn() {
         {/* LEFT column */}
         <div className="flex-1 flex flex-col gap-5 min-w-0">
           {/* Token Allocations card */}
-          <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-2xl p-6 flex-1">
+          <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-2xl p-6 flex-1">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[20px] font-bold text-[#111827]">Token Allocations</h2>
+              <h2 className="text-[20px] font-bold text-[#111827] dark:text-slate-100">Token Allocations</h2>
               <div className="flex items-center gap-3">
                 {/* Balance button */}
                 {totalPct !== 100 && allocations.length > 0 && (
@@ -388,7 +384,7 @@ export default function BuildYourOwn() {
                   <div key={a.symbol} className="flex items-center gap-4">
                     <TokenLogo symbol={a.symbol} size={36} showBadge={false} />
                     <div className="w-[80px] shrink-0">
-                      <p className="text-[15px] font-semibold text-[#111827] leading-tight">
+                      <p className="text-[15px] font-semibold text-[#111827] dark:text-slate-100 leading-tight">
                         {a.symbol}
                       </p>
                     </div>
@@ -419,25 +415,25 @@ export default function BuildYourOwn() {
                 <button
                   type="button"
                   onClick={() => setShowAddMenu((v) => !v)}
-                  className="w-full border-2 border-dashed border-[#D6D9E3] rounded-xl py-3 text-[14px] font-semibold text-[#6B7280]
+                  className="w-full border-2 border-dashed border-[#D6D9E3] dark:border-slate-700 rounded-xl py-3 text-[14px] font-semibold text-[#6B7280] dark:text-slate-400
                              hover:border-[#059669] hover:text-[#059669] transition-colors flex items-center justify-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Add Token
                 </button>
                 {showAddMenu && (
-                  <div className="absolute left-0 right-0 mt-2 bg-white border border-[#D6D9E3] rounded-xl shadow-lg z-10 max-h-[240px] overflow-y-auto">
+                  <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-xl shadow-lg z-10 max-h-[240px] overflow-y-auto">
                     {availableTokens.map((t) => (
                       <button
                         key={t.symbol}
                         type="button"
                         onClick={() => addToken(t.symbol)}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F3F4F9] transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F3F4F9] dark:hover:bg-slate-700 transition-colors text-left"
                       >
                         <TokenLogo symbol={t.symbol} size={28} showBadge={false} />
                         <div>
-                          <p className="text-[14px] font-medium text-[#111827]">{t.name}</p>
-                          <p className="text-[11px] text-[#9CA3AF]">{t.subtitle}</p>
+                          <p className="text-[14px] font-medium text-[#111827] dark:text-slate-100">{t.name}</p>
+                          <p className="text-[11px] text-[#9CA3AF] dark:text-slate-500">{t.subtitle}</p>
                         </div>
                       </button>
                     ))}
@@ -448,14 +444,14 @@ export default function BuildYourOwn() {
           </div>
 
           {/* Drift Threshold */}
-          <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-2xl p-6">
+          <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-[18px] font-bold text-[#111827]">Drift Threshold</h2>
+              <h2 className="text-[18px] font-bold text-[#111827] dark:text-slate-100">Drift Threshold</h2>
               <span className="px-3 py-1 rounded-full bg-[#E0F5EA] text-[#059669] text-[14px] font-semibold">
                 {driftThreshold.toFixed(1)}%
               </span>
             </div>
-            <p className="text-[13px] text-[#6B7280] mb-4">
+            <p className="text-[13px] text-[#6B7280] dark:text-slate-400 mb-4">
               Rebalancing triggers when any token drifts beyond this threshold from its target.
             </p>
             <ColoredSlider
@@ -463,7 +459,7 @@ export default function BuildYourOwn() {
               color="#059669"
               onChange={(v) => setDriftThreshold(Math.round((1 + (v / 100) * 19) * 2) / 2)}
             />
-            <div className="flex justify-between text-[12px] text-[#9CA3AF] mt-2">
+            <div className="flex justify-between text-[12px] text-[#9CA3AF] dark:text-slate-500 mt-2">
               <span>1%</span>
               <span>20%</span>
             </div>
@@ -474,7 +470,7 @@ export default function BuildYourOwn() {
             <Link
               to={routeState?.templateName ? '/create/templates' : '/create'}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-[14px]
-                         border border-[#D6D9E3] text-[#111827] hover:bg-[#ECEEF4] transition-colors"
+                         border border-[#D6D9E3] dark:border-slate-700 text-[#111827] dark:text-slate-100 hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors"
             >
               Back
             </Link>
@@ -500,8 +496,8 @@ export default function BuildYourOwn() {
 
         {/* RIGHT column — Portfolio Preview */}
         <div className="w-[360px] shrink-0">
-          <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-2xl p-6 sticky top-8">
-            <h2 className="text-[20px] font-bold text-[#111827] mb-5">Portfolio Preview</h2>
+          <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-2xl p-6 sticky top-8">
+            <h2 className="text-[20px] font-bold text-[#111827] dark:text-slate-100 mb-5">Portfolio Preview</h2>
 
             <DonutChart allocations={allocations} hoveredToken={hoveredToken} onHover={setHoveredToken} />
 
@@ -509,37 +505,36 @@ export default function BuildYourOwn() {
               {allocations.map((a) => (
                 <div
                   key={a.symbol}
-                  className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 -mx-2 transition-colors cursor-pointer"
-                  style={{ backgroundColor: hoveredToken === a.symbol ? '#E8EBF2' : 'transparent' }}
+                  className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 -mx-2 transition-colors cursor-pointer ${hoveredToken === a.symbol ? 'bg-[#E8EBF2] dark:bg-slate-700' : ''}`}
                   onMouseEnter={() => setHoveredToken(a.symbol)}
                   onMouseLeave={() => setHoveredToken(null)}
                 >
                   <TokenLogo symbol={a.symbol} size={22} showBadge={false} />
                   <span
                     className="text-[14px] flex-1 transition-colors"
-                    style={{ color: hoveredToken === a.symbol ? TOKEN_ACCENT[a.symbol] || '#111827' : '#111827' }}
+                    style={{ color: hoveredToken === a.symbol ? TOKEN_ACCENT[a.symbol] || '#111827' : undefined }}
                   >
-                    {a.symbol} <span className="text-[#9CA3AF] font-normal">{TOKEN_MAP[a.symbol]?.name || ''}</span>
+                    <span className={hoveredToken === a.symbol ? '' : 'text-[#111827] dark:text-slate-100'}>{a.symbol}</span> <span className="text-[#9CA3AF] dark:text-slate-500 font-normal">{TOKEN_MAP[a.symbol]?.name || ''}</span>
                   </span>
                   <span
                     className="text-[14px] font-bold transition-colors"
-                    style={{ color: hoveredToken === a.symbol ? TOKEN_ACCENT[a.symbol] || '#111827' : '#111827' }}
+                    style={{ color: hoveredToken === a.symbol ? TOKEN_ACCENT[a.symbol] || '#111827' : undefined }}
                   >
-                    {a.pct}%
+                    <span className={hoveredToken === a.symbol ? '' : 'text-[#111827] dark:text-slate-100'}>{a.pct}%</span>
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-6 pt-4 border-t border-[#D6D9E3] space-y-3">
+            <div className="mt-6 pt-4 border-t border-[#D6D9E3] dark:border-slate-700 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[14px] text-[#6B7280]">Drift Threshold</span>
+                <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Drift Threshold</span>
                 <span className="text-[14px] font-semibold text-[#059669]">
                   {driftThreshold.toFixed(1)}%
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[14px] text-[#6B7280]">Auto-Rebalance</span>
+                <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Auto-Rebalance</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-[#E0F5EA] text-[#059669] text-[12px] font-semibold">
                   Enabled
                 </span>

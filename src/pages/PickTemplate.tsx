@@ -31,21 +31,21 @@ function StrategyCard({ strategy, onSelect }: { strategy: Strategy; onSelect: ()
   return (
     <button
       onClick={onSelect}
-      className="flex flex-col rounded-[16px] overflow-hidden text-left cursor-pointer transition-all hover:shadow-md"
-      style={{ backgroundColor: '#F3F4F9', border: '1px solid #D6D9E3', boxShadow: '0 2px 8px #0000000A' }}
+      className="flex flex-col rounded-[16px] overflow-hidden text-left cursor-pointer transition-all hover:shadow-md bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700"
+      style={{ boxShadow: '0 2px 8px #0000000A' }}
     >
-      <div className="w-full h-[130px] flex items-center justify-center" style={{ backgroundColor: '#E8EBF0' }}>
+      <div className="w-full h-[130px] flex items-center justify-center bg-[#E8EBF0] dark:bg-slate-700">
         <img src={strategy.image} alt={strategy.name} className="h-full object-contain" />
       </div>
       <div className="p-4 flex flex-col gap-[6px] flex-1">
-        <h3 className="text-[24px] font-bold" style={{ color: '#111827' }}>{strategy.name}</h3>
-        <p className="text-[17px]" style={{ color: '#6B7280' }}>{strategy.description}</p>
+        <h3 className="text-[24px] font-bold text-[#111827] dark:text-slate-100">{strategy.name}</h3>
+        <p className="text-[17px] text-[#6B7280] dark:text-slate-400">{strategy.description}</p>
         <div className="flex flex-col gap-[8px] mt-3">
           {strategy.allocations.map((a) => (
             <div key={a.symbol} className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <img src={TOKEN_LOGOS[a.symbol]} alt={a.symbol} className="w-[22px] h-[22px] rounded-full" />
-                <span className="text-[16px] font-medium" style={{ color: '#374151' }}>{a.symbol}</span>
+                <span className="text-[16px] font-medium text-[#374151] dark:text-slate-300">{a.symbol}</span>
               </div>
               <span className="text-[16px] font-bold" style={{ color: TOKEN_COLORS[a.symbol] || '#111827' }}>{a.pct}%</span>
             </div>
@@ -68,11 +68,11 @@ export default function PickTemplate() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div className="flex flex-col gap-1">
-          <p className="text-[14px] font-semibold" style={{ color: '#059669' }}>Step 1 of 5</p>
-          <h1 className="text-[31px] font-bold" style={{ color: '#111827', letterSpacing: '-1px' }}>Pick a Template</h1>
-          <p className="text-[16px]" style={{ color: '#6B7280' }}>Select a pre-built portfolio strategy. You can customize it later.</p>
+          <p className="text-[14px] font-semibold text-[#059669]">Step 1 of 5</p>
+          <h1 className="text-[31px] font-bold text-[#111827] dark:text-slate-100" style={{ letterSpacing: '-1px' }}>Pick a Template</h1>
+          <p className="text-[16px] text-[#6B7280] dark:text-slate-400">Select a pre-built portfolio strategy. You can customize it later.</p>
         </div>
-        <Link to="/create" className="flex items-center gap-[6px] px-5 py-[10px] rounded-[10px] border" style={{ borderColor: '#D6D9E3', color: '#6B7280' }}>
+        <Link to="/create" className="flex items-center gap-[6px] px-5 py-[10px] rounded-[10px] border border-[#D6D9E3] dark:border-slate-700 text-[#6B7280] dark:text-slate-400">
           <ArrowLeft size={18} />
           <span className="text-[14px] font-medium">Back</span>
         </Link>
@@ -81,7 +81,7 @@ export default function PickTemplate() {
       {/* Progress bar */}
       <div className="flex gap-2 mb-6">
         {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex-1 h-1 rounded-full" style={{ backgroundColor: i < 1 ? '#059669' : '#D6D9E3' }} />
+          <div key={i} className={`flex-1 h-1 rounded-full ${i < 1 ? 'bg-[#059669]' : 'bg-[#D6D9E3] dark:bg-slate-600'}`} />
         ))}
       </div>
 
@@ -95,12 +95,12 @@ export default function PickTemplate() {
         ))}
 
         {/* Custom card */}
-        <button onClick={() => navigate('/create/build')} className="flex flex-col items-center justify-center rounded-[16px] cursor-pointer transition-all hover:shadow-md" style={{ backgroundColor: '#F3F4F9', border: '1px dashed #D6D9E3' }}>
-          <div className="w-[54px] h-[54px] rounded-full flex items-center justify-center" style={{ backgroundColor: '#ECFDF5' }}>
-            <Plus size={26} style={{ color: '#059669' }} />
+        <button onClick={() => navigate('/create/build')} className="flex flex-col items-center justify-center rounded-[16px] cursor-pointer transition-all hover:shadow-md bg-[#F3F4F9] dark:bg-slate-800 border border-dashed border-[#D6D9E3] dark:border-slate-700">
+          <div className="w-[54px] h-[54px] rounded-full flex items-center justify-center bg-[#ECFDF5] dark:bg-emerald-900/30">
+            <Plus size={26} className="text-[#059669]" />
           </div>
-          <span className="text-[21px] font-bold mt-3" style={{ color: '#111827' }}>Build from scratch</span>
-          <span className="text-[16px] text-center px-3" style={{ color: '#9CA3AF' }}>Create your own custom allocation</span>
+          <span className="text-[21px] font-bold mt-3 text-[#111827] dark:text-slate-100">Build from scratch</span>
+          <span className="text-[16px] text-center px-3 text-[#9CA3AF] dark:text-slate-500">Create your own custom allocation</span>
         </button>
       </div>
     </div>
