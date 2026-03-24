@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Wallet, Repeat2, Trophy, Clock, PieChart, HelpCircle } from 'lucide-react';
+import { Wallet, Repeat2, Trophy, Clock, PieChart, HelpCircle, KeyRound } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/create', icon: Wallet },
@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/dca', icon: Repeat2 },
   { to: '/rewards', icon: Trophy },
   { to: '/history', icon: Clock },
+  { to: '/wallet', icon: KeyRound },
 ] as const;
 
 function XIcon({ className }: { className?: string }) {

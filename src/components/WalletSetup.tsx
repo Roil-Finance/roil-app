@@ -14,8 +14,11 @@ import {
   AlertTriangle,
   Loader2,
   X,
+  Fingerprint,
 } from 'lucide-react';
 import { WalletManager, type RoilWallet } from '@/lib/wallet-core';
+import { isPasskeySupported } from '@/lib/passkey-auth';
+import { isGoogleAuthEnabled, signInWithGoogle } from '@/lib/google-auth';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -30,7 +33,7 @@ interface WalletSetupProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
-type Mode = 'choose' | 'create' | 'import-key' | 'import-keystore' | 'success';
+type Mode = 'choose' | 'create' | 'create-passkey' | 'import-key' | 'import-keystore' | 'success';
 
 /** Password strength: 0 = weak, 1 = fair, 2 = good, 3 = strong */
 function getPasswordStrength(pw: string): { score: number; label: string; color: string } {
@@ -77,10 +80,31 @@ export default function WalletSetup({ onComplete, onCancel }: WalletSetupProps) 
   const [createdWallet, setCreatedWallet] = useState<RoilWallet | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [hasBackedUp, setHasBackedUp] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const googleEnabled = isGoogleAuthEnabled();
 
   // -----------------------------------------------------------------------
   // Actions
   // -----------------------------------------------------------------------
+
+  const handleGoogleWallet = useCallback(async () => {
+    setError(null);
+    setIsGoogleLoading(true);
+    try {
+      const googleUser = await signInWithGoogle();
+      const wallet = await WalletManager.createFromOAuth(
+        'google',
+        googleUser.sub,
+        googleUser.email,
+      );
+      setCreatedWallet(wallet);
+      setMode('success');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google sign-in failed');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }, []);
 
   const handleCreate = useCallback(async () => {
     setError(null);
@@ -109,6 +133,26 @@ export default function WalletSetup({ onComplete, onCancel }: WalletSetupProps) 
       setIsProcessing(false);
     }
   }, [name, password, confirmPassword]);
+
+  const handleCreateWithPasskey = useCallback(async () => {
+    setError(null);
+
+    if (!name.trim()) {
+      setError('Please enter a display name');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const wallet = await WalletManager.createFromPasskey(name.trim());
+      setCreatedWallet(wallet);
+      setMode('success');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Passkey registration failed');
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [name]);
 
   const handleImportKey = useCallback(async () => {
     setError(null);
@@ -274,7 +318,76 @@ export default function WalletSetup({ onComplete, onCancel }: WalletSetupProps) 
           </p>
         </div>
 
+        {/* Google option */}
+        {googleEnabled && (
+          <div className="mb-4">
+            <button
+              onClick={handleGoogleWallet}
+              disabled={isGoogleLoading}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#D6D9E3] bg-white px-5 py-[14px] text-sm font-medium text-[#111827] transition hover:bg-[#F3F4F9] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isGoogleLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+              )}
+              Continue with Google
+            </button>
+
+            {/* Error for Google */}
+            {error && isGoogleLoading === false && mode === 'choose' && (
+              <p className="mt-2 text-sm text-red-600 text-center">{error}</p>
+            )}
+
+            {/* Divider */}
+            <div className="mt-4 flex items-center gap-3">
+              <div className="h-px flex-1 bg-[#D6D9E3]" />
+              <span className="text-xs text-[#6B7280]">Or create with password</span>
+              <div className="h-px flex-1 bg-[#D6D9E3]" />
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3">
+          {/* Passkey option — recommended when supported */}
+          {isPasskeySupported() ? (
+            <button
+              onClick={() => { resetForm(); setMode('create-passkey'); }}
+              className="flex w-full items-center gap-4 rounded-xl border border-[#059669] bg-[#F0FDF4] px-5 py-4 text-left transition hover:bg-[#ECFDF5]"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#059669] to-[#10B981]">
+                <Fingerprint className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-[#111827]">Sign in with Passkey</p>
+                  <span className="rounded-full bg-[#059669] px-2 py-0.5 text-[10px] font-semibold text-white leading-none">
+                    Recommended
+                  </span>
+                </div>
+                <p className="text-xs text-[#6B7280]">Use fingerprint, Face ID, or device PIN</p>
+              </div>
+              <ArrowRight className="ml-auto h-4 w-4 text-[#059669]" />
+            </button>
+          ) : (
+            <div
+              className="flex w-full items-center gap-4 rounded-xl border border-[#D6D9E3] bg-white px-5 py-4 text-left opacity-50 cursor-not-allowed"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3F4F6]">
+                <Fingerprint className="h-5 w-5 text-[#9CA3AF]" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[#6B7280]">Sign in with Passkey</p>
+                <p className="text-xs text-[#9CA3AF]">Not supported in this browser</p>
+              </div>
+            </div>
+          )}
+
           <button
             onClick={() => { resetForm(); setMode('create'); }}
             className="flex w-full items-center gap-4 rounded-xl border border-[#D6D9E3] bg-white px-5 py-4 text-left transition hover:border-[#059669] hover:bg-[#F0FDF4]"
@@ -424,6 +537,92 @@ export default function WalletSetup({ onComplete, onCancel }: WalletSetupProps) 
 
           <button onClick={handleFinish} className={btnPrimary}>
             {hasBackedUp ? 'Continue to App' : 'Skip Backup & Continue'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // -----------------------------------------------------------------------
+  // Render: Create with Passkey
+  // -----------------------------------------------------------------------
+
+  if (mode === 'create-passkey') {
+    return (
+      <div className="w-full max-w-[520px] rounded-3xl border border-[#D6D9E3] bg-[#F3F4F9] px-10 py-9">
+        {/* Back button */}
+        <button
+          onClick={() => { setMode('choose'); resetForm(); }}
+          className="flex items-center gap-1.5 text-sm text-[#6B7280] hover:text-[#111827] transition-colors mb-6"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </button>
+
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#059669] to-[#10B981] shadow-lg">
+            <Fingerprint className="h-7 w-7 text-white" />
+          </div>
+          <h2 className="text-[24px] font-[800] text-[#111827]">Create with Passkey</h2>
+          <p className="mt-1.5 text-sm text-[#6B7280]">
+            Secure your wallet with fingerprint, Face ID, or device PIN
+          </p>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-5">
+          {/* Display name */}
+          <div>
+            <label className={labelCls}>Display Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Alice, MyWallet, Treasury"
+              disabled={isProcessing}
+              className={inputCls}
+            />
+            <p className="mt-1 text-xs text-[#9CA3AF]">
+              Used in your Canton party ID: {name.trim() || 'name'}::1220...
+            </p>
+          </div>
+
+          {/* Info box */}
+          <div className="rounded-xl border border-[#D6D9E3] bg-white px-4 py-3">
+            <div className="flex items-start gap-3">
+              <Shield className="h-5 w-5 text-[#059669] shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-[#111827]">No password needed</p>
+                <p className="text-xs text-[#6B7280] mt-0.5">
+                  Your wallet key is encrypted with your device's biometric sensor.
+                  Only your fingerprint, Face ID, or device PIN can unlock it.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            onClick={handleCreateWithPasskey}
+            disabled={isProcessing || !name.trim()}
+            className={btnPrimary}
+          >
+            {isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isProcessing ? (
+              'Waiting for biometric...'
+            ) : (
+              <>
+                <Fingerprint className="h-4 w-4" />
+                Create with Passkey
+              </>
+            )}
           </button>
         </div>
       </div>

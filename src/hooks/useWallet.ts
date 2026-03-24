@@ -67,6 +67,26 @@ export function useWallet(): UseWalletReturn {
       // Determine if this is a legacy party-hint connection
       const isPartyHint = passwordOrPartyHint?.includes('::');
 
+      // --- Passkey flow: if wallet is passkey-based, use biometric unlock ---
+      if (!isPartyHint && WalletManager.isPasskeyWallet()) {
+        const { wallet, sign } = await WalletManager.unlockWithPasskey();
+        signRef.current = sign;
+        setWalletInfo(wallet);
+
+        const jwt = await WalletManager.createJWT(sign, wallet.partyId);
+        setAuthToken(jwt);
+
+        const walletState: WalletState = {
+          connected: true,
+          party: wallet.partyId,
+          displayName: wallet.displayName,
+          balances: [],
+        };
+        setState(walletState);
+
+        return walletState;
+      }
+
       if (!isPartyHint && WalletManager.hasWallet() && passwordOrPartyHint) {
         // --- Primary flow: WalletManager unlock ---
         const { wallet, sign } = await WalletManager.unlockWallet(passwordOrPartyHint);

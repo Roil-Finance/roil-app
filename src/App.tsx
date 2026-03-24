@@ -15,6 +15,7 @@ import Settings from '@/pages/Settings';
 import History from '@/pages/History';
 import Portfolio from '@/pages/Portfolio';
 import AdminDashboard from '@/pages/AdminDashboard';
+import Wallet from '@/pages/Wallet';
 import Slides from '@/pages/Slides';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ToastProvider } from '@/components/Toast';
@@ -57,6 +58,7 @@ function AuthenticatedApp() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/history" element={<History />} />
+          <Route path="/wallet" element={<Wallet />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/ref/:code" element={<ReferralRedirect />} />
           <Route path="*" element={<NotFound />} />

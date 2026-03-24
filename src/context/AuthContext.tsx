@@ -8,6 +8,8 @@ import {
 } from 'react';
 import { setAuthToken, getAuthToken } from '@/hooks/useApi';
 import { config } from '@/config';
+import { signInWithGoogle, isGoogleAuthEnabled } from '@/lib/google-auth';
+import { WalletManager } from '@/lib/wallet-core';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -42,6 +44,7 @@ interface AuthResponse {
 
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => void;
 }
@@ -123,6 +126,7 @@ const AuthContext = createContext<AuthContextValue>({
   isAuthenticated: false,
   isLoading: true,
   login: async () => {},
+  loginWithGoogle: async () => {},
   signup: async () => {},
   logout: () => {},
 });
@@ -249,6 +253,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persistAuth(payload.token, authUser);
   }, []);
 
+  // ---- loginWithGoogle ----
+  const loginWithGoogle = useCallback(async () => {
+    // 1. Trigger Google Sign-In popup
+    const googleUser = await signInWithGoogle();
+
+    // 2. Create (or recover) a deterministic wallet from Google identity
+    const wallet = await WalletManager.createFromOAuth(
+      'google',
+      googleUser.sub,
+      googleUser.email,
+    );
+
+    // 3. Unlock the wallet to get a sign function (for JWT creation)
+    const { sign } = await WalletManager.unlockOAuthWallet('google', googleUser.sub);
+
+    // 4. Create a Canton JWT
+    const jwt = await WalletManager.createJWT(sign, wallet.partyId);
+
+    const authUser: AuthUser = {
+      party: wallet.partyId,
+      displayName: googleUser.name || wallet.displayName,
+      email: googleUser.email,
+    };
+
+    setToken(jwt);
+    setUser(authUser);
+    setAuthToken(jwt);
+    persistAuth(jwt, authUser);
+  }, []);
+
   // ---- logout ----
   const logout = useCallback(() => {
     setToken(null);
@@ -265,6 +299,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!token && !!user,
         isLoading,
         login,
+        loginWithGoogle,
         signup,
         logout,
       }}

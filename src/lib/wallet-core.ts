@@ -15,6 +15,14 @@
 import { ed25519 } from '@noble/curves/ed25519';
 import { sha256 } from '@noble/hashes/sha256';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
+import {
+  registerPasskey,
+  authenticateWithPasskey,
+  deriveKeyFromPasskey,
+  encryptWithPasskeyKey,
+  decryptWithPasskeyKey,
+  hasStoredPasskey,
+} from './passkey-auth';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -25,6 +33,8 @@ export interface RoilWallet {
   publicKey: string; // hex
   displayName: string;
   createdAt: number;
+  authMethod: 'password' | 'email' | 'google' | 'passkey';
+  email?: string;
 }
 
 export type SignFunction = (msg: string) => Promise<string>;
@@ -35,6 +45,8 @@ interface EncryptedKeystore {
   displayName: string;
   partyId: string;
   createdAt: number;
+  authMethod: 'password' | 'email' | 'google' | 'passkey';
+  email?: string;
   crypto: {
     cipher: 'aes-256-gcm';
     iv: string;  // hex
@@ -194,6 +206,7 @@ export class WalletManager {
       displayName: name,
       partyId,
       createdAt: Date.now(),
+      authMethod: 'password',
       crypto: {
         cipher: 'aes-256-gcm',
         iv: encrypted.iv,
@@ -210,6 +223,7 @@ export class WalletManager {
       publicKey: publicKeyHex,
       displayName: name,
       createdAt: keystore.createdAt,
+      authMethod: 'password',
     };
   }
 
@@ -256,6 +270,8 @@ export class WalletManager {
         publicKey: keystore.publicKey,
         displayName: keystore.displayName,
         createdAt: keystore.createdAt,
+        authMethod: keystore.authMethod || 'password',
+        email: keystore.email,
       },
       sign,
     };
@@ -293,6 +309,7 @@ export class WalletManager {
       displayName: name,
       partyId,
       createdAt: Date.now(),
+      authMethod: 'password',
       crypto: {
         cipher: 'aes-256-gcm',
         iv: encrypted.iv,
@@ -309,6 +326,7 @@ export class WalletManager {
       publicKey: publicKeyHex,
       displayName: name,
       createdAt: keystore.createdAt,
+      authMethod: 'password',
     };
   }
 
@@ -401,6 +419,8 @@ export class WalletManager {
       publicKey: keystore.publicKey,
       displayName: keystore.displayName,
       createdAt: keystore.createdAt,
+      authMethod: keystore.authMethod || 'password',
+      email: keystore.email,
     };
   }
 
@@ -445,6 +465,380 @@ export class WalletManager {
     const signatureB64 = base64url(hexToBytes(signatureHex));
 
     return `${signingInput}.${signatureB64}`;
+  }
+
+  /**
+   * Deterministic wallet from email + password.
+   *
+   * Same combo always produces the same wallet (deterministic key derivation).
+   * Uses PBKDF2 with email as salt, password as input, 310K iterations to
+   * derive 32 bytes used as the Ed25519 private key seed.
+   */
+  static async createFromEmailPassword(email: string, password: string): Promise<RoilWallet> {
+    const encoder = new TextEncoder();
+
+    // Derive deterministic seed: PBKDF2(password, email, 310K, SHA-256) → 32 bytes
+    const baseKey = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(password),
+      'PBKDF2',
+      false,
+      ['deriveBits'],
+    );
+
+    const seedBits = await crypto.subtle.deriveBits(
+      {
+        name: 'PBKDF2',
+        salt: encoder.encode(email.toLowerCase().trim()),
+        iterations: PBKDF2_ITERATIONS,
+        hash: 'SHA-256',
+      },
+      baseKey,
+      256, // 32 bytes
+    );
+
+    const privateKey = new Uint8Array(seedBits);
+    const publicKey = ed25519.getPublicKey(privateKey);
+
+    const privateKeyHex = bytesToHex(privateKey);
+    const publicKeyHex = bytesToHex(publicKey);
+    const displayName = email.split('@')[0];
+    const partyId = derivePartyId(publicKeyHex, displayName);
+
+    // Encrypt with the same password
+    const encrypted = await encryptPrivateKey(privateKeyHex, password);
+
+    const keystore: EncryptedKeystore = {
+      version: 1,
+      publicKey: publicKeyHex,
+      displayName,
+      partyId,
+      createdAt: Date.now(),
+      authMethod: 'email',
+      email: email.toLowerCase().trim(),
+      crypto: {
+        cipher: 'aes-256-gcm',
+        iv: encrypted.iv,
+        salt: encrypted.salt,
+        ciphertext: encrypted.ciphertext,
+        tag: '',
+      },
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(keystore));
+
+    return {
+      partyId,
+      publicKey: publicKeyHex,
+      displayName,
+      createdAt: keystore.createdAt,
+      authMethod: 'email',
+      email: keystore.email,
+    };
+  }
+
+  /**
+   * Deterministic wallet from OAuth provider (Google, Apple, etc.).
+   *
+   * Uses HKDF with `provider:providerUserId` as input key material,
+   * `roil-wallet-v1` as info, and email as salt to derive 32 bytes
+   * used as the Ed25519 private key seed.
+   *
+   * For OAuth wallets the encryption password is derived from the
+   * provider token material (since the user doesn't set a password).
+   */
+  static async createFromOAuth(
+    provider: string,
+    providerUserId: string,
+    email: string,
+  ): Promise<RoilWallet> {
+    const encoder = new TextEncoder();
+
+    // Input key material: "provider:providerUserId"
+    const ikm = encoder.encode(`${provider}:${providerUserId}`);
+    const salt = encoder.encode(email.toLowerCase().trim());
+    const info = encoder.encode('roil-wallet-v1');
+
+    // Web Crypto supports HKDF natively via importKey + deriveBits.
+    const hkdfKey = await crypto.subtle.importKey(
+      'raw',
+      ikm,
+      'HKDF',
+      false,
+      ['deriveBits'],
+    );
+
+    const seedBits = await crypto.subtle.deriveBits(
+      {
+        name: 'HKDF',
+        hash: 'SHA-256',
+        salt,
+        info,
+      },
+      hkdfKey,
+      256, // 32 bytes
+    );
+
+    const privateKey = new Uint8Array(seedBits);
+    const publicKey = ed25519.getPublicKey(privateKey);
+
+    const privateKeyHex = bytesToHex(privateKey);
+    const publicKeyHex = bytesToHex(publicKey);
+    const displayName = email.split('@')[0];
+    const partyId = derivePartyId(publicKeyHex, displayName);
+
+    // For OAuth wallets we derive an encryption password from the provider ID.
+    // This is deterministic — the same OAuth identity always produces the same
+    // encryption key, so unlockWallet can recover the key later.
+    const encPasswordSeed = await crypto.subtle.deriveBits(
+      {
+        name: 'HKDF',
+        hash: 'SHA-256',
+        salt: encoder.encode('roil-enc-v1'),
+        info: encoder.encode(`${provider}:${providerUserId}:enc`),
+      },
+      hkdfKey,
+      256,
+    );
+    const encPassword = bytesToHex(new Uint8Array(encPasswordSeed));
+
+    const encrypted = await encryptPrivateKey(privateKeyHex, encPassword);
+
+    const keystore: EncryptedKeystore = {
+      version: 1,
+      publicKey: publicKeyHex,
+      displayName,
+      partyId,
+      createdAt: Date.now(),
+      authMethod: provider as 'google' | 'passkey',
+      email: email.toLowerCase().trim(),
+      crypto: {
+        cipher: 'aes-256-gcm',
+        iv: encrypted.iv,
+        salt: encrypted.salt,
+        ciphertext: encrypted.ciphertext,
+        tag: '',
+      },
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(keystore));
+
+    return {
+      partyId,
+      publicKey: publicKeyHex,
+      displayName,
+      createdAt: keystore.createdAt,
+      authMethod: provider as 'google' | 'passkey',
+      email: keystore.email,
+    };
+  }
+
+  /**
+   * Unlock an OAuth wallet (no user password needed).
+   *
+   * Re-derives the encryption password from the provider identity, then
+   * decrypts the stored private key and returns a sign function.
+   */
+  static async unlockOAuthWallet(
+    provider: string,
+    providerUserId: string,
+  ): Promise<{ wallet: RoilWallet; sign: SignFunction }> {
+    const keystore = WalletManager.loadKeystore();
+    if (!keystore) {
+      throw new Error('No wallet found. Please create a wallet first.');
+    }
+
+    const encoder = new TextEncoder();
+    const ikm = encoder.encode(`${provider}:${providerUserId}`);
+
+    const hkdfKey = await crypto.subtle.importKey(
+      'raw',
+      ikm,
+      'HKDF',
+      false,
+      ['deriveBits'],
+    );
+
+    const encPasswordSeed = await crypto.subtle.deriveBits(
+      {
+        name: 'HKDF',
+        hash: 'SHA-256',
+        salt: encoder.encode('roil-enc-v1'),
+        info: encoder.encode(`${provider}:${providerUserId}:enc`),
+      },
+      hkdfKey,
+      256,
+    );
+    const encPassword = bytesToHex(new Uint8Array(encPasswordSeed));
+
+    let privateKeyHex: string;
+    try {
+      privateKeyHex = await decryptPrivateKey(
+        keystore.crypto.ciphertext,
+        keystore.crypto.iv,
+        keystore.crypto.salt,
+        encPassword,
+      );
+    } catch {
+      throw new Error('Failed to decrypt wallet. OAuth identity mismatch.');
+    }
+
+    // Verify the decrypted key
+    const derivedPub = bytesToHex(ed25519.getPublicKey(hexToBytes(privateKeyHex)));
+    if (derivedPub !== keystore.publicKey) {
+      throw new Error('Key verification failed. Keystore may be corrupted.');
+    }
+
+    const sign: SignFunction = async (msg: string) => {
+      const msgBytes = new TextEncoder().encode(msg);
+      const signature = ed25519.sign(msgBytes, hexToBytes(privateKeyHex));
+      return bytesToHex(signature);
+    };
+
+    return {
+      wallet: {
+        partyId: keystore.partyId,
+        publicKey: keystore.publicKey,
+        displayName: keystore.displayName,
+        createdAt: keystore.createdAt,
+        authMethod: keystore.authMethod || 'password',
+        email: keystore.email,
+      },
+      sign,
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // Passkey methods
+  // -------------------------------------------------------------------------
+
+  /**
+   * Create a wallet secured by passkey (no password needed).
+   *
+   * Flow: biometric prompt -> register passkey -> generate Ed25519 keypair
+   *       -> authenticate to get key material -> encrypt private key
+   *       with passkey-derived key -> store.
+   */
+  static async createFromPasskey(displayName: string, email?: string): Promise<RoilWallet> {
+    // 1. Register passkey (triggers biometric prompt)
+    const credential = await registerPasskey(displayName, email);
+
+    // 2. Generate Ed25519 keypair
+    const privateKey = ed25519.utils.randomPrivateKey();
+    const publicKey = ed25519.getPublicKey(privateKey);
+    const privateKeyHex = bytesToHex(privateKey);
+    const publicKeyHex = bytesToHex(publicKey);
+    const partyId = derivePartyId(publicKeyHex, displayName);
+
+    // 3. Authenticate immediately to get material for key derivation
+    //    (registration just happened, so the credential is fresh)
+    const authResult = await authenticateWithPasskey();
+
+    // 4. Derive encryption key from passkey auth and encrypt private key
+    const encryptionKey = await deriveKeyFromPasskey(authResult);
+    const encrypted = await encryptWithPasskeyKey(privateKeyHex, encryptionKey);
+
+    // 5. Store keystore with passkey auth method
+    //    We store the credential ID in the salt field for reference.
+    const keystore: EncryptedKeystore = {
+      version: 1,
+      publicKey: publicKeyHex,
+      displayName,
+      partyId,
+      createdAt: Date.now(),
+      authMethod: 'passkey',
+      email,
+      crypto: {
+        cipher: 'aes-256-gcm',
+        iv: encrypted.iv,
+        salt: credential.credentialId, // Store credential ID in salt field
+        ciphertext: encrypted.ciphertext,
+        tag: '',
+      },
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(keystore));
+
+    return {
+      partyId,
+      publicKey: publicKeyHex,
+      displayName,
+      createdAt: keystore.createdAt,
+      authMethod: 'passkey',
+      email,
+    };
+  }
+
+  /**
+   * Unlock a passkey-secured wallet using biometric authentication.
+   *
+   * Flow: biometric prompt -> authenticate -> derive decryption key
+   *       -> decrypt private key -> return wallet + sign function.
+   */
+  static async unlockWithPasskey(): Promise<{
+    wallet: RoilWallet;
+    sign: SignFunction;
+  }> {
+    const keystore = WalletManager.loadKeystore();
+    if (!keystore) {
+      throw new Error('No wallet found. Please create a wallet first.');
+    }
+
+    if (keystore.authMethod !== 'passkey') {
+      throw new Error('This wallet is not secured with a passkey.');
+    }
+
+    // 1. Authenticate with passkey (triggers biometric prompt)
+    const authResult = await authenticateWithPasskey();
+
+    // 2. Derive decryption key
+    const decryptionKey = await deriveKeyFromPasskey(authResult);
+
+    // 3. Decrypt private key
+    let privateKeyHex: string;
+    try {
+      privateKeyHex = await decryptWithPasskeyKey(
+        keystore.crypto.ciphertext,
+        keystore.crypto.iv,
+        decryptionKey,
+      );
+    } catch {
+      throw new Error('Passkey authentication failed. Could not decrypt wallet.');
+    }
+
+    // 4. Verify the decrypted key matches the stored public key
+    const derivedPub = bytesToHex(ed25519.getPublicKey(hexToBytes(privateKeyHex)));
+    if (derivedPub !== keystore.publicKey) {
+      throw new Error('Key verification failed. Keystore may be corrupted.');
+    }
+
+    // 5. Build sign function
+    const sign: SignFunction = async (msg: string) => {
+      const msgBytes = new TextEncoder().encode(msg);
+      const signature = ed25519.sign(msgBytes, hexToBytes(privateKeyHex));
+      return bytesToHex(signature);
+    };
+
+    return {
+      wallet: {
+        partyId: keystore.partyId,
+        publicKey: keystore.publicKey,
+        displayName: keystore.displayName,
+        createdAt: keystore.createdAt,
+        authMethod: 'passkey',
+        email: keystore.email,
+      },
+      sign,
+    };
+  }
+
+  /**
+   * Check if the stored wallet uses passkey authentication.
+   */
+  static isPasskeyWallet(): boolean {
+    const keystore = WalletManager.loadKeystore();
+    if (!keystore) return false;
+    return keystore.authMethod === 'passkey' && hasStoredPasskey();
   }
 
   // -------------------------------------------------------------------------
