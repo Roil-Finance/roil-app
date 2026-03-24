@@ -23,7 +23,10 @@ import { AuthProvider } from '@/context/AuthContext';
 
 function ReferralRedirect() {
   const { code } = useParams();
-  if (code) localStorage.setItem('referralCode', code);
+  // Sanitize referral code: alphanumeric only, max 32 chars
+  if (code && /^[a-zA-Z0-9]{1,32}$/.test(code)) {
+    localStorage.setItem('referralCode', code);
+  }
   return <Navigate to="/rewards" replace />;
 }
 

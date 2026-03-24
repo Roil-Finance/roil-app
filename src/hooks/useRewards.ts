@@ -118,6 +118,8 @@ export function useRewards(party?: string) {
     error: query.error,
     refetch: query.refetch,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }
 
@@ -137,5 +139,7 @@ export function usePayoutHistory(party?: string) {
     isLoading: query.isLoading,
     error: query.error,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }

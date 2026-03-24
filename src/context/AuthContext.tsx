@@ -53,6 +53,17 @@ interface AuthContextValue extends AuthState {
 const STORAGE_KEY_TOKEN = 'roil_auth_token';
 const STORAGE_KEY_USER = 'roil_auth_user';
 
+/**
+ * Persist auth state to localStorage.
+ *
+ * Trade-off: localStorage is accessible to any JS on this origin, making it
+ * vulnerable to XSS. The safer alternative (httpOnly cookies) requires a
+ * same-origin backend to set the cookie, which isn't available in this SPA
+ * architecture (separate frontend/backend origins). We mitigate by:
+ *  1. Validating the token with the backend on every app load (see useEffect below).
+ *  2. Short token expiry + client-side exp check to limit exposure window.
+ *  3. Clearing tokens immediately when validation fails.
+ */
 function persistAuth(token: string, user: AuthUser) {
   localStorage.setItem(STORAGE_KEY_TOKEN, token);
   localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
@@ -78,17 +89,27 @@ function loadPersistedAuth(): { token: string; user: AuthUser } | null {
   return null;
 }
 
-/** Check whether a JWT is expired (without verifying signature). */
+/**
+ * Check whether a JWT is expired (without verifying signature).
+ *
+ * NOTE: This is intentionally a client-side hint only. The server validates
+ * the full signature on every request. We decode here solely to avoid sending
+ * obviously-expired tokens and to trigger a proactive logout / token refresh.
+ * The try/catch ensures malformed tokens (corrupted localStorage, XSS
+ * injection, etc.) don't crash the app — they're treated as expired.
+ */
 function isTokenExpired(token: string): boolean {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const parts = token.split('.');
+    if (parts.length !== 3) return true; // not a valid JWT structure
+    const payload = JSON.parse(atob(parts[1]));
     if (payload.exp) {
       // exp is in seconds, Date.now() in ms
       return Date.now() >= payload.exp * 1000;
     }
     return false; // no exp claim — treat as valid
   } catch {
-    return true; // malformed token
+    return true; // malformed token — treat as expired, will be cleared
   }
 }
 
@@ -115,13 +136,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Hydrate from localStorage on mount
+  // Hydrate from localStorage on mount, then verify token with backend.
   useEffect(() => {
     const persisted = loadPersistedAuth();
     if (persisted && !isTokenExpired(persisted.token)) {
       setToken(persisted.token);
       setUser(persisted.user);
       setAuthToken(persisted.token);
+
+      // Token rotation: verify the stored token is still valid server-side.
+      // If the backend is unreachable we keep the token (offline-first).
+      fetch(`${config.backendUrl}/api/auth/verify`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${persisted.token}` },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            // Server explicitly rejected the token — clear it
+            setToken(null);
+            setUser(null);
+            setAuthToken(null);
+            clearPersistedAuth();
+          }
+        })
+        .catch(() => {
+          // Network error — keep token (backend may be down, demo mode)
+        });
     } else if (persisted) {
       // Token expired — clean up
       clearPersistedAuth();

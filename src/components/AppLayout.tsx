@@ -1,14 +1,22 @@
 import type { ReactNode } from 'react';
 import Sidebar from '@/components/Sidebar';
 import ProfileDropdown from '@/components/ProfileDropdown';
+import DemoBanner from '@/components/DemoBanner';
+import { useBackendStatus } from '@/hooks/useApi';
 import { Wallet } from 'lucide-react';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
+  const { status } = useBackendStatus();
+  const isDemo = status === 'disconnected';
+
   return (
     <div className="flex h-screen">
       <Sidebar />
 
       <div className="flex-1 flex flex-col" style={{ marginLeft: 72 }}>
+        {/* Demo mode banner */}
+        <DemoBanner visible={isDemo} />
+
         {/* Top bar */}
         <header className="flex items-center justify-end gap-3 px-8 shrink-0" style={{ height: 64 }}>
           <button

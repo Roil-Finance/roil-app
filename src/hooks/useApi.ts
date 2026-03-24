@@ -60,7 +60,7 @@ interface ApiEnvelope<T> {
 async function apiFetch<T>(
   path: string,
   options?: RequestInit,
-): Promise<T> {
+): Promise<T | null> {
   const url = path.startsWith('http') ? path : `${config.backendUrl}${path}`;
   const res = await fetch(url, {
     headers: {
@@ -87,8 +87,8 @@ async function apiFetch<T>(
     throw err;
   }
 
-  // 204 No Content
-  if (res.status === 204) return undefined as unknown as T;
+  // 204 No Content — no body to parse
+  if (res.status === 204) return null;
 
   const json = await res.json();
 
@@ -183,7 +183,7 @@ export function useQuery<T>(
 // ---------------------------------------------------------------------------
 
 export interface MutationResult<TInput, TOutput = void> {
-  mutate: (input: TInput) => Promise<TOutput>;
+  mutate: (input: TInput) => Promise<TOutput | null>;
   isLoading: boolean;
   error: string | null;
 }
@@ -196,7 +196,7 @@ export function useMutation<TInput, TOutput = void>(
   const [error, setError] = useState<string | null>(null);
 
   const mutate = useCallback(
-    async (input: TInput): Promise<TOutput> => {
+    async (input: TInput): Promise<TOutput | null> => {
       const path =
         typeof pathOrFn === 'function' ? pathOrFn(input) : pathOrFn;
 

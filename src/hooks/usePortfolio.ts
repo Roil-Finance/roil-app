@@ -138,6 +138,8 @@ export function usePortfolio(party?: string) {
     error: query.error,
     refetch: query.refetch,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }
 
@@ -250,6 +252,8 @@ export function usePerformance(party?: string) {
   return {
     ...query,
     data: query.data ?? DEMO_PERFORMANCE,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }
 
@@ -288,5 +292,7 @@ export function useRebalanceHistory(party?: string) {
     isLoading: query.isLoading,
     error: query.error,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }

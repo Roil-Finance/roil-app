@@ -85,6 +85,8 @@ export function useMarketPrices() {
     error: query.error,
     refetch: query.refetch,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }
 
@@ -102,5 +104,7 @@ export function usePools() {
     error: query.error,
     refetch: query.refetch,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }

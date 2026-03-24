@@ -10,12 +10,12 @@ interface PartyContextValue {
 }
 
 const PartyContext = createContext<PartyContextValue>({
-  party: 'app-user::1220placeholder',
+  party: '',
   setParty: () => {},
 });
 
 export function PartyProvider({ children }: { children: ReactNode }) {
-  const [party, setParty] = useState('app-user::1220placeholder');
+  const [party, setParty] = useState('');
 
   return (
     <PartyContext.Provider value={{ party, setParty }}>

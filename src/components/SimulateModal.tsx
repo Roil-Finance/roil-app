@@ -158,7 +158,7 @@ export default function SimulateModal({
 
     try {
       const result = await rebalanceMutation.mutate({ id: portfolioId });
-      if (result.success === false && result.error) {
+      if (result && result.success === false && result.error) {
         setErrorMsg(result.error);
         setStep('error');
       } else {

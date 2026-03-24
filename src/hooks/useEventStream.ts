@@ -26,6 +26,18 @@ export function useEventStream({
   const { addToast } = useToast();
   const sourceRef = useRef<EventSource | null>(null);
 
+  // Keep refs to callbacks so the effect always calls the latest version
+  // without needing to reconnect the EventSource when callbacks change.
+  const onRebalanceRef = useRef(onRebalance);
+  const onDCARef = useRef(onDCA);
+  const onPortfolioUpdateRef = useRef(onPortfolioUpdate);
+  const addToastRef = useRef(addToast);
+
+  useEffect(() => { onRebalanceRef.current = onRebalance; });
+  useEffect(() => { onDCARef.current = onDCA; });
+  useEffect(() => { onPortfolioUpdateRef.current = onPortfolioUpdate; });
+  useEffect(() => { addToastRef.current = addToast; });
+
   useEffect(() => {
     if (!party || !enabled) return;
 
@@ -40,11 +52,11 @@ export function useEventStream({
     source.addEventListener('rebalance', (e) => {
       try {
         const data = JSON.parse(e.data);
-        onRebalance?.(data);
+        onRebalanceRef.current?.(data);
         // Check if notifications are enabled (from localStorage)
         const notificationsEnabled = localStorage.getItem('notifications') !== 'false';
         if (notificationsEnabled) {
-          addToast('success', 'Portfolio rebalanced — ledger updated');
+          addToastRef.current('success', 'Portfolio rebalanced — ledger updated');
         }
       } catch { /* ignore parse errors */ }
     });
@@ -52,10 +64,10 @@ export function useEventStream({
     source.addEventListener('dca', (e) => {
       try {
         const data = JSON.parse(e.data);
-        onDCA?.(data);
+        onDCARef.current?.(data);
         const notificationsEnabled = localStorage.getItem('notifications') !== 'false';
         if (notificationsEnabled) {
-          addToast('info', 'DCA execution completed');
+          addToastRef.current('info', 'DCA execution completed');
         }
       } catch { /* ignore */ }
     });
@@ -63,7 +75,7 @@ export function useEventStream({
     source.addEventListener('portfolio', (e) => {
       try {
         const data = JSON.parse(e.data);
-        onPortfolioUpdate?.(data);
+        onPortfolioUpdateRef.current?.(data);
       } catch { /* ignore */ }
     });
 
@@ -75,5 +87,5 @@ export function useEventStream({
       source.close();
       sourceRef.current = null;
     };
-  }, [party, enabled]); // Intentionally exclude callbacks to avoid reconnects
+  }, [party, enabled]);
 }

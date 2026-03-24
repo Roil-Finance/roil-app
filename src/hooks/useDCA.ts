@@ -113,6 +113,7 @@ export function useDCASchedules(party?: string) {
   const path = party ? `/api/dca/${encodeURIComponent(party)}` : null;
   const query = useQuery<DCASchedule[]>(path, [party]);
 
+  const isDemo = !query.isFromBackend;
   const schedules = query.data ?? DEMO_SCHEDULES;
   return {
     schedules,
@@ -120,6 +121,8 @@ export function useDCASchedules(party?: string) {
     error: query.error,
     refetch: query.refetch,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo,
   };
 }
 
@@ -239,5 +242,7 @@ export function useDCAHistory(party?: string) {
     isLoading: query.isLoading,
     error: query.error,
     isFromBackend: query.isFromBackend,
+    /** True when using fallback demo data (backend unavailable) */
+    isDemo: !query.isFromBackend,
   };
 }

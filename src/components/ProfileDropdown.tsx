@@ -1,11 +1,35 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutGrid, Settings, Moon, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  // Derive display name and initials from auth state
+  const displayName = useMemo(() => {
+    if (isAuthenticated && user?.displayName) return user.displayName;
+    return 'Guest';
+  }, [isAuthenticated, user]);
+
+  const initials = useMemo(() => {
+    if (isAuthenticated && user?.displayName) {
+      const parts = user.displayName.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      return user.displayName.slice(0, 2).toUpperCase();
+    }
+    return 'G';
+  }, [isAuthenticated, user]);
+
+  const email = useMemo(() => {
+    if (isAuthenticated && user?.email) return user.email;
+    return 'Not signed in';
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -30,7 +54,7 @@ export default function ProfileDropdown() {
         className="flex items-center justify-center rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] text-white text-sm font-semibold"
         style={{ width: 38, height: 38 }}
       >
-        HK
+        {initials}
       </button>
 
       {/* Dropdown */}
@@ -45,14 +69,14 @@ export default function ProfileDropdown() {
               className="flex items-center justify-center rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] text-white text-base font-semibold flex-shrink-0"
               style={{ width: 44, height: 44 }}
             >
-              HK
+              {initials}
             </div>
             <div className="min-w-0">
               <div className="text-sm font-bold text-[#111827] truncate">
-                Hime K.
+                {displayName}
               </div>
               <div className="text-xs text-[#9CA3AF] truncate">
-                hime@roil.finance
+                {email}
               </div>
             </div>
           </div>
@@ -66,7 +90,10 @@ export default function ProfileDropdown() {
           <div className="my-1 border-t border-[#D6D9E3]" />
 
           {/* Log Out */}
-          <DropdownItem icon={LogOut} label="Log Out" danger onClick={() => handleNavigate('/login')} />
+          <DropdownItem icon={LogOut} label="Log Out" danger onClick={() => {
+            logout();
+            handleNavigate('/login');
+          }} />
         </div>
       )}
     </div>
