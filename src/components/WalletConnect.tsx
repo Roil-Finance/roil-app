@@ -1,15 +1,29 @@
-import { useState, useRef, useEffect } from 'react';
-import { Wallet, ChevronDown, LogOut, RefreshCw, Plug } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  Wallet,
+  ChevronDown,
+  LogOut,
+  RefreshCw,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2,
+  Copy,
+  Check,
+} from 'lucide-react';
 import clsx from 'clsx';
 import { useWallet } from '@/hooks/useWallet';
 import { truncateParty } from '@/lib/canton-wallet';
+import { WalletManager } from '@/lib/wallet-core';
+import WalletSetup from '@/components/WalletSetup';
 
 // ---------------------------------------------------------------------------
 // WalletConnect component
 //
-// Renders a connect button when disconnected.
-// When connected, shows the party name, truncated ID, and a balance summary
-// in a dropdown with balances and a disconnect action.
+// Three states:
+//   1. No wallet: "Create Wallet" button -> opens WalletSetup overlay
+//   2. Wallet locked: "Unlock" button -> inline password prompt
+//   3. Wallet unlocked: party info + dropdown with balances / disconnect
 // ---------------------------------------------------------------------------
 
 export default function WalletConnect() {
@@ -21,16 +35,23 @@ export default function WalletConnect() {
     connect,
     disconnect,
     refreshBalances,
-    isExtensionAvailable,
-    isSDKConnected,
     isConnecting,
     error,
   } = useWallet();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [partyHint, setPartyHint] = useState('');
-  const [showHintInput, setShowHintInput] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [unlockPassword, setUnlockPassword] = useState('');
+  const [showUnlockPw, setShowUnlockPw] = useState(false);
+  const [unlockError, setUnlockError] = useState<string | null>(null);
+  const [isUnlocking, setIsUnlocking] = useState(false);
+  const [copiedParty, setCopiedParty] = useState(false);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const unlockRef = useRef<HTMLDivElement>(null);
+
+  const hasWallet = WalletManager.hasWallet();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -41,154 +62,226 @@ export default function WalletConnect() {
       ) {
         setDropdownOpen(false);
       }
+      if (
+        unlockRef.current &&
+        !unlockRef.current.contains(e.target as Node) &&
+        showUnlock
+      ) {
+        setShowUnlock(false);
+        setUnlockPassword('');
+        setUnlockError(null);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [showUnlock]);
 
-  // ------- Handlers -------
+  // -----------------------------------------------------------------------
+  // Handlers
+  // -----------------------------------------------------------------------
 
-  const handleConnect = async () => {
-    try {
-      if (!isExtensionAvailable && !partyHint) {
-        // Show the hint input so user can enter a party ID for dev mode
-        setShowHintInput(true);
-        return;
-      }
-      await connect(partyHint || undefined);
-      setShowHintInput(false);
-      setPartyHint('');
-    } catch {
-      // error state is managed by useWallet
+  const handleUnlock = useCallback(async () => {
+    if (!unlockPassword) {
+      setUnlockError('Please enter your password');
+      return;
     }
-  };
-
-  const handleConnectWithHint = async () => {
+    setIsUnlocking(true);
+    setUnlockError(null);
     try {
-      await connect(partyHint || undefined);
-      setShowHintInput(false);
-      setPartyHint('');
-    } catch {
-      // error state is managed by useWallet
+      await connect(unlockPassword);
+      setShowUnlock(false);
+      setUnlockPassword('');
+    } catch (err) {
+      setUnlockError(err instanceof Error ? err.message : 'Unlock failed');
+    } finally {
+      setIsUnlocking(false);
     }
-  };
+  }, [unlockPassword, connect]);
 
-  const handleDisconnect = async () => {
+  const handleDisconnect = useCallback(async () => {
     await disconnect();
     setDropdownOpen(false);
-  };
+  }, [disconnect]);
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     await refreshBalances();
-  };
+  }, [refreshBalances]);
 
-  // ------- CC balance summary -------
+  const handleCopyParty = useCallback(async () => {
+    if (!party) return;
+    try {
+      await navigator.clipboard.writeText(party);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = party;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    setCopiedParty(true);
+    setTimeout(() => setCopiedParty(false), 2000);
+  }, [party]);
 
+  const handleWalletCreated = useCallback(() => {
+    setShowSetup(false);
+    // After creation, show unlock prompt
+    setShowUnlock(true);
+  }, []);
+
+  // CC balance summary
   const ccBalance = balances.find((b) => b.instrumentId === 'CC');
   const ccTotal = ccBalance ? ccBalance.amount : null;
 
-  // ------- Render: Disconnected state -------
+  const walletInfo = WalletManager.getWalletInfo();
+
+  // -----------------------------------------------------------------------
+  // Render: WalletSetup overlay
+  // -----------------------------------------------------------------------
+
+  if (showSetup) {
+    return (
+      <>
+        {/* Overlay backdrop */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <WalletSetup
+            onComplete={handleWalletCreated}
+            onCancel={() => setShowSetup(false)}
+          />
+        </div>
+      </>
+    );
+  }
+
+  // -----------------------------------------------------------------------
+  // Render: No wallet — show "Create Wallet"
+  // -----------------------------------------------------------------------
+
+  if (!hasWallet) {
+    return (
+      <div className="flex items-center">
+        <button
+          onClick={() => setShowSetup(true)}
+          className="flex items-center gap-2 bg-gradient-to-br from-[#059669] to-[#10B981] text-white text-sm font-semibold py-2 px-4 rounded-xl shadow-[0_2px_8px_#05966930] transition hover:opacity-90"
+        >
+          <Wallet className="w-4 h-4" />
+          Create Wallet
+        </button>
+      </div>
+    );
+  }
+
+  // -----------------------------------------------------------------------
+  // Render: Wallet exists but not connected (locked)
+  // -----------------------------------------------------------------------
 
   if (!connected) {
     return (
-      <div className="px-3">
-        {/* Dev mode hint input */}
-        {showHintInput && !isExtensionAvailable && (
-          <div className="mb-2">
-            <label className="text-sm text-ink-muted block mb-1">
-              Party ID (dev mode)
-            </label>
-            <input
-              type="text"
-              value={partyHint}
-              onChange={(e) => setPartyHint(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleConnectWithHint();
-              }}
-              placeholder="e.g. Alice::1220..."
-              className="w-full bg-surface border border-surface-border rounded px-2 py-1.5 text-sm text-ink font-mono focus:outline-none focus:ring-1 focus:ring-accent mb-1.5"
-              spellCheck={false}
-            />
-            <div className="flex gap-1.5">
+      <div className="relative flex items-center" ref={unlockRef}>
+        {showUnlock ? (
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <input
+                type={showUnlockPw ? 'text' : 'password'}
+                value={unlockPassword}
+                onChange={(e) => { setUnlockPassword(e.target.value); setUnlockError(null); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock(); }}
+                placeholder="Password"
+                disabled={isUnlocking}
+                className="w-[180px] rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669] disabled:opacity-60 pr-8"
+                autoFocus
+              />
               <button
-                onClick={handleConnectWithHint}
-                disabled={isConnecting}
-                className="flex-1 bg-accent hover:bg-accent-hover text-white text-sm font-medium py-1.5 px-2 rounded transition-colors disabled:opacity-50"
+                type="button"
+                onClick={() => setShowUnlockPw(!showUnlockPw)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827]"
               >
-                {isConnecting ? 'Connecting...' : 'Connect'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowHintInput(false);
-                  setPartyHint('');
-                }}
-                className="bg-surface-muted hover:bg-surface-hover text-ink text-sm font-medium py-1.5 px-2 rounded transition-colors"
-              >
-                Cancel
+                {showUnlockPw ? (
+                  <Eye className="h-3.5 w-3.5" />
+                ) : (
+                  <EyeOff className="h-3.5 w-3.5" />
+                )}
               </button>
             </div>
+            <button
+              onClick={handleUnlock}
+              disabled={isUnlocking || !unlockPassword}
+              className="flex items-center gap-1.5 bg-gradient-to-br from-[#059669] to-[#10B981] text-white text-sm font-semibold py-2 px-3.5 rounded-xl shadow-[0_2px_8px_#05966930] transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUnlocking ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Lock className="h-3.5 w-3.5" />
+              )}
+              {isUnlocking ? '' : 'Unlock'}
+            </button>
+            <button
+              onClick={() => { setShowUnlock(false); setUnlockPassword(''); setUnlockError(null); }}
+              className="text-sm text-[#6B7280] hover:text-[#111827] transition-colors px-1"
+            >
+              Cancel
+            </button>
           </div>
-        )}
-
-        {/* Main connect button */}
-        {!showHintInput && (
+        ) : (
           <button
-            onClick={handleConnect}
+            onClick={() => setShowUnlock(true)}
             disabled={isConnecting}
-            className="flex items-center gap-2 w-full bg-accent hover:bg-accent-hover text-white text-base font-medium py-2.5 px-3 rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 py-2 px-4 text-sm font-medium text-[#111827] dark:text-slate-200 transition hover:bg-[#F3F4F9] dark:hover:bg-slate-600 hover:border-[#059669] disabled:opacity-50"
           >
-            <Wallet className="w-4 h-4" />
-            {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+            <Lock className="w-4 h-4 text-[#6B7280]" />
+            <span>{walletInfo?.displayName || 'Wallet'}</span>
+            <span className="text-xs text-[#9CA3AF] font-mono">
+              {walletInfo?.partyId ? truncateParty(walletInfo.partyId, 3) : 'Locked'}
+            </span>
           </button>
         )}
 
-        {/* Extension badge */}
-        {!showHintInput && (
-          <div className="flex items-center gap-1.5 mt-2 px-1">
-            <Plug className="w-3 h-3 text-ink-muted" />
-            <span className="text-sm text-ink-muted">
-              {isExtensionAvailable
-                ? 'Canton extension detected'
-                : 'Canton SDK + Dev mode (JSON API)'}
-            </span>
+        {/* Unlock error tooltip */}
+        {unlockError && (
+          <div className="absolute top-full mt-1.5 right-0 z-50 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-700 shadow-sm whitespace-nowrap">
+            {unlockError}
           </div>
         )}
 
-        {/* Error */}
-        {error && (
-          <p className="text-sm text-negative mt-1.5 px-1">{error}</p>
+        {/* General error */}
+        {error && !unlockError && (
+          <p className="absolute top-full mt-1 right-0 text-xs text-red-600 whitespace-nowrap">{error}</p>
         )}
       </div>
     );
   }
 
-  // ------- Render: Connected state -------
+  // -----------------------------------------------------------------------
+  // Render: Connected state
+  // -----------------------------------------------------------------------
 
   return (
-    <div className="px-3 relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       {/* Connected button / trigger */}
       <button
         onClick={() => setDropdownOpen((prev) => !prev)}
         className={clsx(
-          'flex items-center gap-2 w-full rounded-lg px-3 py-2.5 text-left transition-colors',
-          'bg-surface-muted hover:bg-surface-hover border border-surface-border',
+          'flex items-center gap-2 rounded-xl px-3 py-2 text-left transition-colors',
+          'bg-white dark:bg-slate-700 hover:bg-[#F3F4F9] dark:hover:bg-slate-600 border border-[#D6D9E3] dark:border-slate-600',
         )}
       >
         {/* Green status dot */}
         <div className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
 
-        <div className="flex-1 min-w-0">
-          <p className="text-base font-medium text-ink truncate">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-[#111827] dark:text-slate-100 truncate">
             {displayName ?? 'Connected'}
           </p>
-          <p className="text-sm text-ink-muted font-mono truncate">
+          <p className="text-xs text-[#6B7280] dark:text-slate-400 font-mono truncate">
             {party ? truncateParty(party) : ''}
           </p>
         </div>
 
         <ChevronDown
           className={clsx(
-            'w-4 h-4 text-ink-secondary transition-transform shrink-0',
+            'w-4 h-4 text-[#9CA3AF] transition-transform shrink-0 ml-1',
             dropdownOpen && 'rotate-180',
           )}
         />
@@ -196,16 +289,16 @@ export default function WalletConnect() {
 
       {/* Dropdown */}
       {dropdownOpen && (
-        <div className="absolute left-3 right-3 bottom-full mb-2 bg-white border border-surface-border rounded-lg shadow-lg z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-[320px] bg-white dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-xl shadow-lg z-50 overflow-hidden">
           {/* Balance summary */}
-          <div className="px-4 py-3 border-b border-surface-border">
+          <div className="px-4 py-3 border-b border-[#E5E7EB] dark:border-slate-700">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-ink-secondary font-medium">
+              <span className="text-xs font-medium text-[#6B7280] uppercase tracking-wider">
                 Balances
               </span>
               <button
                 onClick={handleRefresh}
-                className="text-ink-secondary hover:text-ink transition-colors"
+                className="text-[#6B7280] hover:text-[#111827] transition-colors"
                 title="Refresh balances"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -219,15 +312,15 @@ export default function WalletConnect() {
                     key={b.instrumentId}
                     className="flex items-center justify-between"
                   >
-                    <span className="text-sm text-ink font-medium">
+                    <span className="text-sm text-[#111827] dark:text-slate-200 font-medium">
                       {b.instrumentId}
                     </span>
                     <div className="text-right">
-                      <span className="text-sm text-ink font-medium">
+                      <span className="text-sm text-[#111827] dark:text-slate-200 font-medium">
                         {b.amount.toLocaleString()}
                       </span>
                       {b.locked > 0 && (
-                        <span className="text-sm text-ink-muted ml-1">
+                        <span className="text-xs text-[#6B7280] ml-1">
                           ({b.locked.toLocaleString()} locked)
                         </span>
                       )}
@@ -235,32 +328,43 @@ export default function WalletConnect() {
                   </div>
                 ))}
                 {ccTotal !== null && (
-                  <div className="pt-1.5 mt-1.5 border-t border-surface-border flex items-center justify-between">
-                    <span className="text-sm text-ink-secondary">CC Balance</span>
-                    <span className="text-sm text-ink font-semibold">
+                  <div className="pt-1.5 mt-1.5 border-t border-[#E5E7EB] flex items-center justify-between">
+                    <span className="text-xs text-[#6B7280]">CC Balance</span>
+                    <span className="text-sm text-[#111827] dark:text-slate-100 font-semibold">
                       {ccTotal.toLocaleString()} CC
                     </span>
                   </div>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-ink-muted mt-2">
+              <p className="text-xs text-[#9CA3AF] mt-2">
                 No balances found
               </p>
             )}
           </div>
 
           {/* Party info */}
-          <div className="px-4 py-2.5 border-b border-surface-border">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-ink-muted">Party</p>
-              {isSDKConnected && (
-                <span className="text-sm text-accent bg-accent-light px-1.5 py-0.5 rounded">
-                  via Canton SDK
-                </span>
-              )}
+          <div className="px-4 py-2.5 border-b border-[#E5E7EB] dark:border-slate-700">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs text-[#6B7280]">Party ID</p>
+              <button
+                onClick={handleCopyParty}
+                className="flex items-center gap-1 text-xs text-[#059669] hover:text-[#047857] transition-colors"
+              >
+                {copiedParty ? (
+                  <>
+                    <Check className="h-3 w-3" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" />
+                    Copy
+                  </>
+                )}
+              </button>
             </div>
-            <p className="text-sm text-ink font-mono break-all mt-0.5">
+            <p className="text-xs text-[#111827] dark:text-slate-200 font-mono break-all">
               {party}
             </p>
           </div>
@@ -268,7 +372,7 @@ export default function WalletConnect() {
           {/* Disconnect */}
           <button
             onClick={handleDisconnect}
-            className="flex items-center gap-2 w-full px-4 py-2.5 text-base text-negative hover:bg-surface-hover transition-colors"
+            className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
           >
             <LogOut className="w-4 h-4" />
             Disconnect
@@ -278,7 +382,7 @@ export default function WalletConnect() {
 
       {/* Error */}
       {error && (
-        <p className="text-sm text-negative mt-1.5 px-1">{error}</p>
+        <p className="absolute top-full mt-1 right-0 text-xs text-red-600 whitespace-nowrap">{error}</p>
       )}
     </div>
   );

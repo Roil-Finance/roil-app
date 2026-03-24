@@ -78,8 +78,8 @@ export default function DCA() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-[#1A1A2E]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h2 className="text-2xl font-bold text-[#1A1A2E] dark:text-slate-100">
           Dollar Cost Averaging
         </h2>
         <Link
@@ -97,11 +97,11 @@ export default function DCA() {
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Active Schedules */}
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-[18px_22px]">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-[18px_22px]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#6B7280]">Active Schedules</p>
-              <p className="text-3xl font-bold text-[#1A1A2E] mt-1">7</p>
+              <p className="text-sm text-[#6B7280] dark:text-slate-400">Active Schedules</p>
+              <p className="text-3xl font-bold text-[#1A1A2E] dark:text-slate-100 mt-1">7</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-[#E0F5EA] flex items-center justify-center">
               <Repeat className="w-5 h-5 text-[#059669]" />
@@ -110,11 +110,11 @@ export default function DCA() {
         </div>
 
         {/* Monthly Volume */}
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-[18px_22px]">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-[18px_22px]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#6B7280]">Monthly Volume</p>
-              <p className="text-3xl font-bold text-[#1A1A2E] mt-1">$4,200</p>
+              <p className="text-sm text-[#6B7280] dark:text-slate-400">Monthly Volume</p>
+              <p className="text-3xl font-bold text-[#1A1A2E] dark:text-slate-100 mt-1">$4,200</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-[#DBEAFE] flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-[#2563EB]" />
@@ -123,11 +123,11 @@ export default function DCA() {
         </div>
 
         {/* Week Streak */}
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-[18px_22px]">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-[18px_22px]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#6B7280]">Week Streak</p>
-              <p className="text-3xl font-bold text-[#1A1A2E] mt-1">12</p>
+              <p className="text-sm text-[#6B7280] dark:text-slate-400">Week Streak</p>
+              <p className="text-3xl font-bold text-[#1A1A2E] dark:text-slate-100 mt-1">12</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-[#FEF3C7] flex items-center justify-center">
               <Flame className="w-5 h-5 text-[#D97706]" />
@@ -138,7 +138,7 @@ export default function DCA() {
 
       {/* Active Schedules section */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1A1A2E] mb-3">
+        <h3 className="text-lg font-semibold text-[#1A1A2E] dark:text-slate-100 mb-3">
           Active Schedules
         </h3>
 
@@ -146,7 +146,7 @@ export default function DCA() {
           {schedules.map((schedule) => (
             <div
               key={schedule.id}
-              className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-[18px_22px] flex items-center justify-between"
+              className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-[18px_22px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
             >
               {/* Left: token logo + title/subtitle */}
               <div className="flex items-center gap-3">
@@ -156,10 +156,10 @@ export default function DCA() {
                   className="w-9 h-9 rounded-full"
                 />
                 <div>
-                  <p className="text-sm font-semibold text-[#1A1A2E]">
+                  <p className="text-sm font-semibold text-[#1A1A2E] dark:text-slate-100">
                     USDCx &rarr; {schedule.toLabel}
                   </p>
-                  <p className="text-xs text-[#6B7280]">
+                  <p className="text-xs text-[#6B7280] dark:text-slate-400">
                     ${schedule.amount} {schedule.frequency} &middot;{' '}
                     {schedule.dayLabel}
                   </p>
@@ -168,10 +168,10 @@ export default function DCA() {
 
               {/* Middle: executions + invested */}
               <div className="hidden sm:block text-center">
-                <p className="text-xs text-[#6B7280]">
+                <p className="text-xs text-[#6B7280] dark:text-slate-400">
                   {schedule.executions} executions
                 </p>
-                <p className="text-sm font-bold text-[#1A1A2E]">
+                <p className="text-sm font-bold text-[#1A1A2E] dark:text-slate-100">
                   ${schedule.invested.toLocaleString()} invested
                 </p>
               </div>
@@ -189,7 +189,7 @@ export default function DCA() {
                 </span>
                 <button
                   onClick={() => toggleStatus(schedule.id)}
-                  className="w-8 h-8 rounded-full border border-[#D6D9E3] flex items-center justify-center hover:bg-[#E8E9F0] transition-colors"
+                  className="w-8 h-8 rounded-full border border-[#D6D9E3] dark:border-slate-600 flex items-center justify-center hover:bg-[#E8E9F0] dark:hover:bg-slate-700 transition-colors"
                 >
                   {schedule.status === 'Active' ? (
                     <Pause className="w-4 h-4 text-[#6B7280]" />
@@ -199,7 +199,7 @@ export default function DCA() {
                 </button>
                 <button
                   onClick={() => removeSchedule(schedule.id)}
-                  className="w-8 h-8 rounded-full border border-[#D6D9E3] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors"
+                  className="w-8 h-8 rounded-full border border-[#D6D9E3] dark:border-slate-600 flex items-center justify-center hover:bg-[#FEE2E2] dark:hover:bg-red-900/30 transition-colors"
                 >
                   <X className="w-4 h-4 text-[#EF4444]" />
                 </button>

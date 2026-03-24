@@ -15,6 +15,12 @@
     background: linear-gradient(160deg, #E8EBF2 0%, #F0F1F6 50%, #ECEEF4 100%);
   }
 
+  /* Dark mode body background */
+  .dark body {
+    background: linear-gradient(160deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+    color: #F1F5F9;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
@@ -25,12 +31,24 @@
     @apply bg-surface-muted;
   }
 
+  .dark ::-webkit-scrollbar-track {
+    background: #1E293B;
+  }
+
   ::-webkit-scrollbar-thumb {
     @apply bg-ink-faint rounded-full;
   }
 
+  .dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-ink-muted;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #64748B;
   }
 }
 
@@ -39,6 +57,11 @@
     @apply bg-white rounded-xl;
     border: 1px solid #D6D9E3;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.04);
+  }
+
+  .dark .card {
+    @apply bg-slate-800;
+    border-color: #334155;
   }
 
   .card-hover {
@@ -65,6 +88,10 @@
     @apply bg-surface border border-surface-border rounded-lg px-3 py-2 text-ink
            focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
            placeholder-ink-muted;
+  }
+
+  .dark .input-field {
+    @apply bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-500;
   }
 
   .badge {
@@ -114,5 +141,18 @@
     background: #059669;
     border: 2px solid white;
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  .dark input[type="range"]::-webkit-slider-track {
+    background: #475569;
+  }
+  .dark input[type="range"]::-moz-range-track {
+    background: #475569;
+  }
+  .dark input[type="range"]::-webkit-slider-thumb {
+    border-color: #1E293B;
+  }
+  .dark input[type="range"]::-moz-range-thumb {
+    border-color: #1E293B;
   }
 }

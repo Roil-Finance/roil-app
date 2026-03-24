@@ -98,10 +98,10 @@ export default function NewDCA() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-[#1A1A2E]">
+        <h2 className="text-2xl font-bold text-[#1A1A2E] dark:text-slate-100">
           Create DCA Schedule
         </h2>
-        <p className="text-sm text-[#6B7280] mt-1">
+        <p className="text-sm text-[#6B7280] dark:text-slate-400 mt-1">
           Set up automated recurring purchases on Canton Network
         </p>
       </div>
@@ -125,14 +125,14 @@ export default function NewDCA() {
       {/* Two column layout */}
       <div className="flex flex-col lg:flex-row gap-6">
         {/* LEFT: Form card */}
-        <div className="flex-1 bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-[18px_22px]">
+        <div className="flex-1 bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-[18px_22px]">
           {/* From dropdown */}
           <div className="mb-4">
-            <label className="block text-xs text-[#6B7280] mb-1.5">From</label>
+            <label className="block text-xs text-[#6B7280] dark:text-slate-400 mb-1.5">From</label>
             <div className="relative">
               <button
                 onClick={() => setShowFromDropdown(!showFromDropdown)}
-                className="w-full flex items-center justify-between bg-white border border-[#D6D9E3] rounded-xl px-4 py-3"
+                className="w-full flex items-center justify-between bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <img
@@ -141,10 +141,10 @@ export default function NewDCA() {
                     className="w-8 h-8 rounded-full"
                   />
                   <div className="text-left">
-                    <p className="text-sm font-semibold text-[#1A1A2E]">
+                    <p className="text-sm font-semibold text-[#1A1A2E] dark:text-slate-100">
                       {fromToken}
                     </p>
-                    <p className="text-xs text-[#6B7280]">
+                    <p className="text-xs text-[#6B7280] dark:text-slate-400">
                       Balance: $12,450
                     </p>
                   </div>
@@ -152,19 +152,19 @@ export default function NewDCA() {
                 <ChevronDown className="w-4 h-4 text-[#6B7280]" />
               </button>
               {showFromDropdown && (
-                <div className="absolute z-10 mt-1 w-full bg-white border border-[#D6D9E3] rounded-xl shadow-lg overflow-hidden">
+                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 rounded-xl shadow-lg overflow-hidden">
                   {Object.keys(TOKEN_LOGOS).map((token) => (
                     <button
                       key={token}
                       onClick={() => setShowFromDropdown(false)}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F3F4F9] transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F3F4F9] dark:hover:bg-slate-600 transition-colors"
                     >
                       <img
                         src={TOKEN_LOGOS[token]}
                         alt={token}
                         className="w-6 h-6 rounded-full"
                       />
-                      <span className="text-sm text-[#1A1A2E]">{token}</span>
+                      <span className="text-sm text-[#1A1A2E] dark:text-slate-100">{token}</span>
                     </button>
                   ))}
                 </div>
@@ -174,11 +174,11 @@ export default function NewDCA() {
 
           {/* To dropdown */}
           <div className="mb-4">
-            <label className="block text-xs text-[#6B7280] mb-1.5">To</label>
+            <label className="block text-xs text-[#6B7280] dark:text-slate-400 mb-1.5">To</label>
             <div className="relative">
               <button
                 onClick={() => setShowToDropdown(!showToDropdown)}
-                className="w-full flex items-center justify-between bg-white border border-[#D6D9E3] rounded-xl px-4 py-3"
+                className="w-full flex items-center justify-between bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <img
@@ -187,10 +187,10 @@ export default function NewDCA() {
                     className="w-8 h-8 rounded-full"
                   />
                   <div className="text-left">
-                    <p className="text-sm font-semibold text-[#1A1A2E]">
+                    <p className="text-sm font-semibold text-[#1A1A2E] dark:text-slate-100">
                       {toToken}
                     </p>
-                    <p className="text-xs text-[#6B7280]">
+                    <p className="text-xs text-[#6B7280] dark:text-slate-400">
                       {TOKEN_PRICES[toToken]}
                     </p>
                   </div>
@@ -198,12 +198,12 @@ export default function NewDCA() {
                 <ChevronDown className="w-4 h-4 text-[#6B7280]" />
               </button>
               {showToDropdown && (
-                <div className="absolute z-10 mt-1 w-full bg-white border border-[#D6D9E3] rounded-xl shadow-lg overflow-hidden">
+                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 rounded-xl shadow-lg overflow-hidden">
                   {Object.entries(TOKEN_PRICES).map(([token, price]) => (
                     <button
                       key={token}
                       onClick={() => setShowToDropdown(false)}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F3F4F9] transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F3F4F9] dark:hover:bg-slate-600 transition-colors"
                     >
                       <img
                         src={TOKEN_LOGOS[token]}
@@ -211,8 +211,8 @@ export default function NewDCA() {
                         className="w-6 h-6 rounded-full"
                       />
                       <div className="text-left">
-                        <span className="text-sm text-[#1A1A2E]">{token}</span>
-                        <span className="text-xs text-[#6B7280] ml-2">
+                        <span className="text-sm text-[#1A1A2E] dark:text-slate-100">{token}</span>
+                        <span className="text-xs text-[#6B7280] dark:text-slate-400 ml-2">
                           {price}
                         </span>
                       </div>
@@ -224,35 +224,35 @@ export default function NewDCA() {
           </div>
 
           {/* Divider */}
-          <div className="border-t border-[#D6D9E3] my-5" />
+          <div className="border-t border-[#D6D9E3] dark:border-slate-700 my-5" />
 
           {/* Amount input */}
           <div className="mb-4">
-            <label className="block text-xs text-[#6B7280] mb-1.5">
+            <label className="block text-xs text-[#6B7280] dark:text-slate-400 mb-1.5">
               Amount per purchase
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#1A1A2E] font-semibold">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#1A1A2E] dark:text-slate-100 font-semibold">
                 $
               </span>
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value) || 0)}
-                className="w-full bg-white border border-[#D6D9E3] rounded-xl pl-8 pr-4 py-3 text-sm font-semibold text-[#1A1A2E] focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
+                className="w-full bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 rounded-xl pl-8 pr-4 py-3 text-sm font-semibold text-[#1A1A2E] dark:text-slate-100 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
               />
             </div>
 
             {/* Quick select amounts */}
-            <div className="flex gap-2 mt-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
               {QUICK_AMOUNTS.map((qa) => (
                 <button
                   key={qa}
                   onClick={() => setAmount(qa)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
+                  className={`py-2 rounded-lg text-xs font-medium transition-colors ${
                     amount === qa
                       ? 'bg-[#059669] text-white'
-                      : 'bg-white border border-[#D6D9E3] text-[#6B7280] hover:border-[#059669] hover:text-[#059669]'
+                      : 'bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 text-[#6B7280] dark:text-slate-300 hover:border-[#059669] hover:text-[#059669]'
                   }`}
                 >
                   ${qa}
@@ -262,11 +262,11 @@ export default function NewDCA() {
           </div>
 
           {/* Divider */}
-          <div className="border-t border-[#D6D9E3] my-5" />
+          <div className="border-t border-[#D6D9E3] dark:border-slate-700 my-5" />
 
           {/* Frequency */}
           <div className="mb-4">
-            <label className="block text-xs text-[#6B7280] mb-1.5">
+            <label className="block text-xs text-[#6B7280] dark:text-slate-400 mb-1.5">
               Frequency
             </label>
             <div className="flex gap-2">
@@ -277,7 +277,7 @@ export default function NewDCA() {
                   className={`flex-1 py-2.5 rounded-lg text-xs font-medium transition-colors ${
                     frequency === f
                       ? 'bg-[#059669] text-white'
-                      : 'bg-white border border-[#D6D9E3] text-[#6B7280] hover:border-[#059669] hover:text-[#059669]'
+                      : 'bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 text-[#6B7280] dark:text-slate-300 hover:border-[#059669] hover:text-[#059669]'
                   }`}
                 >
                   {f}
@@ -288,7 +288,7 @@ export default function NewDCA() {
 
           {/* Day of week */}
           <div className="mb-6">
-            <label className="block text-xs text-[#6B7280] mb-1.5">
+            <label className="block text-xs text-[#6B7280] dark:text-slate-400 mb-1.5">
               Day of Week
             </label>
             <div className="flex gap-2">
@@ -299,7 +299,7 @@ export default function NewDCA() {
                   className={`flex-1 py-2.5 rounded-lg text-xs font-medium transition-colors ${
                     selectedDay === d
                       ? 'bg-[#059669] text-white'
-                      : 'bg-white border border-[#D6D9E3] text-[#6B7280] hover:border-[#059669] hover:text-[#059669]'
+                      : 'bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 text-[#6B7280] dark:text-slate-300 hover:border-[#059669] hover:text-[#059669]'
                   }`}
                 >
                   {d}
@@ -313,7 +313,7 @@ export default function NewDCA() {
             <button
               onClick={() => navigate('/dca')}
               disabled={isSubmitting}
-              className="flex-1 py-3 rounded-xl border border-[#D6D9E3] text-sm font-medium text-[#6B7280] hover:bg-white transition-colors disabled:opacity-50"
+              className="flex-1 py-3 rounded-xl border border-[#D6D9E3] dark:border-slate-600 text-sm font-medium text-[#6B7280] dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -339,15 +339,15 @@ export default function NewDCA() {
 
         {/* RIGHT: Summary card */}
         <div className="w-full lg:w-[360px] shrink-0">
-          <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-[18px_22px]">
-            <h3 className="text-sm font-semibold text-[#1A1A2E] mb-4">
+          <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-[18px_22px]">
+            <h3 className="text-sm font-semibold text-[#1A1A2E] dark:text-slate-100 mb-4">
               Schedule Summary
             </h3>
 
             {/* From / To */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#6B7280]">From</span>
+                <span className="text-xs text-[#6B7280] dark:text-slate-400">From</span>
                 <div className="flex items-center gap-2">
                   <img
                     src={TOKEN_LOGOS[fromToken]}
@@ -360,7 +360,7 @@ export default function NewDCA() {
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#6B7280]">To</span>
+                <span className="text-xs text-[#6B7280] dark:text-slate-400">To</span>
                 <div className="flex items-center gap-2">
                   <img
                     src={TOKEN_LOGOS[toToken]}
@@ -373,13 +373,13 @@ export default function NewDCA() {
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#6B7280]">Amount</span>
-                <span className="text-sm font-semibold text-[#1A1A2E]">
+                <span className="text-xs text-[#6B7280] dark:text-slate-400">Amount</span>
+                <span className="text-sm font-semibold text-[#1A1A2E] dark:text-slate-100">
                   ${amount.toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#6B7280]">Frequency</span>
+                <span className="text-xs text-[#6B7280] dark:text-slate-400">Frequency</span>
                 <span className="text-sm font-medium text-[#059669]">
                   {frequency} ({selectedDay})
                 </span>
@@ -387,26 +387,26 @@ export default function NewDCA() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-[#D6D9E3] my-4" />
+            <div className="border-t border-[#D6D9E3] dark:border-slate-700 my-4" />
 
             {/* Projected */}
             <div>
-              <p className="text-xs text-[#6B7280] mb-3">Projected Investment</p>
+              <p className="text-xs text-[#6B7280] dark:text-slate-400 mb-3">Projected Investment</p>
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#6B7280]">1 Month</span>
+                  <span className="text-xs text-[#6B7280] dark:text-slate-400">1 Month</span>
                   <span className="text-sm font-semibold text-[#059669]">
                     ${projected.oneMonth.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#6B7280]">3 Months</span>
+                  <span className="text-xs text-[#6B7280] dark:text-slate-400">3 Months</span>
                   <span className="text-sm font-semibold text-[#059669]">
                     ${projected.threeMonth.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#6B7280]">1 Year</span>
+                  <span className="text-xs text-[#6B7280] dark:text-slate-400">1 Year</span>
                   <span className="text-sm font-semibold text-[#059669]">
                     ${projected.oneYear.toLocaleString()}
                   </span>
@@ -415,13 +415,13 @@ export default function NewDCA() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-[#D6D9E3] my-4" />
+            <div className="border-t border-[#D6D9E3] dark:border-slate-700 my-4" />
 
             {/* First Execution */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#6B7280]" />
-                <span className="text-xs text-[#6B7280]">First Execution</span>
+                <span className="text-xs text-[#6B7280] dark:text-slate-400">First Execution</span>
               </div>
               <span className="text-sm font-medium text-[#059669]">
                 {firstExecution}

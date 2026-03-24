@@ -67,7 +67,7 @@ export default function Rewards() {
       </div>
 
       {/* Gold Hero Card */}
-      <div className="bg-gradient-to-br from-[#D97706] to-[#F59E0B] rounded-2xl p-6 shadow flex items-center justify-between">
+      <div className="bg-gradient-to-br from-[#D97706] to-[#F59E0B] rounded-2xl p-6 shadow flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <span className="inline-block px-3 py-1 rounded-full bg-white/30 text-white text-xs font-medium">
             Current Tier
@@ -86,14 +86,14 @@ export default function Rewards() {
           </div>
         </div>
 
-        <div className="text-right ml-8 shrink-0">
+        <div className="text-left sm:text-right sm:ml-8 shrink-0">
           <p className="text-[32px] font-[800] text-white">$1,248</p>
           <p className="text-white/80 text-sm">Lifetime Earnings</p>
         </div>
       </div>
 
       {/* 4 Tier Cards */}
-      <div className="grid grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         {TIER_DATA.map((tier) => {
           const Icon = tier.icon;
           return (
@@ -124,7 +124,7 @@ export default function Rewards() {
       </div>
 
       {/* Payout History */}
-      <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-2xl p-6">
+      <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-ink">Payout History</h3>
           <button className="text-sm font-medium text-accent hover:underline">

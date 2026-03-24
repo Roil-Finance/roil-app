@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Settings, Moon, LogOut } from 'lucide-react';
+import { LayoutGrid, Settings, Moon, Sun, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { isDark, toggle: toggleDark } = useDarkMode();
 
   // Derive display name and initials from auth state
   const displayName = useMemo(() => {
@@ -60,7 +62,7 @@ export default function ProfileDropdown() {
       {/* Dropdown */}
       {open && (
         <div
-          className="absolute right-0 mt-2 bg-[#F3F4F9] rounded-xl shadow-lg border border-[#D6D9E3] py-2 z-50"
+          className="absolute right-0 mt-2 bg-[#F3F4F9] dark:bg-slate-800 rounded-xl shadow-lg border border-[#D6D9E3] dark:border-slate-700 py-2 z-50"
           style={{ width: 260 }}
         >
           {/* Profile section */}
@@ -72,10 +74,10 @@ export default function ProfileDropdown() {
               {initials}
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-bold text-[#111827] truncate">
+              <div className="text-sm font-bold text-[#111827] dark:text-slate-100 truncate">
                 {displayName}
               </div>
-              <div className="text-xs text-[#9CA3AF] truncate">
+              <div className="text-xs text-[#9CA3AF] dark:text-slate-400 truncate">
                 {email}
               </div>
             </div>
@@ -84,10 +86,14 @@ export default function ProfileDropdown() {
           {/* Menu items */}
           <DropdownItem icon={LayoutGrid} label="Dashboard" onClick={() => handleNavigate('/')} />
           <DropdownItem icon={Settings} label="Settings" onClick={() => handleNavigate('/settings')} />
-          <DropdownItem icon={Moon} label="Dark Mode" />
+          <DropdownItem
+            icon={isDark ? Sun : Moon}
+            label={isDark ? 'Light Mode' : 'Dark Mode'}
+            onClick={toggleDark}
+          />
 
           {/* Divider */}
-          <div className="my-1 border-t border-[#D6D9E3]" />
+          <div className="my-1 border-t border-[#D6D9E3] dark:border-slate-700" />
 
           {/* Log Out */}
           <DropdownItem icon={LogOut} label="Log Out" danger onClick={() => {
@@ -114,8 +120,8 @@ function DropdownItem({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-3 w-full px-4 py-2 text-sm transition-colors hover:bg-[#ECEEF4] ${
-        danger ? 'text-[#E11D48]' : 'text-[#111827]'
+      className={`flex items-center gap-3 w-full px-4 py-2 text-sm transition-colors hover:bg-[#ECEEF4] dark:hover:bg-slate-700 ${
+        danger ? 'text-[#E11D48]' : 'text-[#111827] dark:text-slate-200'
       }`}
     >
       <Icon className="w-4 h-4" />

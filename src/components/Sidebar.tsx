@@ -21,21 +21,73 @@ export default function Sidebar() {
   const location = useLocation();
 
   return (
-    <aside
-      className="fixed top-0 left-0 h-screen flex flex-col items-center bg-white border-r border-[#D6D9E3] z-30 py-5"
-      style={{ width: 72 }}
-    >
-      {/* Logo — click to go home */}
-      <NavLink to="/">
-        <img
-          src="/logo.jpg"
-          alt="Roil"
-          className="w-10 h-10 rounded-xl object-cover mb-6"
-        />
-      </NavLink>
+    <>
+      {/* ============ Desktop Sidebar (md+) ============ */}
+      <aside
+        className="fixed top-0 left-0 h-screen hidden md:flex flex-col items-center bg-white dark:bg-slate-800 border-r border-[#D6D9E3] dark:border-slate-700 z-30 py-5"
+        style={{ width: 72 }}
+      >
+        {/* Logo — click to go home */}
+        <NavLink to="/">
+          <img
+            src="/logo.jpg"
+            alt="Roil"
+            className="w-10 h-10 rounded-xl object-cover mb-6"
+          />
+        </NavLink>
 
-      {/* Navigation */}
-      <nav className="flex flex-col items-center gap-2 flex-1">
+        {/* Navigation */}
+        <nav className="flex flex-col items-center gap-2 flex-1">
+          {NAV_ITEMS.map(({ to, icon: Icon }) => {
+            const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                className="flex items-center justify-center rounded-xl transition-colors"
+                style={{ width: 44, height: 44 }}
+              >
+                <div
+                  className={`flex items-center justify-center w-full h-full rounded-xl transition-colors ${
+                    isActive
+                      ? 'bg-gradient-to-b from-[#059669] to-[#10B981] text-white'
+                      : 'text-[#9CA3AF] hover:text-[#6B7280] hover:bg-[#ECEEF4] dark:hover:bg-slate-700 dark:hover:text-slate-300'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" strokeWidth={2} />
+                </div>
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        {/* Bottom icons — Twitter + Help */}
+        <div className="flex flex-col items-center gap-2 mb-1">
+          <a
+            href="https://x.com/RoilFinance"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center rounded-xl text-[#9CA3AF] hover:text-[#111827] dark:hover:text-slate-200 hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors"
+            style={{ width: 44, height: 44 }}
+            title="Follow us on X"
+          >
+            <XIcon className="w-[18px] h-[18px]" />
+          </a>
+          <a
+            href="https://docs.roil.fi"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center rounded-xl text-[#9CA3AF] hover:text-[#6B7280] dark:hover:text-slate-300 hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors"
+            style={{ width: 44, height: 44 }}
+            title="Help & Docs"
+          >
+            <HelpCircle className="w-5 h-5" strokeWidth={2} />
+          </a>
+        </div>
+      </aside>
+
+      {/* ============ Mobile Bottom Nav (<md) ============ */}
+      <nav className="fixed bottom-0 left-0 right-0 md:hidden flex items-center justify-around bg-white dark:bg-slate-800 border-t border-[#D6D9E3] dark:border-slate-700 z-30 h-16 px-2">
         {NAV_ITEMS.map(({ to, icon: Icon }) => {
           const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
           return (
@@ -49,7 +101,7 @@ export default function Sidebar() {
                 className={`flex items-center justify-center w-full h-full rounded-xl transition-colors ${
                   isActive
                     ? 'bg-gradient-to-b from-[#059669] to-[#10B981] text-white'
-                    : 'text-[#9CA3AF] hover:text-[#6B7280] hover:bg-[#ECEEF4]'
+                    : 'text-[#9CA3AF] hover:text-[#6B7280] dark:hover:text-slate-300'
                 }`}
               >
                 <Icon className="w-5 h-5" strokeWidth={2} />
@@ -58,30 +110,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Bottom icons — Twitter + Help */}
-      <div className="flex flex-col items-center gap-2 mb-1">
-        <a
-          href="https://x.com/RoilFinance"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center rounded-xl text-[#9CA3AF] hover:text-[#111827] hover:bg-[#ECEEF4] transition-colors"
-          style={{ width: 44, height: 44 }}
-          title="Follow us on X"
-        >
-          <XIcon className="w-[18px] h-[18px]" />
-        </a>
-        <a
-          href="https://docs.roil.fi"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center rounded-xl text-[#9CA3AF] hover:text-[#6B7280] hover:bg-[#ECEEF4] transition-colors"
-          style={{ width: 44, height: 44 }}
-          title="Help & Docs"
-        >
-          <HelpCircle className="w-5 h-5" strokeWidth={2} />
-        </a>
-      </div>
-    </aside>
+    </>
   );
 }

@@ -1,93 +1,97 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CantonWallet, WalletState, TokenBalance } from '@/lib/canton-wallet';
-import { cantonSDKWallet } from '@/lib/canton-sdk-wallet';
+import { WalletManager, type SignFunction, type RoilWallet } from '@/lib/wallet-core';
 import { setAuthToken } from './useApi';
 
 // ---------------------------------------------------------------------------
-// Singleton wallet instance — shared across all components
+// Singleton CantonWallet instance — used for ledger interactions
+// (balance fetching, transaction submission) after wallet unlock
 // ---------------------------------------------------------------------------
 
-const wallet = new CantonWallet();
+const cantonWallet = new CantonWallet();
 
 // ---------------------------------------------------------------------------
 // React hook
 // ---------------------------------------------------------------------------
 
 export interface UseWalletReturn extends WalletState {
-  /** Connect the wallet. Optionally pass a party hint for dev/JSON API mode. */
-  connect: (partyHint?: string) => Promise<WalletState>;
-  /** Disconnect the wallet */
+  /**
+   * Connect / unlock the wallet.
+   *
+   * Pass a password to unlock via WalletManager (primary flow).
+   * Pass a party hint string (containing '::') for legacy dev mode.
+   */
+  connect: (passwordOrPartyHint?: string) => Promise<WalletState>;
+  /** Disconnect and lock the wallet */
   disconnect: () => Promise<void>;
   /** Re-fetch balances from the ledger */
   refreshBalances: () => Promise<TokenBalance[]>;
   /** True when the Canton browser extension is detected */
   isExtensionAvailable: boolean;
-  /** True when connected via the official Canton dApp SDK */
-  isSDKConnected: boolean;
   /** True while a connect/disconnect operation is in progress */
   isConnecting: boolean;
   /** Error message from the last failed operation, or null */
   error: string | null;
+  /** The unlocked wallet info (null if locked) */
+  walletInfo: RoilWallet | null;
 }
 
 export function useWallet(): UseWalletReturn {
-  const [state, setState] = useState<WalletState>(wallet.getState());
+  const [state, setState] = useState<WalletState>(cantonWallet.getState());
   const [isConnecting, setIsConnecting] = useState(false);
-  const [isSDKConnected, setIsSDKConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [walletInfo, setWalletInfo] = useState<RoilWallet | null>(null);
+  const signRef = useRef<SignFunction | null>(null);
 
-  // Subscribe to wallet state changes
+  // Subscribe to CantonWallet state changes (for balance updates etc.)
   useEffect(() => {
-    const unsubWallet = wallet.subscribe(setState);
-
-    // Also subscribe to SDK state changes so the UI updates if
-    // the SDK wallet status changes externally (e.g. user disconnects
-    // via the Canton wallet provider).
-    const unsubSDK = cantonSDKWallet.subscribe((sdkState) => {
-      setIsSDKConnected(sdkState.connected);
-      if (sdkState.connected && sdkState.party) {
-        setState({
-          connected: true,
-          party: sdkState.party,
-          displayName: sdkState.displayName || sdkState.party,
-          balances: [],
-        });
-      }
-    });
-
+    const unsub = cantonWallet.subscribe(setState);
     return () => {
-      try { unsubWallet(); } catch (e) { console.warn('[useWallet] Error unsubscribing wallet:', e); }
-      try { unsubSDK(); } catch (e) { console.warn('[useWallet] Error unsubscribing SDK:', e); }
+      try { unsub(); } catch (e) { console.warn('[useWallet] unsub error:', e); }
     };
   }, []);
 
-  const connect = useCallback(async (partyHint?: string) => {
+  /**
+   * Connect the wallet.
+   *
+   * If `passwordOrPartyHint` looks like a party ID (contains '::'), it falls
+   * back to the legacy CantonWallet dev-mode flow.
+   *
+   * Otherwise it's treated as a password for WalletManager.unlockWallet().
+   */
+  const connect = useCallback(async (passwordOrPartyHint?: string) => {
     setIsConnecting(true);
     setError(null);
+
     try {
-      // Try official Canton dApp SDK first
-      try {
-        await cantonSDKWallet.init();
-        const sdkState = await cantonSDKWallet.connect();
-        if (sdkState.connected && sdkState.party) {
-          const walletState: WalletState = {
-            connected: true,
-            party: sdkState.party,
-            displayName: sdkState.displayName || sdkState.party,
-            balances: [],
-          };
-          setState(walletState);
-          setAuthToken(sdkState.party); // SDK manages auth internally
-          return walletState;
-        }
-      } catch {
-        // SDK not available or connect failed -- fall back to custom wallet
+      // Determine if this is a legacy party-hint connection
+      const isPartyHint = passwordOrPartyHint?.includes('::');
+
+      if (!isPartyHint && WalletManager.hasWallet() && passwordOrPartyHint) {
+        // --- Primary flow: WalletManager unlock ---
+        const { wallet, sign } = await WalletManager.unlockWallet(passwordOrPartyHint);
+        signRef.current = sign;
+        setWalletInfo(wallet);
+
+        // Create a JWT for Canton JSON API auth
+        const jwt = await WalletManager.createJWT(sign, wallet.partyId);
+        setAuthToken(jwt);
+
+        // Build the wallet state
+        const walletState: WalletState = {
+          connected: true,
+          party: wallet.partyId,
+          displayName: wallet.displayName,
+          balances: [],
+        };
+        setState(walletState);
+
+        return walletState;
       }
 
-      // Fallback: existing custom wallet connection
-      const result = await wallet.connect(partyHint);
-      // After successful connection, set the auth token for API requests
-      const token = wallet.getCurrentToken();
+      // --- Fallback: legacy CantonWallet connection (dev mode / extension) ---
+      const result = await cantonWallet.connect(passwordOrPartyHint);
+      const token = cantonWallet.getCurrentToken();
       setAuthToken(token);
       return result;
     } catch (err) {
@@ -99,18 +103,30 @@ export function useWallet(): UseWalletReturn {
     }
   }, []);
 
+  /**
+   * Disconnect: clear auth token, reset state, lock wallet.
+   */
   const disconnect = useCallback(async () => {
     setError(null);
     setAuthToken(null);
-    // Disconnect both SDK and custom wallet to ensure clean state
-    await cantonSDKWallet.disconnect();
-    await wallet.disconnect();
+    signRef.current = null;
+    setWalletInfo(null);
+    await cantonWallet.disconnect();
+    setState({
+      connected: false,
+      party: null,
+      displayName: null,
+      balances: [],
+    });
   }, []);
 
+  /**
+   * Refresh balances from the ledger.
+   */
   const refreshBalances = useCallback(async () => {
     setError(null);
     try {
-      return await wallet.refreshBalances();
+      return await cantonWallet.refreshBalances();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to refresh balances';
       setError(msg);
@@ -127,8 +143,8 @@ export function useWallet(): UseWalletReturn {
     disconnect,
     refreshBalances,
     isExtensionAvailable,
-    isSDKConnected,
     isConnecting,
     error,
+    walletInfo,
   };
 }

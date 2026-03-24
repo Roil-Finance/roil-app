@@ -51,7 +51,7 @@ function tierColor(tier: string): string {
 /* ------------------------------------------------------------------ */
 
 function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse bg-gray-200 rounded ${className}`} />;
+  return <div className={`animate-pulse bg-gray-200 dark:bg-slate-700 rounded ${className}`} />;
 }
 
 /* ------------------------------------------------------------------ */
@@ -178,8 +178,8 @@ export default function Dashboard() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-6 font-['DM_Sans']">
         <div className="text-center">
-          <h1 className="text-[26px] font-bold text-[#111827] mb-2">No Portfolio Yet</h1>
-          <p className="text-[#6B7280] text-sm max-w-md">
+          <h1 className="text-[26px] font-bold text-[#111827] dark:text-slate-100 mb-2">No Portfolio Yet</h1>
+          <p className="text-[#6B7280] dark:text-slate-400 text-sm max-w-md">
             Create your first portfolio to start tracking performance, managing allocations, and earning rewards.
           </p>
         </div>
@@ -196,9 +196,9 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col gap-5 h-full font-['DM_Sans']">
       {/* ---- Header row ---- */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-[26px] font-bold text-[#111827] leading-tight">
+          <h1 className="text-[26px] font-bold text-[#111827] dark:text-slate-100 leading-tight">
             Portfolio Overview
           </h1>
         </div>
@@ -213,7 +213,7 @@ export default function Dashboard() {
       </div>
 
       {/* ---- 4 Stat cards ---- */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           label="Total Value"
           value={isMainLoading ? <Skeleton className="h-8 w-32" /> : fmtUsd(totalValueUsd)}
@@ -234,7 +234,7 @@ export default function Dashboard() {
           value={dcaLoading ? <Skeleton className="h-8 w-12" /> : String(activeDcaCount)}
           sub={
             <div>
-              <span className="text-sm text-[#6B7280]">schedules</span>
+              <span className="text-sm text-[#6B7280] dark:text-slate-400">schedules</span>
               <div className="mt-1">
                 <Link to="/dca" className="text-sm font-semibold text-[#059669] hover:underline">
                   View all &rarr;
@@ -259,7 +259,7 @@ export default function Dashboard() {
               <Skeleton className="h-4 w-24" />
             ) : (
               <div>
-                <span className="text-sm text-[#6B7280]">{rewardRebate}% rebate</span>
+                <span className="text-sm text-[#6B7280] dark:text-slate-400">{rewardRebate}% rebate</span>
                 <div className="mt-1">
                   <Link to="/rewards" className="text-sm font-semibold hover:underline" style={{ color: rewardColor }}>
                     View rewards &rarr;
@@ -289,13 +289,13 @@ export default function Dashboard() {
       </div>
 
       {/* ---- Content row: chart + allocation ---- */}
-      <div className="flex gap-5 flex-1 min-h-0">
+      <div className="flex flex-col lg:flex-row gap-5 flex-1 min-h-0">
         {/* Performance chart */}
-        <div className="flex-1 bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] shadow-[0_2px_8px_#0000000A] p-5 flex flex-col">
+        <div className="flex-1 bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] shadow-[0_2px_8px_#0000000A] p-5 flex flex-col min-h-[350px]">
           {/* Chart header */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-[#111827]">Performance</h2>
-            <div className="flex items-center gap-1 bg-white rounded-lg p-1">
+            <h2 className="text-lg font-bold text-[#111827] dark:text-slate-100">Performance</h2>
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-700 rounded-lg p-1">
               {(['1W', '1M', '1Y', 'ALL'] as const).map((tab) => (
                 <button
                   key={tab}
@@ -303,7 +303,7 @@ export default function Dashboard() {
                   className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
                     activeTab === tab
                       ? 'bg-[#059669] text-white'
-                      : 'text-[#6B7280] hover:text-[#111827]'
+                      : 'text-[#6B7280] hover:text-[#111827] dark:hover:text-slate-200'
                   }`}
                 >
                   {tab}
@@ -388,8 +388,8 @@ export default function Dashboard() {
         </div>
 
         {/* Allocation panel */}
-        <div className="w-[360px] bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] shadow-[0_2px_8px_#0000000A] p-5 flex flex-col">
-          <h2 className="text-lg font-bold text-[#111827] mb-4">Allocation</h2>
+        <div className="w-full lg:w-[360px] bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] shadow-[0_2px_8px_#0000000A] p-5 flex flex-col">
+          <h2 className="text-lg font-bold text-[#111827] dark:text-slate-100 mb-4">Allocation</h2>
 
           {isMainLoading ? (
             <div className="flex flex-col items-center gap-4">
@@ -402,7 +402,7 @@ export default function Dashboard() {
             </div>
           ) : allocationSegments.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 text-center">
-              <p className="text-[#6B7280] text-sm">No holdings yet</p>
+              <p className="text-[#6B7280] dark:text-slate-400 text-sm">No holdings yet</p>
             </div>
           ) : (
             <>
@@ -449,18 +449,18 @@ export default function Dashboard() {
                   />
                   {/* Center hole */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-[100px] h-[100px] rounded-full bg-[#F3F4F9] flex flex-col items-center justify-center">
+                    <div className="w-[100px] h-[100px] rounded-full bg-[#F3F4F9] dark:bg-slate-800 flex flex-col items-center justify-center">
                       {hoveredToken ? (
                         <>
-                          <span className="text-[22px] font-[800] text-[#111827] leading-none">
+                          <span className="text-[22px] font-[800] text-[#111827] dark:text-slate-100 leading-none">
                             {allocationSegments.find((s) => s.token === hoveredToken)?.pct}%
                           </span>
-                          <span className="text-[11px] text-[#6B7280] mt-0.5">{hoveredToken}</span>
+                          <span className="text-[11px] text-[#6B7280] dark:text-slate-400 mt-0.5">{hoveredToken}</span>
                         </>
                       ) : (
                         <>
-                          <span className="text-[28px] font-[800] text-[#111827] leading-none">{allocationSegments.length}</span>
-                          <span className="text-xs text-[#6B7280]">Assets</span>
+                          <span className="text-[28px] font-[800] text-[#111827] dark:text-slate-100 leading-none">{allocationSegments.length}</span>
+                          <span className="text-xs text-[#6B7280] dark:text-slate-400">Assets</span>
                         </>
                       )}
                     </div>
@@ -484,10 +484,10 @@ export default function Dashboard() {
                         alt={a.token}
                         className="w-[16px] h-[16px] rounded-full object-cover"
                       />
-                      <span className="text-sm font-medium text-[#111827]">
+                      <span className="text-sm font-medium text-[#111827] dark:text-slate-100">
                         {a.token}
                       </span>
-                      <span className="text-xs text-[#6B7280]">
+                      <span className="text-xs text-[#6B7280] dark:text-slate-400">
                         {a.amount} &middot; {a.usd}
                       </span>
                     </div>
@@ -523,7 +523,7 @@ interface StatCardProps {
 
 function StatCard({ label, value, sub, icon, iconBg }: StatCardProps) {
   return (
-    <div className="relative bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] shadow-[0_2px_8px_#0000000A] p-5">
+    <div className="relative bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] shadow-[0_2px_8px_#0000000A] p-5">
       {/* Icon — top-right */}
       <div
         className={`absolute top-4 right-4 w-[42px] h-[42px] rounded-[10px] flex items-center justify-center ${iconBg}`}
@@ -531,8 +531,8 @@ function StatCard({ label, value, sub, icon, iconBg }: StatCardProps) {
         {icon}
       </div>
 
-      <p className="text-sm text-[#6B7280] mb-1">{label}</p>
-      <p className="text-[28px] font-[800] text-[#111827] leading-tight">{value}</p>
+      <p className="text-sm text-[#6B7280] dark:text-slate-400 mb-1">{label}</p>
+      <p className="text-[28px] font-[800] text-[#111827] dark:text-slate-100 leading-tight">{value}</p>
       <div className="mt-1">{sub}</div>
     </div>
   );

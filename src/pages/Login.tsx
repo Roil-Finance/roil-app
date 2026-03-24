@@ -39,7 +39,7 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[linear-gradient(160deg,#E8EBF2,#F0F1F6,#ECEEF4)]">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[linear-gradient(160deg,#E8EBF2,#F0F1F6,#ECEEF4)] dark:bg-[linear-gradient(160deg,#0F172A,#1E293B,#0F172A)]">
       {/* Decorative radial orbs */}
       <div className="pointer-events-none absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(5,150,105,0.08)_0%,transparent_70%)]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.08)_0%,transparent_70%)]" />
@@ -53,12 +53,12 @@ export default function Login() {
         />
 
         {/* Card */}
-        <div className="w-full max-w-[520px] rounded-3xl border border-[#D6D9E3] bg-[#F3F4F9] px-10 py-9">
+        <div className="w-full max-w-[520px] rounded-3xl border border-[#D6D9E3] dark:border-slate-700 bg-[#F3F4F9] dark:bg-slate-800 px-6 md:px-10 py-9">
           {/* Header */}
-          <h1 className="text-center text-[28px] font-[800] text-[#111827]">
+          <h1 className="text-center text-[28px] font-[800] text-[#111827] dark:text-slate-100">
             Welcome to Roil
           </h1>
-          <p className="mt-1.5 text-center text-sm text-[#6B7280]">
+          <p className="mt-1.5 text-center text-sm text-[#6B7280] dark:text-slate-400">
             Private treasury management on Canton Network
           </p>
 
@@ -72,7 +72,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             {/* Email */}
             <div>
-              <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-[#111827]">
+              <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-[#111827] dark:text-slate-200">
                 Email
               </label>
               <div className="relative">
@@ -84,7 +84,7 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   disabled={isSubmitting}
-                  className="w-full rounded-xl border border-[#D6D9E3] bg-white py-[14px] pl-11 pr-[18px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669] disabled:opacity-60"
+                  className="w-full rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 py-[14px] pl-11 pr-[18px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669] disabled:opacity-60"
                 />
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function Login() {
             {/* Password */}
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label htmlFor="login-password" className="text-sm font-medium text-[#111827]">
+                <label htmlFor="login-password" className="text-sm font-medium text-[#111827] dark:text-slate-200">
                   Password
                 </label>
                 <button type="button" className="text-sm font-medium text-[#059669] hover:text-[#047857]">
@@ -107,7 +107,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   disabled={isSubmitting}
-                  className="w-full rounded-xl border border-[#D6D9E3] bg-white px-[18px] py-[14px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669] disabled:opacity-60"
+                  className="w-full rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 px-[18px] py-[14px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669] disabled:opacity-60"
                 />
                 <button
                   type="button"
@@ -132,9 +132,9 @@ export default function Login() {
 
           {/* Divider */}
           <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-[#D6D9E3]" />
-            <span className="text-xs text-[#6B7280]">or</span>
-            <div className="h-px flex-1 bg-[#D6D9E3]" />
+            <div className="h-px flex-1 bg-[#D6D9E3] dark:bg-slate-700" />
+            <span className="text-xs text-[#6B7280] dark:text-slate-500">or</span>
+            <div className="h-px flex-1 bg-[#D6D9E3] dark:bg-slate-700" />
           </div>
 
           {/* Social buttons — disabled / coming soon */}
@@ -143,7 +143,7 @@ export default function Login() {
               type="button"
               disabled
               title="Coming soon"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] bg-white py-[12px] text-sm font-medium text-[#111827] transition hover:bg-[#F3F4F9] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 py-[12px] text-sm font-medium text-[#111827] dark:text-slate-200 transition hover:bg-[#F3F4F9] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Wallet className="h-[18px] w-[18px]" />
               Wallet
@@ -152,7 +152,7 @@ export default function Login() {
               type="button"
               disabled
               title="Coming soon"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#111827] py-[12px] text-sm font-medium text-white transition hover:bg-[#1f2937] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#111827] dark:bg-slate-600 py-[12px] text-sm font-medium text-white transition hover:bg-[#1f2937] dark:hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="text-base font-bold leading-none">&#120143;</span>
             </button>
@@ -160,7 +160,7 @@ export default function Login() {
               type="button"
               disabled
               title="Coming soon"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] bg-white py-[12px] text-sm font-medium text-[#111827] transition hover:bg-[#F3F4F9] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 py-[12px] text-sm font-medium text-[#111827] dark:text-slate-200 transition hover:bg-[#F3F4F9] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="text-base font-bold text-[#4285F4]">G</span>
               Google
@@ -168,7 +168,7 @@ export default function Login() {
           </div>
 
           {/* Sign up link */}
-          <p className="mt-6 text-center text-sm text-[#6B7280]">
+          <p className="mt-6 text-center text-sm text-[#6B7280] dark:text-slate-400">
             Don&apos;t have an account?{' '}
             <Link to="/signup" className="font-medium text-[#059669] hover:text-[#047857]">
               Sign Up

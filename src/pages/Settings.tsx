@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ShieldCheck, Key, Timer, Loader2, Check, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Key, Timer, Loader2, Check, AlertCircle, Sun, Moon } from 'lucide-react';
 import { useQuery, useMutation } from '@/hooks/useApi';
 import { useParty } from '@/context/PartyContext';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 // ---------------------------------------------------------------------------
 // Toggle Component
@@ -122,6 +123,7 @@ function saveCachedSettings(s: CachedSettings) {
 
 export default function Settings() {
   const { party } = useParty();
+  const { isDark, toggle: toggleDark } = useDarkMode();
 
   // Fetch compound config from backend
   const configPath = party
@@ -236,8 +238,8 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-[26px] font-bold text-ink">Settings</h1>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h1 className="text-[26px] font-bold text-ink dark:text-slate-100">Settings</h1>
         <div className="flex items-center gap-3">
           {/* Save confirmation */}
           {showSaved && (
@@ -278,13 +280,13 @@ export default function Settings() {
         </div>
       )}
 
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
       {/* ==================== LEFT COLUMN ==================== */}
       <div className="flex-1 space-y-5">
         {/* --- Auto-Rebalance Card --- */}
-        <div className="bg-[#F3F4F9] border border-surface-border rounded-2xl p-6">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-surface-border dark:border-slate-700 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-lg font-semibold text-ink">Auto-Rebalance</span>
+            <span className="text-lg font-semibold text-ink dark:text-slate-100">Auto-Rebalance</span>
             <Toggle checked={autoRebalance} onChange={setAutoRebalance} aria-label="Toggle auto-rebalance" />
           </div>
           <p className="text-sm text-ink-secondary mb-5">
@@ -316,9 +318,9 @@ export default function Settings() {
         </div>
 
         {/* --- Max Slippage Card --- */}
-        <div className="bg-[#F3F4F9] border border-surface-border rounded-2xl p-6">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-surface-border dark:border-slate-700 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-lg font-semibold text-ink">Max Slippage</span>
+            <span className="text-lg font-semibold text-ink dark:text-slate-100">Max Slippage</span>
             <span className="text-xs font-semibold bg-[#E0F5EA] text-[#059669] px-2.5 py-0.5 rounded-full">
               {slippage.toFixed(1)}%
             </span>
@@ -332,7 +334,7 @@ export default function Settings() {
                 className={
                   slippage === opt
                     ? 'flex-1 py-2 rounded-xl text-sm font-medium bg-[#059669] text-white transition-colors'
-                    : 'flex-1 py-2 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors'
+                    : 'flex-1 py-2 rounded-xl text-sm font-medium bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors'
                 }
               >
                 {opt.toFixed(1)}%
@@ -341,9 +343,23 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* --- Dark Mode Card --- */}
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-surface-border dark:border-slate-700 rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {isDark ? <Moon className="w-5 h-5 text-[#6366F1]" /> : <Sun className="w-5 h-5 text-[#F59E0B]" />}
+              <div>
+                <span className="text-lg font-semibold text-ink dark:text-slate-100">Dark Mode</span>
+                <p className="text-sm text-ink-secondary dark:text-slate-400">Switch between light and dark theme</p>
+              </div>
+            </div>
+            <Toggle checked={isDark} onChange={toggleDark} aria-label="Toggle dark mode" />
+          </div>
+        </div>
+
         {/* --- Auto-Compound Strategy Card --- */}
-        <div className="bg-[#F3F4F9] border border-surface-border rounded-2xl p-6">
-          <span className="text-lg font-semibold text-ink block mb-4">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-surface-border dark:border-slate-700 rounded-2xl p-6">
+          <span className="text-lg font-semibold text-ink dark:text-slate-100 block mb-4">
             Auto-Compound Strategy
           </span>
 
@@ -354,10 +370,10 @@ export default function Settings() {
                 <button
                   key={s.id}
                   onClick={() => setCompoundStrategy(s.id)}
-                  className={`w-full text-left bg-white rounded-xl p-[14px_18px] transition-all ${
+                  className={`w-full text-left bg-white dark:bg-slate-700 rounded-xl p-[14px_18px] transition-all ${
                     selected
                       ? 'border-2 border-[#059669]'
-                      : 'border border-gray-200'
+                      : 'border border-gray-200 dark:border-slate-600'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -373,8 +389,8 @@ export default function Settings() {
                     </div>
 
                     <div>
-                      <div className="text-sm font-semibold text-ink">{s.name}</div>
-                      <div className="text-xs text-ink-secondary mt-0.5">
+                      <div className="text-sm font-semibold text-ink dark:text-slate-100">{s.name}</div>
+                      <div className="text-xs text-ink-secondary dark:text-slate-400 mt-0.5">
                         {s.description}
                       </div>
                     </div>
@@ -387,17 +403,17 @@ export default function Settings() {
       </div>
 
       {/* ==================== RIGHT COLUMN ==================== */}
-      <div className="w-[380px] space-y-5">
+      <div className="w-full lg:w-[380px] space-y-5">
         {/* --- Notifications Card --- */}
-        <div className="bg-[#F3F4F9] border border-surface-border rounded-2xl p-6">
-          <span className="text-lg font-semibold text-ink block mb-4">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-surface-border dark:border-slate-700 rounded-2xl p-6">
+          <span className="text-lg font-semibold text-ink dark:text-slate-100 block mb-4">
             Notifications
           </span>
 
           <div className="space-y-4">
             {NOTIFICATION_DEFAULTS.map((item, idx) => (
               <div key={item.label} className="flex items-center justify-between">
-                <span className="text-sm text-ink">{item.label}</span>
+                <span className="text-sm text-ink dark:text-slate-200">{item.label}</span>
                 <Toggle
                   checked={notifications[idx]}
                   onChange={() => toggleNotification(idx)}
@@ -409,8 +425,8 @@ export default function Settings() {
         </div>
 
         {/* --- Security Card --- */}
-        <div className="bg-[#F3F4F9] border border-surface-border rounded-2xl p-6">
-          <span className="text-lg font-semibold text-ink block mb-4">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-surface-border dark:border-slate-700 rounded-2xl p-6">
+          <span className="text-lg font-semibold text-ink dark:text-slate-100 block mb-4">
             Security
           </span>
 
@@ -418,7 +434,7 @@ export default function Settings() {
             {/* Wallet Connected */}
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-5 h-5 text-[#059669] shrink-0" />
-              <span className="text-sm text-ink flex-1">Wallet Connected</span>
+              <span className="text-sm text-ink dark:text-slate-200 flex-1">Wallet Connected</span>
               <span className="text-xs font-semibold bg-[#E0F5EA] text-[#059669] px-2.5 py-0.5 rounded-full">
                 Verified
               </span>
@@ -427,7 +443,7 @@ export default function Settings() {
             {/* 2FA */}
             <div className="flex items-center gap-3">
               <Key className="w-5 h-5 text-[#059669] shrink-0" />
-              <span className="text-sm text-ink flex-1">2FA</span>
+              <span className="text-sm text-ink dark:text-slate-200 flex-1">2FA</span>
               <span className="text-xs font-semibold bg-[#E0F5EA] text-[#059669] px-2.5 py-0.5 rounded-full">
                 Enabled
               </span>
@@ -436,7 +452,7 @@ export default function Settings() {
             {/* Last Login */}
             <div className="flex items-center gap-3">
               <Timer className="w-5 h-5 text-gray-400 shrink-0" />
-              <span className="text-sm text-ink flex-1">Last Login</span>
+              <span className="text-sm text-ink dark:text-slate-200 flex-1">Last Login</span>
               <span className="text-xs font-medium text-gray-500">
                 2 hours ago
               </span>

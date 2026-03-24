@@ -160,9 +160,9 @@ function SkeletonRow() {
 
 function SkeletonCard() {
   return (
-    <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-      <div className="w-24 h-4 rounded bg-[#E5E7EB] animate-pulse" />
-      <div className="w-16 h-8 rounded bg-[#E5E7EB] animate-pulse mt-2" />
+    <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+      <div className="w-24 h-4 rounded bg-[#E5E7EB] dark:bg-slate-700 animate-pulse" />
+      <div className="w-16 h-8 rounded bg-[#E5E7EB] dark:bg-slate-700 animate-pulse mt-2" />
     </div>
   );
 }
@@ -272,14 +272,14 @@ export default function History() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-[28px] font-bold text-[#111827]">Wallet History</h1>
-        <p className="text-[15px] text-[#6B7280] mt-1">
+        <h1 className="text-[28px] font-bold text-[#111827] dark:text-slate-100">Wallet History</h1>
+        <p className="text-[15px] text-[#6B7280] dark:text-slate-400 mt-1">
           All your transactions, swaps, DCA buys, and rewards in one place.
         </p>
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {isLoading ? (
           <>
             <SkeletonCard />
@@ -288,16 +288,16 @@ export default function History() {
           </>
         ) : (
           <>
-            <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-              <p className="text-sm text-[#6B7280]">Total Transactions</p>
-              <p className="text-[28px] font-bold text-[#111827] mt-1">{allHistory.length}</p>
+            <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+              <p className="text-sm text-[#6B7280] dark:text-slate-400">Total Transactions</p>
+              <p className="text-[28px] font-bold text-[#111827] dark:text-slate-100 mt-1">{allHistory.length}</p>
             </div>
-            <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-              <p className="text-sm text-[#6B7280]">Deposits & Swaps</p>
-              <p className="text-[28px] font-bold text-[#111827] mt-1">{totalDeposits + totalSwaps}</p>
+            <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+              <p className="text-sm text-[#6B7280] dark:text-slate-400">Deposits & Swaps</p>
+              <p className="text-[28px] font-bold text-[#111827] dark:text-slate-100 mt-1">{totalDeposits + totalSwaps}</p>
             </div>
-            <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-              <p className="text-sm text-[#6B7280]">Total Rewards Earned</p>
+            <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+              <p className="text-sm text-[#6B7280] dark:text-slate-400">Total Rewards Earned</p>
               <p className="text-[28px] font-bold text-[#059669] mt-1">${totalRewards.toFixed(2)}</p>
             </div>
           </>
@@ -313,16 +313,16 @@ export default function History() {
       )}
 
       {/* Search + Filter bar */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
         {/* Search */}
-        <div className="relative flex-1 max-w-[360px]">
+        <div className="relative flex-1 md:max-w-[360px]">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
           <input
             type="text"
             placeholder="Search transactions..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-[#D6D9E3] bg-white py-2.5 pl-10 pr-4 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669]"
+            className="w-full rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-4 text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669]"
           />
         </div>
 
@@ -330,7 +330,7 @@ export default function History() {
         <button
           onClick={handleExportCsv}
           disabled={isExporting || isLoading}
-          className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-[#D6D9E3] bg-white text-[13px] font-medium text-[#6B7280] hover:border-[#059669] hover:text-[#059669] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-800 text-[13px] font-medium text-[#6B7280] dark:text-slate-300 hover:border-[#059669] hover:text-[#059669] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Export CSV"
         >
           {isExporting ? (
@@ -342,14 +342,14 @@ export default function History() {
         </button>
 
         {/* Type filters */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
           <Filter className="w-4 h-4 text-[#9CA3AF] mr-1" />
           <button
             onClick={() => setActiveFilter('All')}
-            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap ${
               activeFilter === 'All'
                 ? 'bg-[#059669] text-white'
-                : 'bg-white border border-[#D6D9E3] text-[#6B7280] hover:border-[#059669]'
+                : 'bg-white dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-600 text-[#6B7280] dark:text-slate-300 hover:border-[#059669]'
             }`}
           >
             All
@@ -360,10 +360,10 @@ export default function History() {
               <button
                 key={type}
                 onClick={() => setActiveFilter(activeFilter === type ? 'All' : type)}
-                className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap ${
                   activeFilter === type
                     ? 'text-white'
-                    : 'bg-white border border-[#D6D9E3] text-[#6B7280] hover:border-[#059669]'
+                    : 'bg-white dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-600 text-[#6B7280] dark:text-slate-300 hover:border-[#059669]'
                 }`}
                 style={activeFilter === type ? { backgroundColor: colors.text } : undefined}
               >
@@ -375,11 +375,11 @@ export default function History() {
       </div>
 
       {/* Transaction table */}
-      <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
+      <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-[13px] text-[#9CA3AF] border-b border-[#D6D9E3]">
+              <tr className="text-[13px] text-[#9CA3AF] dark:text-slate-500 border-b border-[#D6D9E3] dark:border-slate-700">
                 <th className="text-left font-medium pb-3 pr-4">Type</th>
                 <th className="text-left font-medium pb-3 pr-4">Token</th>
                 <th className="text-left font-medium pb-3 pr-4">Details</th>
@@ -428,7 +428,7 @@ export default function History() {
                   return (
                     <tr
                       key={tx.id}
-                      className="border-b border-[#D6D9E3]/50 last:border-0 hover:bg-[#ECEEF4] transition-colors"
+                      className="border-b border-[#D6D9E3]/50 dark:border-slate-700/50 last:border-0 hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors"
                     >
                       <td className="py-3.5 pr-4">
                         <div className="flex items-center gap-2.5">
@@ -438,7 +438,7 @@ export default function History() {
                           >
                             <Icon className="w-[18px] h-[18px]" color={colors.text} />
                           </div>
-                          <span className="text-[14px] font-semibold text-[#111827]">{tx.type}</span>
+                          <span className="text-[14px] font-semibold text-[#111827] dark:text-slate-100">{tx.type}</span>
                         </div>
                       </td>
                       <td className="py-3.5 pr-4">
@@ -446,11 +446,11 @@ export default function History() {
                           {logo && (
                             <img src={logo} alt={tx.token} className="w-5 h-5 rounded-full object-cover" />
                           )}
-                          <span className="text-[13px] font-medium text-[#111827]">{tx.token}</span>
+                          <span className="text-[13px] font-medium text-[#111827] dark:text-slate-200">{tx.token}</span>
                         </div>
                       </td>
                       <td className="py-3.5 pr-4">
-                        <span className="text-[13px] text-[#374151]">{tx.amount}</span>
+                        <span className="text-[13px] text-[#374151] dark:text-slate-300">{tx.amount}</span>
                       </td>
                       <td className="py-3.5 pr-4 text-right">
                         <span
@@ -465,7 +465,7 @@ export default function History() {
                         </span>
                       </td>
                       <td className="py-3.5 pr-4 text-right">
-                        <span className="text-[13px] text-[#6B7280]">{tx.date}</span>
+                        <span className="text-[13px] text-[#6B7280] dark:text-slate-400">{tx.date}</span>
                       </td>
                       <td className="py-3.5 text-right">
                         <span

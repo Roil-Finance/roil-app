@@ -64,13 +64,13 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="bg-white rounded-2xl p-6 w-[420px] shadow-xl">
-        <h3 className="text-[20px] font-bold text-[#111827] mb-2">{title}</h3>
-        <p className="text-[14px] text-[#6B7280] mb-6">{message}</p>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 w-[90vw] max-w-[420px] shadow-xl">
+        <h3 className="text-[20px] font-bold text-[#111827] dark:text-slate-100 mb-2">{title}</h3>
+        <p className="text-[14px] text-[#6B7280] dark:text-slate-400 mb-6">{message}</p>
         <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-5 py-2.5 rounded-xl border border-[#D6D9E3] text-[14px] font-medium text-[#6B7280] hover:bg-[#F3F4F9] transition-colors"
+            className="px-5 py-2.5 rounded-xl border border-[#D6D9E3] dark:border-slate-600 text-[14px] font-medium text-[#6B7280] dark:text-slate-300 hover:bg-[#F3F4F9] dark:hover:bg-slate-700 transition-colors"
           >
             Cancel
           </button>
@@ -120,7 +120,7 @@ function TriggerModeSelector({
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isUpdating}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[#D6D9E3] text-[13px] font-medium text-[#111827] hover:bg-[#F3F4F9] transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[#D6D9E3] dark:border-slate-600 text-[13px] font-medium text-[#111827] dark:text-slate-200 hover:bg-[#F3F4F9] dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
       >
         {isUpdating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
         {currentLabel}
@@ -130,7 +130,7 @@ function TriggerModeSelector({
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 z-50 w-[320px] bg-white rounded-xl border border-[#D6D9E3] shadow-lg overflow-hidden">
+          <div className="absolute right-0 top-full mt-2 z-50 w-[320px] bg-white dark:bg-slate-800 rounded-xl border border-[#D6D9E3] dark:border-slate-700 shadow-lg overflow-hidden">
             {TRIGGER_MODE_OPTIONS.map((opt) => (
               <button
                 key={opt.tag}
@@ -327,7 +327,7 @@ export default function Portfolio() {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 text-[#059669] animate-spin" />
-        <span className="ml-3 text-[15px] text-[#6B7280]">Loading portfolio...</span>
+        <span className="ml-3 text-[15px] text-[#6B7280] dark:text-slate-400">Loading portfolio...</span>
       </div>
     );
   }
@@ -335,21 +335,21 @@ export default function Portfolio() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <h1 className="text-[28px] font-bold text-[#111827]">My Portfolio</h1>
-          <p className="text-[15px] text-[#6B7280] mt-1">
+          <h1 className="text-[28px] font-bold text-[#111827] dark:text-slate-100">My Portfolio</h1>
+          <p className="text-[15px] text-[#6B7280] dark:text-slate-400 mt-1">
             {portfolio.targets.length} assets &middot; {portfolio.totalRebalances} rebalances
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={handleTogglePause}
             disabled={isTogglingPause}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[14px] font-medium border transition-colors disabled:opacity-50 ${
               paused
-                ? 'border-[#059669] text-[#059669] hover:bg-[#E0F5EA]'
-                : 'border-[#D6D9E3] text-[#6B7280] hover:bg-[#F3F4F9]'
+                ? 'border-[#059669] text-[#059669] hover:bg-[#E0F5EA] dark:hover:bg-emerald-900/30'
+                : 'border-[#D6D9E3] dark:border-slate-600 text-[#6B7280] dark:text-slate-300 hover:bg-[#F3F4F9] dark:hover:bg-slate-700'
             }`}
           >
             {isTogglingPause ? (
@@ -363,7 +363,7 @@ export default function Portfolio() {
           </button>
           <button
             onClick={() => navigate('/create/build', { state: { allocations: tokenAllocations.map((t) => ({ symbol: t.symbol, pct: t.targetPct })) } })}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[14px] font-medium border border-[#D6D9E3] text-[#6B7280] hover:bg-[#F3F4F9] transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[14px] font-medium border border-[#D6D9E3] dark:border-slate-600 text-[#6B7280] dark:text-slate-300 hover:bg-[#F3F4F9] dark:hover:bg-slate-700 transition-colors"
           >
             <Edit3 className="w-4 h-4" />
             Edit
@@ -404,27 +404,27 @@ export default function Portfolio() {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-          <p className="text-sm text-[#6B7280]">Total Value</p>
-          <p className="text-[26px] font-bold text-[#111827] mt-1">{totalValue}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+          <p className="text-sm text-[#6B7280] dark:text-slate-400">Total Value</p>
+          <p className="text-[26px] font-bold text-[#111827] dark:text-slate-100 mt-1">{totalValue}</p>
         </div>
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-          <p className="text-sm text-[#6B7280]">Tokens</p>
-          <p className="text-[26px] font-bold text-[#111827] mt-1">{portfolio.targets.length}</p>
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+          <p className="text-sm text-[#6B7280] dark:text-slate-400">Tokens</p>
+          <p className="text-[26px] font-bold text-[#111827] dark:text-slate-100 mt-1">{portfolio.targets.length}</p>
         </div>
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-          <p className="text-sm text-[#6B7280]">Max Drift</p>
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+          <p className="text-sm text-[#6B7280] dark:text-slate-400">Max Drift</p>
           <p className={`text-[26px] font-bold mt-1 ${
             driftStatus === 'high' ? 'text-[#DC2626]' : driftStatus === 'medium' ? 'text-[#D97706]' : 'text-[#059669]'
           }`}>
             {maxDrift.toFixed(1)}%
           </p>
         </div>
-        <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
+        <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#6B7280]">Trigger Mode</p>
+              <p className="text-sm text-[#6B7280] dark:text-slate-400">Trigger Mode</p>
               <div className="mt-2">
                 <TriggerModeSelector
                   currentMode={portfolio.triggerMode}
@@ -451,12 +451,12 @@ export default function Portfolio() {
       </div>
 
       {/* Token allocations table */}
-      <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-        <h2 className="text-[18px] font-bold text-[#111827] mb-5">Token Allocations</h2>
+      <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+        <h2 className="text-[18px] font-bold text-[#111827] dark:text-slate-100 mb-5">Token Allocations</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-[13px] text-[#9CA3AF] border-b border-[#D6D9E3]">
+              <tr className="text-[13px] text-[#9CA3AF] dark:text-slate-500 border-b border-[#D6D9E3] dark:border-slate-700">
                 <th className="text-left font-medium pb-3 pr-4">Token</th>
                 <th className="text-right font-medium pb-3 pr-4">Holdings</th>
                 <th className="text-right font-medium pb-3 pr-4">Value</th>
@@ -471,21 +471,21 @@ export default function Portfolio() {
                 const drift = t.currentPct - t.targetPct;
                 const absDrift = Math.abs(drift);
                 return (
-                  <tr key={t.symbol} className="border-b border-[#D6D9E3]/50 last:border-0 hover:bg-[#ECEEF4] transition-colors">
+                  <tr key={t.symbol} className="border-b border-[#D6D9E3]/50 dark:border-slate-700/50 last:border-0 hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors">
                     <td className="py-4 pr-4">
                       <div className="flex items-center gap-3">
                         <img src={TOKEN_LOGOS[t.symbol]} alt={t.symbol} className="w-8 h-8 rounded-full object-cover" />
-                        <span className="text-[15px] font-semibold text-[#111827]">{t.symbol}</span>
+                        <span className="text-[15px] font-semibold text-[#111827] dark:text-slate-100">{t.symbol}</span>
                       </div>
                     </td>
                     <td className="py-4 pr-4 text-right">
-                      <span className="text-[14px] text-[#111827]">{t.holdings}</span>
+                      <span className="text-[14px] text-[#111827] dark:text-slate-200">{t.holdings}</span>
                     </td>
                     <td className="py-4 pr-4 text-right">
-                      <span className="text-[14px] font-semibold text-[#111827]">{t.value}</span>
+                      <span className="text-[14px] font-semibold text-[#111827] dark:text-slate-100">{t.value}</span>
                     </td>
                     <td className="py-4 pr-4 text-right">
-                      <span className="text-[14px] text-[#6B7280]">{t.targetPct}%</span>
+                      <span className="text-[14px] text-[#6B7280] dark:text-slate-400">{t.targetPct}%</span>
                     </td>
                     <td className="py-4 pr-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -534,8 +534,8 @@ export default function Portfolio() {
       </div>
 
       {/* Rebalance History */}
-      <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-        <h2 className="text-[18px] font-bold text-[#111827] mb-4">Rebalance History</h2>
+      <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+        <h2 className="text-[18px] font-bold text-[#111827] dark:text-slate-100 mb-4">Rebalance History</h2>
         {historyLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="w-6 h-6 text-[#059669] animate-spin" />
@@ -544,7 +544,7 @@ export default function Portfolio() {
         ) : rebalanceLogs.length === 0 ? (
           <div className="text-center py-8">
             <RefreshCw className="w-8 h-8 text-[#D6D9E3] mx-auto mb-2" />
-            <p className="text-[14px] text-[#9CA3AF]">No rebalance history yet</p>
+            <p className="text-[14px] text-[#9CA3AF] dark:text-slate-500">No rebalance history yet</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -569,15 +569,15 @@ export default function Portfolio() {
                 <div key={index}>
                   <div
                     onClick={() => setExpandedLogIndex(isExpanded ? null : index)}
-                    className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-[#ECEEF4] transition-colors cursor-pointer"
+                    className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-[#FEF3C7] flex items-center justify-center">
                         <RefreshCw className="w-4 h-4 text-[#D97706]" />
                       </div>
                       <div>
-                        <p className="text-[14px] text-[#111827]">{actionText}</p>
-                        <p className="text-[12px] text-[#9CA3AF]">{formatDate(log.timestamp)}</p>
+                        <p className="text-[14px] text-[#111827] dark:text-slate-200">{actionText}</p>
+                        <p className="text-[12px] text-[#9CA3AF] dark:text-slate-500">{formatDate(log.timestamp)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -593,19 +593,19 @@ export default function Portfolio() {
 
                   {/* Expanded details */}
                   {isExpanded && (
-                    <div className="ml-11 mr-3 mb-3 p-4 bg-white border border-[#D6D9E3] rounded-xl space-y-3">
+                    <div className="ml-11 mr-3 mb-3 p-4 bg-white dark:bg-slate-700 border border-[#D6D9E3] dark:border-slate-600 rounded-xl space-y-3">
                       {/* All swap legs */}
                       <div>
                         <p className="text-[12px] text-[#9CA3AF] uppercase tracking-wide font-medium mb-2">Swap Details</p>
                         {log.swapLegs.map((leg, li) => (
                           <div key={li} className="flex items-center gap-2 py-1.5">
                             <img src={TOKEN_LOGOS[leg.fromAsset.symbol]} alt={leg.fromAsset.symbol} className="w-5 h-5 rounded-full" />
-                            <span className="text-[13px] text-[#111827]">
+                            <span className="text-[13px] text-[#111827] dark:text-slate-200">
                               {formatAmount(leg.fromAmount, leg.fromAsset.symbol)} {leg.fromAsset.symbol}
                             </span>
                             <span className="text-[#9CA3AF]">→</span>
                             <img src={TOKEN_LOGOS[leg.toAsset.symbol]} alt={leg.toAsset.symbol} className="w-5 h-5 rounded-full" />
-                            <span className="text-[13px] text-[#111827]">
+                            <span className="text-[13px] text-[#111827] dark:text-slate-200">
                               {formatAmount(leg.toAmount, leg.toAsset.symbol)} {leg.toAsset.symbol}
                             </span>
                           </div>
@@ -627,12 +627,12 @@ export default function Portfolio() {
       </div>
 
       {/* Strategy Info */}
-      <div className="bg-[#F3F4F9] border border-[#D6D9E3] rounded-[14px] p-5">
-        <h2 className="text-[18px] font-bold text-[#111827] mb-4">Strategy Details</h2>
-        <div className="grid grid-cols-2 gap-x-12 gap-y-3">
+      <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] p-5">
+        <h2 className="text-[18px] font-bold text-[#111827] dark:text-slate-100 mb-4">Strategy Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[14px] text-[#6B7280]">Trigger Mode</span>
-            <span className="text-[14px] font-semibold text-[#111827]">
+            <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Trigger Mode</span>
+            <span className="text-[14px] font-semibold text-[#111827] dark:text-slate-100">
               {portfolio.triggerMode.tag === 'Manual'
                 ? 'Manual'
                 : portfolio.triggerMode.tag === 'DriftThreshold'
@@ -641,27 +641,27 @@ export default function Portfolio() {
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[14px] text-[#6B7280]">Platform</span>
-            <span className="text-[14px] text-[#111827]">{portfolio.platform.replace('Canton::', '')}</span>
+            <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Platform</span>
+            <span className="text-[14px] text-[#111827] dark:text-slate-200">{portfolio.platform.replace('Canton::', '')}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[14px] text-[#6B7280]">Drift Threshold</span>
+            <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Drift Threshold</span>
             <span className="text-[14px] font-semibold text-[#059669]">{driftThreshold}%</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[14px] text-[#6B7280]">Last Rebalance</span>
-            <span className="text-[14px] text-[#111827]">
+            <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Last Rebalance</span>
+            <span className="text-[14px] text-[#111827] dark:text-slate-200">
               {rebalanceLogs.length > 0
                 ? formatDate(rebalanceLogs[0].timestamp)
                 : 'Never'}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[14px] text-[#6B7280]">Total Rebalances</span>
-            <span className="text-[14px] font-semibold text-[#111827]">{portfolio.totalRebalances}</span>
+            <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Total Rebalances</span>
+            <span className="text-[14px] font-semibold text-[#111827] dark:text-slate-100">{portfolio.totalRebalances}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[14px] text-[#6B7280]">Status</span>
+            <span className="text-[14px] text-[#6B7280] dark:text-slate-400">Status</span>
             <div className="flex items-center gap-1.5">
               {paused ? (
                 <>

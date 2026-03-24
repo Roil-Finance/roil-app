@@ -119,10 +119,10 @@ export default function SignUp() {
 
   /** Tailwind ring class for inputs with errors */
   const inputErr = 'border-red-400 focus:border-red-500 focus:ring-red-500';
-  const inputOk = 'border-[#D6D9E3] focus:border-[#059669] focus:ring-[#059669]';
+  const inputOk = 'border-[#D6D9E3] dark:border-slate-600 focus:border-[#059669] focus:ring-[#059669]';
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[linear-gradient(160deg,#E8EBF2,#F0F1F6,#ECEEF4)]">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[linear-gradient(160deg,#E8EBF2,#F0F1F6,#ECEEF4)] dark:bg-[linear-gradient(160deg,#0F172A,#1E293B,#0F172A)]">
       {/* Decorative radial orbs */}
       <div className="pointer-events-none absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(5,150,105,0.08)_0%,transparent_70%)]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.08)_0%,transparent_70%)]" />
@@ -136,12 +136,12 @@ export default function SignUp() {
         />
 
         {/* Card */}
-        <div className="w-full max-w-[620px] rounded-3xl border border-[#D6D9E3] bg-[#F3F4F9] px-10 py-9">
+        <div className="w-full max-w-[620px] rounded-3xl border border-[#D6D9E3] dark:border-slate-700 bg-[#F3F4F9] dark:bg-slate-800 px-6 md:px-10 py-9">
           {/* Header */}
-          <h1 className="text-center text-[28px] font-[800] text-[#111827]">
+          <h1 className="text-center text-[28px] font-[800] text-[#111827] dark:text-slate-100">
             Create your account
           </h1>
-          <p className="mt-1.5 text-center text-sm text-[#6B7280]">
+          <p className="mt-1.5 text-center text-sm text-[#6B7280] dark:text-slate-400">
             Start managing your private treasury on Canton Network
           </p>
 
@@ -154,9 +154,9 @@ export default function SignUp() {
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             {/* First Name + Last Name */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="signup-first" className="mb-1.5 block text-sm font-medium text-[#111827]">
+                <label htmlFor="signup-first" className="mb-1.5 block text-sm font-medium text-[#111827] dark:text-slate-200">
                   First Name
                 </label>
                 <input
@@ -166,14 +166,14 @@ export default function SignUp() {
                   onChange={(e) => { setFirstName(e.target.value); clearError('firstName'); }}
                   placeholder="Jane"
                   disabled={isSubmitting}
-                  className={`w-full rounded-xl border bg-white px-[18px] py-[14px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.firstName ? inputErr : inputOk}`}
+                  className={`w-full rounded-xl border bg-white dark:bg-slate-700 px-[18px] py-[14px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.firstName ? inputErr : inputOk}`}
                 />
                 {fieldErrors.firstName && (
                   <p className="mt-1 text-xs text-red-600">{fieldErrors.firstName}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="signup-last" className="mb-1.5 block text-sm font-medium text-[#111827]">
+                <label htmlFor="signup-last" className="mb-1.5 block text-sm font-medium text-[#111827] dark:text-slate-200">
                   Last Name
                 </label>
                 <input
@@ -183,7 +183,7 @@ export default function SignUp() {
                   onChange={(e) => { setLastName(e.target.value); clearError('lastName'); }}
                   placeholder="Doe"
                   disabled={isSubmitting}
-                  className={`w-full rounded-xl border bg-white px-[18px] py-[14px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.lastName ? inputErr : inputOk}`}
+                  className={`w-full rounded-xl border bg-white dark:bg-slate-700 px-[18px] py-[14px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.lastName ? inputErr : inputOk}`}
                 />
                 {fieldErrors.lastName && (
                   <p className="mt-1 text-xs text-red-600">{fieldErrors.lastName}</p>
@@ -193,7 +193,7 @@ export default function SignUp() {
 
             {/* Email */}
             <div>
-              <label htmlFor="signup-email" className="mb-1.5 block text-sm font-medium text-[#111827]">
+              <label htmlFor="signup-email" className="mb-1.5 block text-sm font-medium text-[#111827] dark:text-slate-200">
                 Email
               </label>
               <div className="relative">
@@ -205,7 +205,7 @@ export default function SignUp() {
                   onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
                   placeholder="you@example.com"
                   disabled={isSubmitting}
-                  className={`w-full rounded-xl border bg-white py-[14px] pl-11 pr-[18px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.email ? inputErr : inputOk}`}
+                  className={`w-full rounded-xl border bg-white dark:bg-slate-700 py-[14px] pl-11 pr-[18px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.email ? inputErr : inputOk}`}
                 />
               </div>
               {fieldErrors.email && (
@@ -215,7 +215,7 @@ export default function SignUp() {
 
             {/* Password */}
             <div>
-              <label htmlFor="signup-password" className="mb-1.5 block text-sm font-medium text-[#111827]">
+              <label htmlFor="signup-password" className="mb-1.5 block text-sm font-medium text-[#111827] dark:text-slate-200">
                 Password
               </label>
               <div className="relative">
@@ -226,7 +226,7 @@ export default function SignUp() {
                   onChange={(e) => { setPassword(e.target.value); clearError('password'); }}
                   placeholder="Min 8 characters"
                   disabled={isSubmitting}
-                  className={`w-full rounded-xl border bg-white px-[18px] py-[14px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.password ? inputErr : inputOk}`}
+                  className={`w-full rounded-xl border bg-white dark:bg-slate-700 px-[18px] py-[14px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.password ? inputErr : inputOk}`}
                 />
                 <button
                   type="button"
@@ -243,7 +243,7 @@ export default function SignUp() {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="signup-confirm" className="mb-1.5 block text-sm font-medium text-[#111827]">
+              <label htmlFor="signup-confirm" className="mb-1.5 block text-sm font-medium text-[#111827] dark:text-slate-200">
                 Confirm Password
               </label>
               <div className="relative">
@@ -254,7 +254,7 @@ export default function SignUp() {
                   onChange={(e) => { setConfirmPassword(e.target.value); clearError('confirmPassword'); }}
                   placeholder="Re-enter your password"
                   disabled={isSubmitting}
-                  className={`w-full rounded-xl border bg-white px-[18px] py-[14px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.confirmPassword ? inputErr : inputOk}`}
+                  className={`w-full rounded-xl border bg-white dark:bg-slate-700 px-[18px] py-[14px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 disabled:opacity-60 ${fieldErrors.confirmPassword ? inputErr : inputOk}`}
                 />
                 <button
                   type="button"
@@ -271,7 +271,7 @@ export default function SignUp() {
 
             {/* Username (optional) */}
             <div>
-              <label htmlFor="signup-username" className="mb-1.5 block text-sm font-medium text-[#111827]">
+              <label htmlFor="signup-username" className="mb-1.5 block text-sm font-medium text-[#111827] dark:text-slate-200">
                 Username <span className="font-normal text-[#9CA3AF]">(optional)</span>
               </label>
               <div className="relative">
@@ -283,7 +283,7 @@ export default function SignUp() {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Choose a username"
                   disabled={isSubmitting}
-                  className="w-full rounded-xl border border-[#D6D9E3] bg-white py-[14px] pl-11 pr-[18px] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669] disabled:opacity-60"
+                  className="w-full rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 py-[14px] pl-11 pr-[18px] text-sm text-[#111827] dark:text-slate-100 placeholder:text-[#9CA3AF] dark:placeholder:text-slate-500 focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669] disabled:opacity-60"
                 />
               </div>
             </div>
@@ -298,7 +298,7 @@ export default function SignUp() {
                   disabled={isSubmitting}
                   className="mt-0.5 h-4 w-4 rounded border-[#D6D9E3] text-[#059669] focus:ring-[#059669]"
                 />
-                <span className="text-sm text-[#6B7280]">
+                <span className="text-sm text-[#6B7280] dark:text-slate-400">
                   I agree to the{' '}
                   <span className="font-medium text-[#059669] hover:text-[#047857] cursor-pointer">
                     Terms of Service
@@ -327,9 +327,9 @@ export default function SignUp() {
 
           {/* Divider */}
           <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-[#D6D9E3]" />
-            <span className="text-xs text-[#6B7280]">or</span>
-            <div className="h-px flex-1 bg-[#D6D9E3]" />
+            <div className="h-px flex-1 bg-[#D6D9E3] dark:bg-slate-700" />
+            <span className="text-xs text-[#6B7280] dark:text-slate-500">or</span>
+            <div className="h-px flex-1 bg-[#D6D9E3] dark:bg-slate-700" />
           </div>
 
           {/* Social buttons — disabled / coming soon */}
@@ -338,7 +338,7 @@ export default function SignUp() {
               type="button"
               disabled
               title="Coming soon"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] bg-white py-[12px] text-sm font-medium text-[#111827] transition hover:bg-[#F3F4F9] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 py-[12px] text-sm font-medium text-[#111827] dark:text-slate-200 transition hover:bg-[#F3F4F9] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Wallet className="h-[18px] w-[18px]" />
               Wallet
@@ -347,7 +347,7 @@ export default function SignUp() {
               type="button"
               disabled
               title="Coming soon"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#111827] py-[12px] text-sm font-medium text-white transition hover:bg-[#1f2937] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#111827] dark:bg-slate-600 py-[12px] text-sm font-medium text-white transition hover:bg-[#1f2937] dark:hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="text-base font-bold leading-none">&#120143;</span>
             </button>
@@ -355,7 +355,7 @@ export default function SignUp() {
               type="button"
               disabled
               title="Coming soon"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] bg-white py-[12px] text-sm font-medium text-[#111827] transition hover:bg-[#F3F4F9] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#D6D9E3] dark:border-slate-600 bg-white dark:bg-slate-700 py-[12px] text-sm font-medium text-[#111827] dark:text-slate-200 transition hover:bg-[#F3F4F9] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="text-base font-bold text-[#4285F4]">G</span>
               Google
@@ -363,7 +363,7 @@ export default function SignUp() {
           </div>
 
           {/* Sign in link */}
-          <p className="mt-6 text-center text-sm text-[#6B7280]">
+          <p className="mt-6 text-center text-sm text-[#6B7280] dark:text-slate-400">
             Already have an account?{' '}
             <Link to="/login" className="font-medium text-[#059669] hover:text-[#047857]">
               Sign In
