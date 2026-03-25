@@ -75,9 +75,7 @@ export default function Sidebar() {
             <XIcon className="w-[18px] h-[18px]" />
           </a>
           <a
-            href="https://docs.roil.fi"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/docs"
             className="flex items-center justify-center rounded-xl text-[#9CA3AF] hover:text-[#6B7280] dark:hover:text-slate-300 hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors"
             style={{ width: 44, height: 44 }}
             title="Help & Docs"
