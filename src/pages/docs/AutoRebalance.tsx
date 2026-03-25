@@ -101,8 +101,8 @@ for each target in portfolio.targets:
             <thead>
               <tr className="bg-[#F8F9FB] dark:bg-slate-800 border-b border-[#E5E7EB] dark:border-slate-700">
                 <th className="px-4 py-3 text-[12px] font-semibold text-[#6B7280] dark:text-slate-400 uppercase tracking-wider">Feature</th>
-                <th className="px-4 py-3 text-[12px] font-semibold text-[#6B7280] dark:text-slate-400 uppercase tracking-wider">Cantex (AMM)</th>
-                <th className="px-4 py-3 text-[12px] font-semibold text-[#6B7280] dark:text-slate-400 uppercase tracking-wider">Temple (CLOB)</th>
+                <th className="px-4 py-3 text-[12px] font-semibold text-[#6B7280] dark:text-slate-400 uppercase tracking-wider">AMM DEX</th>
+                <th className="px-4 py-3 text-[12px] font-semibold text-[#6B7280] dark:text-slate-400 uppercase tracking-wider">CLOB DEX</th>
               </tr>
             </thead>
             <tbody className="text-[14px]">

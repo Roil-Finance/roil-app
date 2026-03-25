@@ -251,7 +251,7 @@ const API_GROUPS: EndpointGroup[] = [
       {
         method: 'GET',
         path: '/api/market/pools',
-        description: 'Get Cantex liquidity pool information (reserves, fees).',
+        description: 'Get AMM liquidity pool information (reserves, fees).',
         auth: false,
       },
       {
@@ -269,13 +269,13 @@ const API_GROUPS: EndpointGroup[] = [
       {
         method: 'GET',
         path: '/api/market/quote',
-        description: 'Get a swap quote from Cantex without executing.',
+        description: 'Get a swap quote from the AMM DEX without executing.',
         auth: false,
       },
       {
         method: 'GET',
         path: '/api/market/best-quote',
-        description: 'Get the best quote across all DEXes (Cantex + Temple).',
+        description: 'Get the best quote across all available DEXes.',
         auth: false,
       },
       {
@@ -293,7 +293,7 @@ const API_GROUPS: EndpointGroup[] = [
       {
         method: 'GET',
         path: '/api/market/orderbook',
-        description: 'Get Temple CLOB orderbook depth. Params: from, to.',
+        description: 'Get CLOB DEX orderbook depth. Params: from, to.',
         auth: false,
       },
       {
@@ -465,7 +465,7 @@ export default function APIReference() {
         API Reference
       </h1>
       <p className="text-[16px] text-[#6B7280] dark:text-slate-400 leading-relaxed mb-6 max-w-[640px]">
-        Complete REST API documentation for the Roil Finance backend. All endpoints return JSON
+        Complete REST API documentation for the Roil backend. All endpoints return JSON
         wrapped in a <code className="px-1 py-0.5 rounded bg-[#F1F5F9] dark:bg-slate-700 text-[13px] font-mono">{"{ success, data }"}</code> envelope.
       </p>
 

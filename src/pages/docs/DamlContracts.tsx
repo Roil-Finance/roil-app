@@ -94,7 +94,7 @@ export default function DamlContracts() {
         Daml Contracts
       </h1>
       <p className="text-[16px] text-[#6B7280] dark:text-slate-400 leading-relaxed mb-10 max-w-[640px]">
-        Roil Finance is built on Daml smart contracts running on the Canton Network. This section
+        Roil is built on Daml smart contracts running on the Canton Network. This section
         documents the core contract templates and their choices.
       </p>
 

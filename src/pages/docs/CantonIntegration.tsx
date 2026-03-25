@@ -7,8 +7,8 @@ export default function CantonIntegration() {
         Canton Integration
       </h1>
       <p className="text-[16px] text-[#6B7280] dark:text-slate-400 leading-relaxed mb-10 max-w-[640px]">
-        How Roil Finance connects to the Canton Network, interacts with the JSON Ledger API,
-        and leverages Cantex and Temple DEXes for trade execution.
+        How Roil connects to the Canton Network, interacts with the JSON Ledger API,
+        and leverages DEX integrations for trade execution.
       </p>
 
       {/* JSON Ledger API v2 */}
@@ -71,19 +71,19 @@ const result = await ledger.exerciseAs(
         </div>
       </section>
 
-      {/* Cantex DEX */}
+      {/* AMM DEX */}
       <section className="mb-12">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-9 h-9 rounded-lg bg-[#EFF6FF] dark:bg-blue-900/30 flex items-center justify-center">
             <ArrowRightLeft className="w-4 h-4 text-[#2563EB] dark:text-blue-400" />
           </div>
           <h2 className="text-2xl font-bold text-[#111827] dark:text-slate-100">
-            Cantex DEX Integration
+            AMM DEX Integration
           </h2>
         </div>
         <p className="text-[15px] text-[#374151] dark:text-slate-300 leading-relaxed mb-4">
-          Cantex is Canton Network&rsquo;s native Automated Market Maker (AMM) DEX. It uses the constant
-          product formula (x * y = k) for price discovery and supports all 9 Roil token pairs.
+          Roil integrates with Automated Market Maker (AMM) DEXes on Canton Network. AMMs use the constant
+          product formula (x * y = k) for price discovery and support all Roil token pairs.
         </p>
 
         <div className="space-y-3 mb-6">
@@ -114,19 +114,19 @@ const result = await ledger.exerciseAs(
         </div>
       </section>
 
-      {/* Temple CLOB */}
+      {/* CLOB DEX */}
       <section className="mb-12">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-9 h-9 rounded-lg bg-[#EDE9FE] dark:bg-violet-900/30 flex items-center justify-center">
             <BookOpen className="w-4 h-4 text-[#7C3AED] dark:text-violet-400" />
           </div>
           <h2 className="text-2xl font-bold text-[#111827] dark:text-slate-100">
-            Temple CLOB Integration
+            CLOB DEX Integration
           </h2>
         </div>
         <p className="text-[15px] text-[#374151] dark:text-slate-300 leading-relaxed mb-4">
-          Temple is a Central Limit Order Book (CLOB) DEX on Canton Network. Unlike Cantex&rsquo;s AMM model,
-          Temple matches specific buy and sell orders, often providing tighter spreads for larger trades.
+          Roil also supports Central Limit Order Book (CLOB) DEXes on Canton Network. Unlike the AMM model,
+          CLOB DEXes match specific buy and sell orders, often providing tighter spreads for larger trades.
         </p>
 
         <div className="bg-[#1E293B] rounded-lg p-4 mb-4 overflow-x-auto">
@@ -151,7 +151,7 @@ GET /api/market/orderbook?from=CC&to=USDCx
         </div>
 
         <p className="text-[14px] text-[#6B7280] dark:text-slate-400 leading-relaxed">
-          The Smart Router automatically compares quotes from both Cantex and Temple, selecting the
+          The Smart Router automatically compares quotes from all available DEXes, selecting the
           venue that offers the best output for each swap leg. You can also explicitly compare quotes via
           <code className="px-1 py-0.5 rounded bg-[#F1F5F9] dark:bg-slate-700 text-[13px] font-mono">GET /api/market/compare-quotes</code>.
         </p>
@@ -182,7 +182,7 @@ GET /api/market/orderbook?from=CC&to=USDCx
           </p>
           <ul className="mt-2 space-y-1 text-[13px] text-[#92400E] dark:text-amber-300/80">
             <li>&bull; <strong>Alice</strong> sees: her full portfolio, swap details, new holdings</li>
-            <li>&bull; <strong>Cantex DEX</strong> sees: only the specific swap leg it executes</li>
+            <li>&bull; <strong>DEX</strong> sees: only the specific swap leg it executes</li>
             <li>&bull; <strong>Other users</strong> see: nothing</li>
             <li>&bull; <strong>Roil platform</strong> sees: the portfolio contract update (as signatory)</li>
           </ul>

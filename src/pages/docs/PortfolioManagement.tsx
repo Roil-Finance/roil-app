@@ -1,14 +1,11 @@
 import { Layers, Sliders, BarChart3, TrendingUp } from 'lucide-react';
 
 const TEMPLATES = [
-  { name: 'Conservative', risk: 'Low', assets: 'USDCx 40%, USTb 30%, XAUt 20%, CC 10%', drift: '3.0%' },
-  { name: 'Balanced Growth', risk: 'Medium', assets: 'CBTC 25%, ETHx 20%, USDCx 25%, XAUt 15%, CC 15%', drift: '5.0%' },
+  { name: 'Conservative', risk: 'Low', assets: 'USDCx 50%, CC 30%, ETHx 20%', drift: '3.0%' },
+  { name: 'Balanced Growth', risk: 'Medium', assets: 'CBTC 25%, ETHx 25%, USDCx 25%, CC 25%', drift: '5.0%' },
   { name: 'BTC-ETH Maxi', risk: 'High', assets: 'CBTC 50%, ETHx 30%, USDCx 20%', drift: '7.0%' },
-  { name: 'Crypto Basket', risk: 'High', assets: 'CBTC 30%, ETHx 25%, SOLx 15%, CC 15%, USDCx 15%', drift: '5.0%' },
-  { name: 'Precious Metals', risk: 'Low', assets: 'XAUt 60%, XAGt 40%', drift: '3.0%' },
-  { name: 'Institutional Grade', risk: 'Medium', assets: 'USTb 40%, XAUt 25%, USDCx 20%, CBTC 15%', drift: '4.0%' },
+  { name: 'Crypto Basket', risk: 'High', assets: 'CBTC 30%, ETHx 30%, CC 20%, USDCx 20%', drift: '5.0%' },
   { name: 'Stablecoin Yield', risk: 'Low', assets: 'USDCx 70%, CC 30%', drift: '2.0%' },
-  { name: 'All Weather', risk: 'Medium', assets: 'USTb 30%, XAUt 20%, CBTC 20%, USDCx 15%, ETHx 15%', drift: '5.0%' },
 ];
 
 const RISK_COLORS: Record<string, string> = {
@@ -46,7 +43,7 @@ export default function PortfolioManagement() {
               From Template
             </h3>
             <p className="text-[13px] text-[#6B7280] dark:text-slate-400 leading-relaxed">
-              Select from 8 pre-built strategies. Each template defines asset allocations that sum to 100%
+              Select from 5 pre-built strategies. Each template defines asset allocations that sum to 100%
               and a default drift threshold. You can modify allocations after creation.
             </p>
           </div>
@@ -58,7 +55,7 @@ export default function PortfolioManagement() {
               Build Your Own
             </h3>
             <p className="text-[13px] text-[#6B7280] dark:text-slate-400 leading-relaxed">
-              Choose from 9 available assets, set allocation percentages with interactive sliders, and
+              Choose from 4 available assets (CC, USDCx, CBTC, ETHx), set allocation percentages with interactive sliders, and
               configure trigger mode. Minimum 2 assets, maximum 20. Allocations must sum to 100%.
             </p>
           </div>
@@ -123,10 +120,9 @@ data TargetAllocation = TargetAllocation
 -- Example: Balanced Growth targets
 targets = [
   TargetAllocation { asset = AssetId "CBTC" admin, targetPct = 25.0 },
-  TargetAllocation { asset = AssetId "ETHx" admin, targetPct = 20.0 },
+  TargetAllocation { asset = AssetId "ETHx" admin, targetPct = 25.0 },
   TargetAllocation { asset = AssetId "USDCx" admin, targetPct = 25.0 },
-  TargetAllocation { asset = AssetId "XAUt" admin, targetPct = 15.0 },
-  TargetAllocation { asset = AssetId "CC" admin, targetPct = 15.0 },
+  TargetAllocation { asset = AssetId "CC" admin, targetPct = 25.0 },
 ]`}
           </pre>
         </div>

@@ -18,10 +18,10 @@ const STEPS = [
     number: '02',
     icon: PieChart,
     title: 'Create Your First Portfolio',
-    description: 'Choose from 8 pre-built templates or build a fully custom allocation:',
+    description: 'Choose from pre-built templates or build a fully custom allocation:',
     details: [
-      { method: 'Templates', desc: 'Conservative, Balanced Growth, BTC-ETH Maxi, Crypto Basket, Precious Metals, Institutional Grade, Stablecoin Yield, and All Weather. Each comes with pre-configured asset allocations and drift thresholds.' },
-      { method: 'Build Your Own', desc: 'Select from 9 available assets, set individual allocation percentages using sliders, and configure your preferred trigger mode (Manual, Drift Threshold, or Price Condition).' },
+      { method: 'Templates', desc: 'BTC-ETH Maxi, Crypto Basket, Stablecoin Yield, and more. Each comes with pre-configured asset allocations and drift thresholds.' },
+      { method: 'Build Your Own', desc: 'Select from 4 available assets (CC, USDCx, CBTC, ETHx), set individual allocation percentages using sliders, and configure your preferred trigger mode (Manual, Drift Threshold, or Price Condition).' },
     ],
   },
   {
@@ -56,7 +56,7 @@ export default function QuickStart() {
       </h1>
       <p className="text-[16px] text-[#6B7280] dark:text-slate-400 leading-relaxed mb-10 max-w-[600px]">
         Go from zero to a fully automated portfolio in under 5 minutes. Follow these four steps
-        to get started with Roil Finance.
+        to get started with Roil.
       </p>
 
       {/* Info box */}

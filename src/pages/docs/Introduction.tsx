@@ -29,12 +29,12 @@ const KEY_FEATURES = [
   {
     icon: PieChart,
     title: 'Portfolio Management',
-    desc: 'Create portfolios from 8 pre-built templates or build custom allocations across 9 tokenized assets including BTC, ETH, SOL, Gold, Silver, Bonds, Stablecoins, and Canton Coin.',
+    desc: 'Create portfolios from pre-built templates or build custom allocations across 4 supported assets: Canton Coin (CC), USDCx, CBTC, and ETHx.',
   },
   {
     icon: RefreshCw,
     title: 'Auto-Rebalancing',
-    desc: 'Set drift thresholds (e.g. 5%) and Roil automatically rebalances your portfolio when allocations deviate. Smart Router picks the best DEX (Cantex AMM or Temple CLOB) for each swap.',
+    desc: 'Set drift thresholds (e.g. 5%) and Roil automatically rebalances your portfolio when allocations deviate. Smart Router finds the best execution across available DEXes for each swap.',
   },
   {
     icon: TrendingUp,
@@ -64,7 +64,7 @@ export default function Introduction() {
       {/* Hero */}
       <div className="mb-10">
         <h1 className="text-[32px] lg:text-[40px] font-bold text-[#111827] dark:text-slate-100 leading-tight">
-          Welcome to Roil Finance
+          Welcome to Roil
         </h1>
         <p className="mt-3 text-[17px] text-[#6B7280] dark:text-slate-400 leading-relaxed max-w-[640px]">
           Automated portfolio rebalancing, DCA strategies, and reward tracking &mdash;
@@ -93,23 +93,23 @@ export default function Introduction() {
         ))}
       </div>
 
-      {/* What is Roil Finance */}
+      {/* What is Roil */}
       <section className="mb-12">
         <h2 className="text-2xl font-bold text-[#111827] dark:text-slate-100 mb-4">
-          What is Roil Finance?
+          What is Roil?
         </h2>
         <p className="text-[15px] text-[#374151] dark:text-slate-300 leading-relaxed mb-4">
-          Roil Finance is a private treasury management platform built on the Canton Network. It allows
+          Roil is a private treasury management platform built on the Canton Network. It allows
           individuals and institutions to create diversified portfolios of tokenized assets, automate
           rebalancing based on configurable drift thresholds, and execute dollar-cost averaging strategies
           &mdash; all while maintaining sub-transaction privacy through Canton&rsquo;s unique architecture.
         </p>
         <p className="text-[15px] text-[#374151] dark:text-slate-300 leading-relaxed mb-4">
-          The platform supports 9 tokenized assets: Canton Coin (CC), USDCx, CBTC (tokenized Bitcoin),
-          ETHx (tokenized Ethereum), SOLx (tokenized Solana), XAUt (tokenized Gold), XAGt (tokenized Silver),
-          USTb (US Treasury Bonds), and MMF (Money Market Fund). Portfolios are represented as Daml contracts
-          on the Canton ledger, with all trades routed through either Cantex (an AMM DEX) or Temple (a
-          central-limit order book), selected automatically by Roil&rsquo;s Smart Router for best execution.
+          The platform currently supports 4 tokenized assets: Canton Coin (CC), USDCx (stablecoin),
+          CBTC (tokenized Bitcoin), and ETHx (tokenized Ethereum). Additional assets including tokenized
+          commodities and fixed income are on the roadmap. Portfolios are represented as Daml contracts
+          on the Canton ledger, with all trades routed through available DEXes, selected automatically
+          by Roil&rsquo;s Smart Router for best execution.
         </p>
         <p className="text-[15px] text-[#374151] dark:text-slate-300 leading-relaxed">
           A tiered reward system (Bronze through Platinum) incentivizes active management, distributing

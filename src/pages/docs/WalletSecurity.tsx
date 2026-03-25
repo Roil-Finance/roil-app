@@ -8,7 +8,7 @@ export default function WalletSecurity() {
       </h1>
       <p className="text-[16px] text-[#6B7280] dark:text-slate-400 leading-relaxed mb-10 max-w-[640px]">
         A deep dive into the cryptographic primitives, authentication protocols, and authorization
-        model that protect your assets on Roil Finance.
+        model that protect your assets on Roil.
       </p>
 
       {/* Ed25519 */}

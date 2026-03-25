@@ -15,8 +15,8 @@ const PHASES = [
       { label: 'Express backend with JSON Ledger API v2 integration', done: true },
       { label: 'React frontend with 12 pages and full UI', done: true },
       { label: 'Three.js landing page with 3D morphing animations', done: true },
-      { label: 'Cantex AMM DEX integration', done: true },
-      { label: 'Smart Router (Cantex + Temple DEX aggregation)', done: true },
+      { label: 'AMM DEX integration', done: true },
+      { label: 'Smart Router (multi-DEX aggregation)', done: true },
       { label: 'Reward tier system (Bronze through Platinum)', done: true },
       { label: 'Referral program with Daml contract tracking', done: true },
       { label: '8 portfolio templates with configurable allocations', done: true },
@@ -61,7 +61,7 @@ const PHASES = [
     items: [
       { label: 'Deploy to Canton TestNet (Global Synchronizer)', done: false },
       { label: 'Public beta access with testnet CC tokens', done: false },
-      { label: 'Temple CLOB orderbook integration (live)', done: false },
+      { label: 'CLOB orderbook DEX integration (live)', done: false },
       { label: 'Mobile-responsive PWA', done: false },
       { label: 'Transaction history export (CSV/PDF)', done: false },
       { label: 'Multi-portfolio support per user', done: false },
@@ -109,7 +109,7 @@ export default function Roadmap() {
         Roadmap
       </h1>
       <p className="text-[16px] text-[#6B7280] dark:text-slate-400 leading-relaxed mb-10 max-w-[640px]">
-        Roil Finance development roadmap from local testing through production deployment on
+        Roil development roadmap from local testing through production deployment on
         Canton MainNet.
       </p>
 

@@ -66,7 +66,7 @@ export default function CreateWallet() {
         Create Your Wallet
       </h1>
       <p className="text-[16px] text-[#6B7280] dark:text-slate-400 leading-relaxed mb-10 max-w-[640px]">
-        Roil Finance supports multiple authentication methods, each generating a Canton Network party
+        Roil supports multiple authentication methods, each generating a Canton Network party
         and an Ed25519 keypair for signing ledger transactions.
       </p>
 
