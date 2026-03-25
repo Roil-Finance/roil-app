@@ -17,6 +17,19 @@ import Portfolio from '@/pages/Portfolio';
 import AdminDashboard from '@/pages/AdminDashboard';
 import Wallet from '@/pages/Wallet';
 import Slides from '@/pages/Slides';
+import DocsLayout from '@/pages/docs/DocsLayout';
+import Introduction from '@/pages/docs/Introduction';
+import QuickStart from '@/pages/docs/QuickStart';
+import CreateWallet from '@/pages/docs/CreateWallet';
+import PortfolioManagement from '@/pages/docs/PortfolioManagement';
+import AutoRebalance from '@/pages/docs/AutoRebalance';
+import DCAStrategies from '@/pages/docs/DCAStrategies';
+import RewardsReferrals from '@/pages/docs/RewardsReferrals';
+import WalletSecurity from '@/pages/docs/WalletSecurity';
+import DamlContracts from '@/pages/docs/DamlContracts';
+import CantonIntegration from '@/pages/docs/CantonIntegration';
+import APIReference from '@/pages/docs/APIReference';
+import Roadmap from '@/pages/docs/Roadmap';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ToastProvider } from '@/components/Toast';
 import { PartyProvider } from '@/context/PartyContext';
@@ -79,6 +92,20 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/slides" element={<Slides />} />
+            <Route path="/docs" element={<DocsLayout />}>
+              <Route index element={<Introduction />} />
+              <Route path="quick-start" element={<QuickStart />} />
+              <Route path="create-wallet" element={<CreateWallet />} />
+              <Route path="portfolio" element={<PortfolioManagement />} />
+              <Route path="rebalance" element={<AutoRebalance />} />
+              <Route path="dca" element={<DCAStrategies />} />
+              <Route path="rewards" element={<RewardsReferrals />} />
+              <Route path="security" element={<WalletSecurity />} />
+              <Route path="contracts" element={<DamlContracts />} />
+              <Route path="canton" element={<CantonIntegration />} />
+              <Route path="api" element={<APIReference />} />
+              <Route path="roadmap" element={<Roadmap />} />
+            </Route>
             <Route path="/*" element={<AuthenticatedApp />} />
           </Routes>
         </ToastProvider>
