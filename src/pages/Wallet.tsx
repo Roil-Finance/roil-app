@@ -1,13 +1,14 @@
 import { useState, useMemo, useCallback } from 'react';
 import {
   Copy, Check, Eye, EyeOff, Lock, Unlock, Download, KeyRound,
-  ShieldAlert, Trash2, Loader2, AlertTriangle, X,
+  ShieldAlert, Trash2, Loader2, AlertTriangle, X, ArrowDownToLine,
 } from 'lucide-react';
 import { WalletManager } from '@/lib/wallet-core';
 import { useWallet } from '@/hooks/useWallet';
 import { useMarketPrices } from '@/hooks/useMarket';
 import { useToast } from '@/components/Toast';
 import { TOKEN_LOGOS, ASSET_COLORS } from '@/config';
+import { CCTPDepositModal } from '@/components/CCTPDepositModal';
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -461,6 +462,7 @@ export default function WalletPage() {
   const [showPrivateKey, setShowPrivateKey] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
 
   // Public key expand
   const [pubKeyExpanded, setPubKeyExpanded] = useState(false);
@@ -672,11 +674,22 @@ export default function WalletPage() {
           <div className="bg-[#F3F4F9] dark:bg-slate-800 border border-[#D6D9E3] dark:border-slate-700 rounded-[14px] shadow-[0_2px_8px_#0000000A] p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-[#111827] dark:text-slate-100">Balances</h2>
-              {!pricesLoading && wallet.balances && wallet.balances.length > 0 && (
-                <span className="text-sm font-bold text-[#111827] dark:text-slate-100">
-                  {fmtUsd(totalValueUsd)}
-                </span>
-              )}
+              <div className="flex items-center gap-3">
+                {!pricesLoading && wallet.balances && wallet.balances.length > 0 && (
+                  <span className="text-sm font-bold text-[#111827] dark:text-slate-100">
+                    {fmtUsd(totalValueUsd)}
+                  </span>
+                )}
+                {isConnected && (
+                  <button
+                    onClick={() => setShowDepositModal(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition"
+                  >
+                    <ArrowDownToLine className="w-3.5 h-3.5" />
+                    Deposit
+                  </button>
+                )}
+              </div>
             </div>
 
             {!isConnected ? (
@@ -687,10 +700,17 @@ export default function WalletPage() {
                 </p>
               </div>
             ) : !wallet.balances || wallet.balances.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div className="flex flex-col items-center justify-center py-8 text-center gap-3">
                 <p className="text-sm text-[#6B7280] dark:text-slate-400">
-                  No balances — deposit tokens to get started.
+                  No balances — deposit USDC from Ethereum, Base, Arbitrum or other chains to get started.
                 </p>
+                <button
+                  onClick={() => setShowDepositModal(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition"
+                >
+                  <ArrowDownToLine className="w-4 h-4" />
+                  Deposit USDC
+                </button>
               </div>
             ) : (
               <div className="space-y-3">
@@ -855,6 +875,10 @@ export default function WalletPage() {
           onConfirm={handleDelete}
         />
       )}
+      <CCTPDepositModal
+        isOpen={showDepositModal}
+        onClose={() => setShowDepositModal(false)}
+      />
     </div>
   );
 }
