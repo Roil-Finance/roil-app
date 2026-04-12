@@ -8,7 +8,7 @@ import { useWallet } from '@/hooks/useWallet';
 import { useMarketPrices } from '@/hooks/useMarket';
 import { useToast } from '@/components/Toast';
 import { TOKEN_LOGOS, ASSET_COLORS } from '@/config';
-import { CCTPDepositModal } from '@/components/CCTPDepositModal';
+import { XReserveModal } from '@/components/XReserveModal';
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -875,9 +875,10 @@ export default function WalletPage() {
           onConfirm={handleDelete}
         />
       )}
-      <CCTPDepositModal
+      <XReserveModal
         isOpen={showDepositModal}
         onClose={() => setShowDepositModal(false)}
+        cantonParty={walletInfo?.partyId ?? ''}
       />
     </div>
   );
