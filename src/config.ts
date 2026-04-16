@@ -1,5 +1,16 @@
+export type NetworkEnv = 'localnet' | 'devnet' | 'testnet' | 'mainnet';
+
+const rawNetwork = (import.meta.env.VITE_NETWORK as string | undefined)?.toLowerCase();
+const network: NetworkEnv =
+  rawNetwork === 'localnet' || rawNetwork === 'devnet' || rawNetwork === 'mainnet'
+    ? (rawNetwork as NetworkEnv)
+    : 'testnet';
+
 export const config = {
   backendUrl: import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001',
+  network,
+  /** True on any non-mainnet environment — used to decide whether to surface the network banner. */
+  isTestEnvironment: network !== 'mainnet',
 };
 
 /** Asset color map for consistent chart / UI coloring */

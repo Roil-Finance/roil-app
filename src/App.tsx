@@ -34,6 +34,7 @@ import APIReference from '@/pages/docs/APIReference';
 import Roadmap from '@/pages/docs/Roadmap';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ToastProvider } from '@/components/Toast';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { PartyProvider } from '@/context/PartyContext';
 import { AuthProvider } from '@/context/AuthContext';
 
@@ -62,24 +63,45 @@ function AuthenticatedApp() {
   return (
     <AppLayout>
       <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/create" element={<ChooseStrategy />} />
-          <Route path="/create/templates" element={<PickTemplate />} />
-          <Route path="/create/build" element={<BuildYourOwn />} />
-          <Route path="/dca" element={<DCA />} />
-          <Route path="/dca/new" element={<NewDCA />} />
-          <Route path="/rewards" element={<Rewards />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/wallet" element={<Wallet />} />
-          <Route path="/swap" element={<Swap />} />
-          <Route path="/invite" element={<Whitelist />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/ref/:code" element={<ReferralRedirect />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {/* Soft guard — unauthenticated visitors still see the app in demo mode
+            (AppLayout surfaces a prominent DemoBanner), but while the
+            AuthContext is hydrating we render a spinner instead of flashing
+            authenticated content. Admin and wallet routes use requireAuth
+            to force a login redirect. */}
+        <ProtectedRoute>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/create" element={<ChooseStrategy />} />
+            <Route path="/create/templates" element={<PickTemplate />} />
+            <Route path="/create/build" element={<BuildYourOwn />} />
+            <Route path="/dca" element={<DCA />} />
+            <Route path="/dca/new" element={<NewDCA />} />
+            <Route path="/rewards" element={<Rewards />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/history" element={<History />} />
+            <Route
+              path="/wallet"
+              element={
+                <ProtectedRoute requireAuth>
+                  <Wallet />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/swap" element={<Swap />} />
+            <Route path="/invite" element={<Whitelist />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAuth>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/ref/:code" element={<ReferralRedirect />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ProtectedRoute>
       </ErrorBoundary>
     </AppLayout>
   );

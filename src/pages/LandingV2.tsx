@@ -279,10 +279,10 @@ function HorizontalScroll() {
   const trackRef = useRef<HTMLDivElement>(null);
 
   const steps = [
-    { num: '01', title: 'Connect', desc: 'Link your Canton wallet in one click. Your keys, your control.', icon: '&#x1F517;' },
-    { num: '02', title: 'Choose', desc: 'Pick a strategy or build your own. 6 templates or fully custom.', icon: '&#x1F3AF;' },
-    { num: '03', title: 'Configure', desc: 'Set allocations, drift thresholds, and DCA schedules.', icon: '&#x2699;' },
-    { num: '04', title: 'Relax', desc: 'Roil handles rebalancing, executes DCA buys, and distributes rewards.', icon: '&#x1F680;' },
+    { num: '01', title: 'Connect', desc: 'Link your Canton wallet in one click. Your keys, your control.', icon: '\u{1F517}' },
+    { num: '02', title: 'Choose', desc: 'Pick a strategy or build your own. 6 templates or fully custom.', icon: '\u{1F3AF}' },
+    { num: '03', title: 'Configure', desc: 'Set allocations, drift thresholds, and DCA schedules.', icon: '\u{2699}\u{FE0F}' },
+    { num: '04', title: 'Relax', desc: 'Roil handles rebalancing, executes DCA buys, and distributes rewards.', icon: '\u{1F680}' },
   ];
 
   useEffect(() => {
@@ -313,7 +313,7 @@ function HorizontalScroll() {
           <div key={step.num} className="w-screen h-full flex items-center justify-center px-8 shrink-0">
             <div className="max-w-[600px]">
               <div className="text-[120px] font-bold text-[#059669]/10 leading-none mb-4">{step.num}</div>
-              <div className="text-[56px] mb-4" dangerouslySetInnerHTML={{ __html: step.icon }} />
+              <div className="text-[56px] mb-4">{step.icon}</div>
               <h3 className="text-[40px] font-bold text-white mb-4">{step.title}</h3>
               <p className="text-[20px] text-[#9CA3AF] leading-relaxed">{step.desc}</p>
             </div>
