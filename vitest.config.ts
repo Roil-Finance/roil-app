@@ -8,6 +8,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test-setup.ts'],
+    // Keep vitest focused on unit tests in src/; Playwright owns e2e/.
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['node_modules', 'dist', 'e2e', 'playwright-report'],
   },
   resolve: {
     alias: {

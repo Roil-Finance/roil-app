@@ -10,6 +10,14 @@ interface ProtectedRouteProps {
    * (Dashboard, Swap preview) still render demo data.
    */
   requireAuth?: boolean;
+  /**
+   * If true, the authenticated user must additionally hold the platform
+   * operator role. Defaults to false. When set, a non-admin authenticated
+   * user is redirected to /dashboard (not /login) because admins and
+   * regular users share the same auth flow — there is nothing to re-login
+   * as.
+   */
+  requireAdmin?: boolean;
 }
 
 /**
@@ -19,12 +27,17 @@ interface ProtectedRouteProps {
  *
  * If requireAuth is true and the user is unauthenticated, redirects to
  * /login preserving the attempted destination.
+ *
+ * If requireAdmin is true, the user must ALSO have admin privileges as
+ * surfaced by AuthContext (`isAdmin` flag, backed by a JWT claim or a
+ * `/api/admin/me` check performed at login).
  */
 export default function ProtectedRoute({
   children,
   requireAuth = false,
+  requireAdmin = false,
 }: ProtectedRouteProps) {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated, isAdmin } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -40,6 +53,12 @@ export default function ProtectedRoute({
 
   if (requireAuth && !isAuthenticated) {
     return <Navigate to={`/login?returnTo=${encodeURIComponent(location.pathname)}`} replace />;
+  }
+
+  if (requireAdmin && !isAdmin) {
+    // Authenticated but not admin — avoid leaking the existence of admin
+    // routes beyond the fact that they redirect.
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

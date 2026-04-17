@@ -151,6 +151,59 @@ function CountUp({ target, suffix = '', prefix = '' }: { target: number; suffix?
   return <span ref={ref}>{prefix}0{suffix}</span>;
 }
 
+// Extracted so useRef/useEffect aren't called inside a .map() callback (which
+// violated React's rules-of-hooks in the prior implementation).
+interface StatShape { target: number; prefix: string; suffix: string; label: string }
+function StatCard({ stat, index }: { stat: StatShape; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    gsap.from(ref.current, {
+      y: 40,
+      opacity: 0,
+      duration: 0.6,
+      delay: index * 0.1,
+      scrollTrigger: { trigger: ref.current, start: 'top 85%' },
+    });
+  }, [index]);
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-[48px] font-bold text-white leading-none">
+        <CountUp target={stat.target} prefix={stat.prefix} suffix={stat.suffix} />
+      </div>
+      <div className="text-[15px] text-[#6B7280] mt-3">{stat.label}</div>
+    </div>
+  );
+}
+
+interface AssetShape { symbol: string; name: string; color: string }
+function AssetCard({ asset, index }: { asset: AssetShape; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    gsap.from(ref.current, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.5,
+      delay: index * 0.05,
+      scrollTrigger: { trigger: ref.current, start: 'top 90%' },
+    });
+  }, [index]);
+  return (
+    <div
+      ref={ref}
+      className="flex items-center gap-4 p-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] transition-colors"
+    >
+      <img src={`/tokens/${asset.symbol.toLowerCase()}.png`} alt={asset.symbol} className="w-10 h-10 rounded-full" />
+      <div>
+        <div className="text-[16px] font-semibold text-white">{asset.symbol}</div>
+        <div className="text-[13px] text-[#6B7280]">{asset.name}</div>
+      </div>
+      <div className="ml-auto w-3 h-3 rounded-full" style={{ backgroundColor: asset.color }} />
+    </div>
+  );
+}
+
 /* ================================================================== */
 /* Pinned Feature Section — text changes as you scroll                 */
 /* ================================================================== */
@@ -461,27 +514,9 @@ export default function LandingV2() {
               { target: 1247, prefix: '', suffix: '', label: 'Active Portfolios' },
               { target: 9, prefix: '', suffix: '', label: 'Tokenized Assets' },
               { target: 99, prefix: '', suffix: '.9%', label: 'Uptime' },
-            ].map((stat, i) => {
-              const ref = useRef<HTMLDivElement>(null);
-              useEffect(() => {
-                if (!ref.current) return;
-                gsap.from(ref.current, {
-                  y: 40,
-                  opacity: 0,
-                  duration: 0.6,
-                  delay: i * 0.1,
-                  scrollTrigger: { trigger: ref.current, start: 'top 85%' },
-                });
-              }, []);
-              return (
-                <div key={stat.label} ref={ref} className="text-center">
-                  <div className="text-[48px] font-bold text-white leading-none">
-                    <CountUp target={stat.target} prefix={stat.prefix} suffix={stat.suffix} />
-                  </div>
-                  <div className="text-[15px] text-[#6B7280] mt-3">{stat.label}</div>
-                </div>
-              );
-            })}
+            ].map((stat, i) => (
+              <StatCard key={stat.label} stat={stat} index={i} />
+            ))}
           </div>
         </div>
       </section>
@@ -514,33 +549,9 @@ export default function LandingV2() {
               { symbol: 'XAGt', name: 'Tokenized Silver', color: '#94A3B8' },
               { symbol: 'USTb', name: 'US Treasury Bond', color: '#1E40AF' },
               { symbol: 'MMF', name: 'Money Market Fund', color: '#0EA5E9' },
-            ].map((asset, i) => {
-              const ref = useRef<HTMLDivElement>(null);
-              useEffect(() => {
-                if (!ref.current) return;
-                gsap.from(ref.current, {
-                  scale: 0.8,
-                  opacity: 0,
-                  duration: 0.5,
-                  delay: i * 0.05,
-                  scrollTrigger: { trigger: ref.current, start: 'top 90%' },
-                });
-              }, []);
-              return (
-                <div
-                  key={asset.symbol}
-                  ref={ref}
-                  className="flex items-center gap-4 p-5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] transition-colors"
-                >
-                  <img src={`/tokens/${asset.symbol.toLowerCase()}.png`} alt={asset.symbol} className="w-10 h-10 rounded-full" />
-                  <div>
-                    <div className="text-[16px] font-semibold text-white">{asset.symbol}</div>
-                    <div className="text-[13px] text-[#6B7280]">{asset.name}</div>
-                  </div>
-                  <div className="ml-auto w-3 h-3 rounded-full" style={{ backgroundColor: asset.color }} />
-                </div>
-              );
-            })}
+            ].map((asset, i) => (
+              <AssetCard key={asset.symbol} asset={asset} index={i} />
+            ))}
           </div>
         </div>
       </section>

@@ -13,6 +13,10 @@ import { useQuery, useMutation } from '@/hooks/useApi';
 import { useToast } from '@/components/Toast';
 import { TOKEN_LOGOS, ASSET_COLORS } from '@/config';
 import { WalletManager } from '@/lib/wallet-core';
+import SwapConfirmModal from '@/components/SwapConfirmModal';
+
+const SWAP_PLATFORM_FEE_RATE = 0.001;    // 0.1% matches backend PLATFORM_FEE_RATE default
+const SWAP_SLIPPAGE_TOLERANCE_PCT = 2.0; // matches backend SLIPPAGE_TOLERANCE=0.02
 
 // ---------------------------------------------------------------------------
 // Types
@@ -195,7 +199,16 @@ export default function Swap() {
     return () => clearTimeout(t);
   }, [numAmount, fromToken, toToken]);
 
-  // Execute swap
+  // Two-step swap: user clicks "Swap" → confirmation modal opens → user clicks
+  // "Confirm swap" → executeSwap fires. Removes the previous one-click path
+  // which fired the mutation without review.
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const openConfirm = () => {
+    if (numAmount <= 0 || fromToken === toToken || exceedsLimit) return;
+    setShowConfirm(true);
+  };
+
   const handleSwap = async () => {
     if (numAmount <= 0 || fromToken === toToken || exceedsLimit) return;
     try {
@@ -205,9 +218,11 @@ export default function Swap() {
         to: toToken,
         fromAmount: numAmount,
       });
+      setShowConfirm(false);
       addToast('success', `Swapped ${formatNumber(numAmount)} ${fromToken} for ${formatNumber(estimatedOutput)} ${toToken}`);
       setAmount('');
     } catch {
+      setShowConfirm(false);
       addToast('error', executeError ?? 'Swap failed. Please try again.');
     }
   };
@@ -517,9 +532,9 @@ export default function Swap() {
               )}
             </div>
 
-            {/* Swap button */}
+            {/* Swap button — opens confirmation modal, does not fire tx directly */}
             <button
-              onClick={handleSwap}
+              onClick={openConfirm}
               disabled={
                 isExecuting ||
                 numAmount <= 0 ||
@@ -623,6 +638,20 @@ export default function Swap() {
           </div>
         </div>
       </div>
+
+      <SwapConfirmModal
+        open={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleSwap}
+        fromToken={fromToken}
+        toToken={toToken}
+        fromAmount={numAmount}
+        estimatedOutput={estimatedOutput}
+        price={numAmount > 0 ? estimatedOutput / numAmount : 0}
+        platformFeeRate={SWAP_PLATFORM_FEE_RATE}
+        slippageTolerancePct={SWAP_SLIPPAGE_TOLERANCE_PCT}
+        isExecuting={isExecuting}
+      />
     </div>
   );
 }

@@ -26,6 +26,10 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  /** True when the authenticated user holds platform-admin rights.
+   *  Driven by a response from `/api/admin/me` (backend enforces, frontend
+   *  only uses for UI gating — server-side check is still authoritative). */
+  isAdmin: boolean;
 }
 
 interface SignupData {
@@ -124,6 +128,7 @@ const AuthContext = createContext<AuthContextValue>({
   user: null,
   token: null,
   isAuthenticated: false,
+  isAdmin: false,
   isLoading: true,
   login: async () => {},
   loginWithGoogle: async () => {},
@@ -139,6 +144,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // After successful auth, ask the backend whether this user has admin rights.
+  // The backend is authoritative; this client-side `isAdmin` flag is only used
+  // to gate UI surfaces. A non-admin reaching `/admin` still gets 403 on every
+  // protected endpoint.
+  useEffect(() => {
+    let cancelled = false;
+    if (!token || !user) {
+      setIsAdmin(false);
+      return;
+    }
+    fetch(`${config.backendUrl}/api/admin/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(5000),
+    })
+      .then((res) => (res.ok ? res.json() : Promise.resolve({ admin: false })))
+      .then((body: { admin?: boolean }) => {
+        if (!cancelled) setIsAdmin(Boolean(body.admin));
+      })
+      .catch(() => {
+        if (!cancelled) setIsAdmin(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [token, user]);
 
   // Hydrate from localStorage on mount, then verify token with backend.
   useEffect(() => {
@@ -297,6 +329,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         isAuthenticated: !!token && !!user,
+        isAdmin,
         isLoading,
         login,
         loginWithGoogle,

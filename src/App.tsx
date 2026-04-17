@@ -35,8 +35,11 @@ import Roadmap from '@/pages/docs/Roadmap';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ToastProvider } from '@/components/Toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import NetworkMismatchScreen from '@/components/NetworkMismatchScreen';
 import { PartyProvider } from '@/context/PartyContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { InstrumentsProvider } from '@/context/InstrumentsContext';
+import { useHealthGuard } from '@/hooks/useHealthGuard';
 
 function ReferralRedirect() {
   const { code } = useParams();
@@ -93,7 +96,7 @@ function AuthenticatedApp() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute requireAuth>
+                <ProtectedRoute requireAuth requireAdmin>
                   <AdminDashboard />
                 </ProtectedRoute>
               }
@@ -108,8 +111,18 @@ function AuthenticatedApp() {
 }
 
 export default function App() {
+  const health = useHealthGuard();
+
+  // Hard-block the UI when the backend says it's on a different Canton
+  // network than this build expects. Prevents launch-day foot-gun of talking
+  // to the wrong ledger.
+  if (health.status === 'mismatch') {
+    return <NetworkMismatchScreen backendNetwork={health.backendNetwork ?? 'unknown'} />;
+  }
+
   return (
     <AuthProvider>
+      <InstrumentsProvider>
       <PartyProvider>
         <ToastProvider>
           <Routes>
@@ -136,6 +149,7 @@ export default function App() {
           </Routes>
         </ToastProvider>
       </PartyProvider>
+      </InstrumentsProvider>
     </AuthProvider>
   );
 }
