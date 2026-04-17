@@ -26,7 +26,7 @@ interface RebalanceDetail {
 
 export default function TransactionDetail() {
   const { id } = useParams();
-  const { party } = useParty();
+  useParty(); // keep provider dependency; party not consumed directly here
 
   const { data, isLoading, error } = useQuery<RebalanceDetail>(
     id ? `/api/portfolio/${encodeURIComponent(id)}/rebalance-detail` : null,

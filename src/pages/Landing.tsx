@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -50,7 +50,7 @@ function MorphingShape({ scrollProgress }: { scrollProgress: React.MutableRefObj
     };
   }, [geometries]);
 
-  useFrame((state) => {
+  useFrame((_state) => {
     if (!meshRef.current) return;
     const t = scrollProgress.current;
 

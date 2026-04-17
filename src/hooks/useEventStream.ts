@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { config } from '@/config';
 import { useToast } from '@/components/Toast';
 
-type EventHandler = (data: any) => void;
+type EventHandler = (data: unknown) => void;
 
 interface UseEventStreamOptions {
   party?: string;

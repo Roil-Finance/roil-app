@@ -40,6 +40,7 @@ export class CantonSDKWallet {
 
     // Listen for SDK status changes
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onStatusChanged((event: any) => {
         const connected = event.status === 'connected';
         this.updateState({
@@ -49,6 +50,7 @@ export class CantonSDKWallet {
         });
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onAccountsChanged((event: any) => {
         const accounts = event.accounts || [];
         if (accounts.length > 0) {
@@ -66,7 +68,7 @@ export class CantonSDKWallet {
 
   async connect(): Promise<CantonSDKState> {
     try {
-      const result: any = await sdkConnect();
+      const result = (await sdkConnect()) as { party?: string; displayName?: string; accounts?: Array<{ party?: string; displayName?: string }> };
       const party = result.party || result.accounts?.[0]?.party || null;
       const displayName = result.displayName || result.accounts?.[0]?.displayName || null;
 
@@ -89,7 +91,7 @@ export class CantonSDKWallet {
 
   async getAccounts(): Promise<{ party: string; displayName?: string }[]> {
     try {
-      const result: any = await sdkListAccounts();
+      const result = (await sdkListAccounts()) as { accounts?: Array<{ party: string; displayName?: string }> };
       return result.accounts || [];
     } catch {
       return [];
@@ -97,10 +99,13 @@ export class CantonSDKWallet {
   }
 
   async submitTransaction(commands: unknown[], actAs: string[]): Promise<unknown> {
+    // SDK call signatures are loosely-typed at the boundary; we pass through.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return sdkExecuteAndWait({ commands, actAs } as any);
   }
 
   async ledgerApiCall(method: string, path: string, body?: unknown): Promise<unknown> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return sdkLedgerApi({ method, path, body } as any);
   }
 
@@ -126,12 +131,10 @@ export class CantonSDKWallet {
    * Check if the Canton dApp SDK is available in the browser.
    */
   static isAvailable(): boolean {
-    try {
-      // The SDK auto-detects Canton wallet providers
-      return true; // SDK handles provider detection internally
-    } catch {
-      return false;
-    }
+    // The SDK auto-detects Canton wallet providers at runtime; there is no
+    // synchronous check we can make here. Historical catch block was
+    // unreachable because the `return true` never threw.
+    return true;
   }
 }
 

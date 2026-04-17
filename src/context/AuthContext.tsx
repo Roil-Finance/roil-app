@@ -6,9 +6,9 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import { setAuthToken, getAuthToken } from '@/hooks/useApi';
+import { setAuthToken } from '@/hooks/useApi';
 import { config } from '@/config';
-import { signInWithGoogle, isGoogleAuthEnabled } from '@/lib/google-auth';
+import { signInWithGoogle } from '@/lib/google-auth';
 import { WalletManager } from '@/lib/wallet-core';
 
 // ---------------------------------------------------------------------------

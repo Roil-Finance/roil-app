@@ -68,7 +68,7 @@ export default function Dashboard() {
   const { party } = useParty();
 
   // ---- Fetch real data via hooks ----
-  const { portfolio, portfolios, isLoading: portfolioLoading, refetch: refetchPortfolio } = usePortfolio(party);
+  const { portfolio, portfolios, isLoading: portfolioLoading } = usePortfolio(party);
   const { drift } = useDrift(portfolio);
   const { schedules, isLoading: dcaLoading } = useDCASchedules(party);
   const { stats: rewardStats, isLoading: rewardsLoading } = useRewards(party);

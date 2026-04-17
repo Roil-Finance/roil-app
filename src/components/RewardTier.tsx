@@ -1,7 +1,7 @@
 import { Award, Star, Crown, Gem } from 'lucide-react';
 import clsx from 'clsx';
 import type { RewardTier as RewardTierType } from '@/types';
-import { TIER_THRESHOLDS, FEE_REBATE_PCT } from '@/config';
+import { TIER_THRESHOLDS } from '@/config';
 
 interface RewardTierProps {
   tier: RewardTierType;

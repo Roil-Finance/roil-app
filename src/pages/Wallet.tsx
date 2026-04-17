@@ -201,7 +201,6 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 /* ------------------------------------------------------------------ */
 
 function ShowKeyModal({ onClose }: { onClose: () => void }) {
-  const { addToast } = useToast();
   const [password, setPassword] = useState('');
   const [privateKey, setPrivateKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

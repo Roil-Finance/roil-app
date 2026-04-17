@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { ArrowLeft, X, Plus, Sparkles } from 'lucide-react';
+import { X, Plus, Sparkles } from 'lucide-react';
 import TokenLogo from '@/assets/TokenLogos';
-import { ASSET_COLORS } from '@/config';
 
 /* ------------------------------------------------------------------ */
 /* Progress bar                                                        */
@@ -378,7 +377,6 @@ export default function BuildYourOwn() {
             {/* Token rows */}
             <div className="space-y-5">
               {allocations.map((a) => {
-                const info = TOKEN_MAP[a.symbol];
                 const accent = TOKEN_ACCENT[a.symbol] || '#6B7280';
                 return (
                   <div key={a.symbol} className="flex items-center gap-4">

@@ -72,10 +72,10 @@ export function getTokenExplorerUrl(symbol: string): string {
     // CC has its own dedicated explorer
     return 'https://ccexplorer.io';
   }
-  // For other tokens, link to Canton Scan with the instrument context
-  const scanBase = getCantonScanUrl();
-  // Canton Scan API uses /v0/holdings/summary for holdings data
-  // The UI explorer (cantonscan.com) may have token pages
+  // For other tokens, link to Canton Scan with the instrument context.
+  // getCantonScanUrl() is reserved for future use when cantonscan.com exposes
+  // per-token pages; today we send users to the network root.
+  void getCantonScanUrl();
   return `https://www.cantonscan.com`;
 }
 

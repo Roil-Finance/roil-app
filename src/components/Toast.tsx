@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, createContext, useContext, type ReactNode } from 'react';
+import { useState, useCallback, createContext, useContext, type ReactNode } from 'react';
 import { CheckCircle, XCircle, Info, X } from 'lucide-react';
 import clsx from 'clsx';
 

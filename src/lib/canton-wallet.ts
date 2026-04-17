@@ -210,9 +210,9 @@ export class CantonWallet {
     const canton = window.canton!;
 
     try {
-      const accounts: string[] = await canton.request({
+      const accounts = (await canton.request({
         method: 'canton_requestAccounts',
-      });
+      })) as string[];
 
       if (!accounts || accounts.length === 0) {
         throw new Error('No accounts returned from Canton extension');
@@ -251,7 +251,7 @@ export class CantonWallet {
 
     if (!Array.isArray(result)) return [];
 
-    return result.map((b: any) => ({
+    return result.map((b: Record<string, unknown>) => ({
       instrumentId: String(b.instrumentId ?? b.symbol ?? 'unknown'),
       amount: Number(b.amount ?? 0),
       locked: Number(b.locked ?? 0),

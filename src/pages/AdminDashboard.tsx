@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Activity, Server, Database, Wifi, WifiOff, Shield, ShieldAlert, ShieldOff,
   RefreshCw, Zap, BarChart3, Users, Repeat2, Gift, TrendingUp, TrendingDown,

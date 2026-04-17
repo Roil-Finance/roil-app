@@ -164,7 +164,7 @@ export default function SimulateModal({
       } else {
         setStep('done');
       }
-    } catch (e: unknown) {
+    } catch {
       // On network error, simulate success with demo feedback
       setStep('done');
     }

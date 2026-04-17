@@ -21,19 +21,12 @@ export default function AllocationChart({
   holdings,
   targets,
 }: AllocationChartProps) {
-  if (!holdings || holdings.length === 0) {
-    return (
-      <div className="card p-6 flex items-center justify-center">
-        <p className="text-base text-ink-muted">No holdings to display</p>
-      </div>
-    );
-  }
-
-  const totalValue = holdings.reduce((acc, h) => acc + h.valueCc, 0);
+  // Hooks must run unconditionally (rules-of-hooks). Early return moved below.
+  const totalValue = (holdings ?? []).reduce((acc, h) => acc + h.valueCc, 0);
 
   const chartData = useMemo(() => {
     return targets.map(target => {
-      const holding = holdings.find(h => h.asset.symbol === target.asset.symbol);
+      const holding = (holdings ?? []).find(h => h.asset.symbol === target.asset.symbol);
       const currentPct = totalValue > 0 && holding ? (holding.valueCc / totalValue) * 100 : 0;
       return {
         asset: target.asset.symbol,
@@ -43,6 +36,14 @@ export default function AllocationChart({
       };
     });
   }, [targets, holdings, totalValue]);
+
+  if (!holdings || holdings.length === 0) {
+    return (
+      <div className="card p-6 flex items-center justify-center">
+        <p className="text-base text-ink-muted">No holdings to display</p>
+      </div>
+    );
+  }
 
   const CustomTooltip = ({
     active,

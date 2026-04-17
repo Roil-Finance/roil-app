@@ -119,7 +119,7 @@ export default function Roadmap() {
         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-[#E5E7EB] dark:bg-slate-700 hidden sm:block" />
 
         <div className="space-y-10">
-          {PHASES.map((phase, phaseIndex) => (
+          {PHASES.map((phase, _phaseIndex) => (
             <div key={phase.name} className="relative">
               {/* Timeline dot */}
               <div className={`absolute left-4 w-5 h-5 rounded-full ${phase.bg} border-2 ${phase.borderColor} hidden sm:flex items-center justify-center z-10`}>

@@ -145,18 +145,28 @@ export async function initGoogleAuth(): Promise<void> {
  * GoogleUser on success, or rejects if the user dismisses the popup.
  */
 export function signInWithGoogle(): Promise<GoogleUser> {
-  return new Promise<GoogleUser>(async (resolve, reject) => {
-    if (!isGoogleAuthEnabled()) {
-      reject(new Error('Google auth is not configured. Set VITE_GOOGLE_CLIENT_ID.'));
-      return;
-    }
+  // Promise executor must not be async (`no-async-promise-executor`) —
+  // wrap the real async flow in a helper and pipe it to resolve/reject.
+  return new Promise<GoogleUser>((resolve, reject) => {
+    void runGoogleSignInFlow(resolve, reject);
+  });
+}
 
-    try {
-      await loadGISScript();
-    } catch (err) {
-      reject(err);
-      return;
-    }
+async function runGoogleSignInFlow(
+  resolve: (user: GoogleUser) => void,
+  reject: (err: Error) => void,
+): Promise<void> {
+  if (!isGoogleAuthEnabled()) {
+    reject(new Error('Google auth is not configured. Set VITE_GOOGLE_CLIENT_ID.'));
+    return;
+  }
+
+  try {
+    await loadGISScript();
+  } catch (err) {
+    reject(err instanceof Error ? err : new Error(String(err)));
+    return;
+  }
 
     const google = window.google;
     if (!google?.accounts) {
@@ -182,7 +192,7 @@ export function signInWithGoogle(): Promise<GoogleUser> {
           }
 
           resolve(user);
-        } catch (err) {
+        } catch {
           reject(new Error('Failed to decode Google credential'));
         }
       },
@@ -231,5 +241,4 @@ export function signInWithGoogle(): Promise<GoogleUser> {
         });
       }
     });
-  });
 }

@@ -11,8 +11,7 @@ import {
 import { useParty } from '@/context/PartyContext';
 import { useQuery, useMutation } from '@/hooks/useApi';
 import { useToast } from '@/components/Toast';
-import { TOKEN_LOGOS, ASSET_COLORS } from '@/config';
-import { WalletManager } from '@/lib/wallet-core';
+import { TOKEN_LOGOS } from '@/config';
 import SwapConfirmModal from '@/components/SwapConfirmModal';
 
 const SWAP_PLATFORM_FEE_RATE = 0.001;    // 0.1% matches backend PLATFORM_FEE_RATE default
@@ -22,23 +21,9 @@ const SWAP_SLIPPAGE_TOLERANCE_PCT = 2.0; // matches backend SLIPPAGE_TOLERANCE=0
 // Types
 // ---------------------------------------------------------------------------
 
-interface SwapPair {
-  from: string;
-  to: string;
-  price: number; // 1 unit of `from` = price units of `to`
-}
-
 interface SwapLimits {
   dailyLimit: number;
   usedToday: number;
-}
-
-interface SwapQuote {
-  fromAmount: number;
-  toAmount: number;
-  price: number;
-  fee: number;
-  feeAmount: number;
 }
 
 interface SwapHistoryItem {

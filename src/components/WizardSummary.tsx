@@ -18,9 +18,10 @@ interface ChartEntry {
 }
 
 // Custom tooltip with token logo
-function ChartTooltip({ active, payload }: any) {
+interface TooltipProps { active?: boolean; payload?: Array<{ payload: ChartEntry }> }
+function ChartTooltip({ active, payload }: TooltipProps) {
   if (active && payload?.[0]) {
-    const { symbol, name, value, fill } = payload[0].payload as ChartEntry;
+    const { symbol, name, value } = payload[0].payload;
     return (
       <div className="bg-white rounded-lg shadow-md border border-surface-border px-3 py-2">
         <div className="flex items-center gap-2">
@@ -36,6 +37,10 @@ function ChartTooltip({ active, payload }: any) {
 }
 
 // Active shape — segment grows on hover
+// Recharts' ActiveShape<T> callback is typed as `(props: unknown) => ReactNode`
+// so we accept an untyped prop bag and destructure — this is the supported
+// pattern from the Recharts docs.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ActiveShape(props: any) {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
   return (
@@ -63,6 +68,11 @@ interface WizardSummaryProps {
 export default function WizardSummary({
   step, templateName, selectedTokens, allocations, weightMode, triggerMode, portfolioName
 }: WizardSummaryProps) {
+  // Hooks must run unconditionally (rules-of-hooks). Early-return moved below.
+  const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
+  const onPieEnter = useCallback((_: unknown, index: number) => setActiveIndex(index), []);
+  const onPieLeave = useCallback(() => setActiveIndex(undefined), []);
+
   // Step 0: no preview yet
   if (step === 0) {
     return (
@@ -72,10 +82,6 @@ export default function WizardSummary({
       </div>
     );
   }
-
-  const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
-  const onPieEnter = useCallback((_: any, index: number) => setActiveIndex(index), []);
-  const onPieLeave = useCallback(() => setActiveIndex(undefined), []);
 
   const chartData: ChartEntry[] = selectedTokens
     .filter(s => allocations[s] > 0)
