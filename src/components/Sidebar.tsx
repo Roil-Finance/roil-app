@@ -1,14 +1,25 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Wallet, Repeat2, Trophy, Clock, PieChart, HelpCircle, KeyRound, ArrowLeftRight } from 'lucide-react';
+import {
+  Wallet,
+  Repeat2,
+  Trophy,
+  Clock,
+  PieChart,
+  HelpCircle,
+  KeyRound,
+  ArrowLeftRight,
+  Workflow,
+} from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/create', icon: Wallet },
-  { to: '/portfolio', icon: PieChart },
-  { to: '/swap', icon: ArrowLeftRight },
-  { to: '/dca', icon: Repeat2 },
-  { to: '/rewards', icon: Trophy },
-  { to: '/history', icon: Clock },
-  { to: '/wallet', icon: KeyRound },
+  { to: '/create', icon: Wallet, label: 'Create' },
+  { to: '/portfolio', icon: PieChart, label: 'Portfolio' },
+  { to: '/swap', icon: ArrowLeftRight, label: 'Swap' },
+  { to: '/bridge', icon: Workflow, label: 'Bridge' },
+  { to: '/dca', icon: Repeat2, label: 'DCA' },
+  { to: '/rewards', icon: Trophy, label: 'Rewards' },
+  { to: '/history', icon: Clock, label: 'History' },
+  { to: '/wallet', icon: KeyRound, label: 'Wallet' },
 ] as const;
 
 function XIcon({ className }: { className?: string }) {
@@ -40,12 +51,14 @@ export default function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex flex-col items-center gap-2 flex-1">
-          {NAV_ITEMS.map(({ to, icon: Icon }) => {
+          {NAV_ITEMS.map(({ to, icon: Icon, label }) => {
             const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
             return (
               <NavLink
                 key={to}
                 to={to}
+                title={label}
+                aria-label={label}
                 className="flex items-center justify-center rounded-xl transition-colors"
                 style={{ width: 44, height: 44 }}
               >
@@ -88,12 +101,13 @@ export default function Sidebar() {
 
       {/* ============ Mobile Bottom Nav (<md) ============ */}
       <nav className="fixed bottom-0 left-0 right-0 md:hidden flex items-center justify-around bg-white dark:bg-slate-800 border-t border-[#D6D9E3] dark:border-slate-700 z-30 h-16 px-2">
-        {NAV_ITEMS.map(({ to, icon: Icon }) => {
+        {NAV_ITEMS.map(({ to, icon: Icon, label }) => {
           const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
           return (
             <NavLink
               key={to}
               to={to}
+              aria-label={label}
               className="flex items-center justify-center rounded-xl transition-colors"
               style={{ width: 44, height: 44 }}
             >

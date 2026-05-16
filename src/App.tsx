@@ -17,6 +17,7 @@ import Portfolio from '@/pages/Portfolio';
 import AdminDashboard from '@/pages/AdminDashboard';
 import Wallet from '@/pages/Wallet';
 import Swap from '@/pages/Swap';
+import Bridge from '@/pages/Bridge';
 import Whitelist from '@/pages/Whitelist';
 import Slides from '@/pages/Slides';
 import DocsLayout from '@/pages/docs/DocsLayout';
@@ -92,6 +93,14 @@ function AuthenticatedApp() {
               }
             />
             <Route path="/swap" element={<Swap />} />
+            <Route
+              path="/bridge"
+              element={
+                <ProtectedRoute requireAuth>
+                  <Bridge />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/invite" element={<Whitelist />} />
             <Route
               path="/admin"
