@@ -134,13 +134,14 @@ export default function Settings() {
     isLoading: isLoadingConfig,
   } = useQuery<CompoundConfig>(configPath, [party]);
 
-  // Save mutation
+  // Save mutation — path resolver returns null when there's no party so the
+  // mutation hook short-circuits instead of hitting `/api/compound/null/config`.
   const {
     mutate: saveConfig,
     isLoading: isSaving,
     error: saveError,
   } = useMutation<CompoundConfig, CompoundConfig>(
-    `/api/compound/${encodeURIComponent(party)}/config`,
+    () => (party ? `/api/compound/${encodeURIComponent(party)}/config` : ''),
     'PUT',
   );
 
@@ -214,6 +215,7 @@ export default function Settings() {
 
   // Handle explicit save
   const handleSave = async () => {
+    if (!party) return;
     setShowSaved(false);
 
     const payload: CompoundConfig = {

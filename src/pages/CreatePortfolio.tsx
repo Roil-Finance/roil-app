@@ -85,8 +85,6 @@ export default function CreatePortfolio() {
   // Inline editing in Review step
   const [editingToken, setEditingToken] = useState<string | null>(null);
   const [editingTrigger, setEditingTrigger] = useState(false);
-  const [, setEditValues] = useState<Record<string, number>>({});
-  void setEditValues;
   const [hasEdited, setHasEdited] = useState(false);
 
   // Whether we came from a template (skip straight to review)

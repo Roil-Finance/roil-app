@@ -52,8 +52,11 @@ export interface SwapLeg {
 // Contract payloads (what the API returns)
 // ---------------------------------------------------------------------------
 
-/** Matches Daml Portfolio.Portfolio */
+/** Matches Daml Portfolio.Portfolio (with the on-chain contract id surfaced
+ *  by the backend so mutation routes have a target). Demo/fallback
+ *  portfolios omit `contractId` and the UI gates write actions on it. */
 export interface Portfolio {
+  contractId?: string;
   platform: string;
   user: string;
   targets: TargetAllocation[];

@@ -125,6 +125,9 @@ export default function Dashboard() {
   }, [portfolio, priceMap]);
 
   // ---- Derived: performance chart data ----
+  // Returns an empty array when we have no real history. The chart container
+  // overlays a "Building history..." message in that case instead of showing
+  // fabricated interpolation that misleads users.
   const performanceChartData = useMemo(() => {
     if (perfData?.history && perfData.history.length > 0) {
       return perfData.history.map((snap) => {
@@ -133,16 +136,8 @@ export default function Dashboard() {
         return { day: label, value: snap.totalValueCc };
       });
     }
-    // Use summary data as single-point fallback with synthetic week
-    const current = perfData?.summary?.current ?? totalValueUsd;
-    const change7d = perfData?.summary?.change7d ?? 0;
-    const baseValue = current / (1 + change7d / 100);
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days.map((day, i) => ({
-      day,
-      value: Math.round(baseValue + ((current - baseValue) * (i + 1)) / 7),
-    }));
-  }, [perfData, totalValueUsd]);
+    return [];
+  }, [perfData]);
 
   // ---- Derived: volume chart data (from performance history deltas) ----
   const volumeChartData = useMemo(() => {
@@ -154,13 +149,10 @@ export default function Dashboard() {
         return { day: label, vol };
       });
     }
-    // Synthetic volume bars
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days.map((day, i) => ({
-      day,
-      vol: Math.round((totalValueUsd * 0.005 * (i + 1)) / 7) || (i + 1) * 10,
-    }));
-  }, [perfData, totalValueUsd]);
+    return [];
+  }, [perfData]);
+
+  const hasPerformanceHistory = performanceChartData.length > 0;
 
   // ---- Loading state ----
   const isMainLoading = portfolioLoading || pricesLoading;
@@ -203,9 +195,14 @@ export default function Dashboard() {
           </h1>
         </div>
         <button
-          onClick={() => triggerRebalance({ id: party })}
-          disabled={rebalancing}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-semibold text-sm bg-gradient-to-r from-[#059669] to-[#10B981] hover:opacity-90 transition-opacity shadow-md disabled:opacity-50"
+          onClick={() => {
+            if (portfolio?.contractId) {
+              triggerRebalance({ id: portfolio.contractId });
+            }
+          }}
+          disabled={rebalancing || !portfolio?.contractId}
+          title={!portfolio?.contractId ? 'Connect a real portfolio to rebalance' : undefined}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-semibold text-sm bg-gradient-to-r from-[#059669] to-[#10B981] hover:opacity-90 transition-opacity shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw className={`w-4 h-4 ${rebalancing ? 'animate-spin' : ''}`} />
           {rebalancing ? 'Rebalancing...' : 'Rebalance Now'}
@@ -313,10 +310,20 @@ export default function Dashboard() {
           </div>
 
           {/* Area chart */}
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 relative">
             {perfLoading ? (
               <div className="flex items-center justify-center h-full">
                 <Skeleton className="h-full w-full rounded-lg" />
+              </div>
+            ) : !hasPerformanceHistory ? (
+              <div className="flex flex-col items-center justify-center h-full text-center px-6">
+                <TrendingUp className="w-10 h-10 text-[#9CA3AF] mb-3" />
+                <p className="text-sm font-medium text-[#6B7280] dark:text-slate-400">
+                  Building performance history
+                </p>
+                <p className="text-xs text-[#9CA3AF] dark:text-slate-500 mt-1 max-w-xs">
+                  Your first portfolio snapshot will appear here within a few hours of activity.
+                </p>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -364,27 +371,29 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Volume bars */}
-          <div className="h-[50px] mt-2">
-            {perfLoading ? (
-              <Skeleton className="h-full w-full rounded" />
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={volumeChartData} margin={{ top: 0, right: 10, left: -10, bottom: 0 }}>
-                  <XAxis dataKey="day" tick={false} axisLine={false} tickLine={false} />
-                  <YAxis hide />
-                  <Bar dataKey="vol" radius={[3, 3, 0, 0]}>
-                    {volumeChartData.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={i === volumeChartData.length - 1 ? '#059669' : '#D1D5DB'}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+          {/* Volume bars — hidden until real history exists */}
+          {hasPerformanceHistory && (
+            <div className="h-[50px] mt-2">
+              {perfLoading ? (
+                <Skeleton className="h-full w-full rounded" />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={volumeChartData} margin={{ top: 0, right: 10, left: -10, bottom: 0 }}>
+                    <XAxis dataKey="day" tick={false} axisLine={false} tickLine={false} />
+                    <YAxis hide />
+                    <Bar dataKey="vol" radius={[3, 3, 0, 0]}>
+                      {volumeChartData.map((_, i) => (
+                        <Cell
+                          key={i}
+                          fill={i === volumeChartData.length - 1 ? '#059669' : '#D1D5DB'}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Allocation panel */}

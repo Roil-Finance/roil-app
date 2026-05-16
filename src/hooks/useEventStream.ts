@@ -4,6 +4,29 @@ import { useToast } from '@/components/Toast';
 
 type EventHandler = (data: unknown) => void;
 
+/**
+ * Notification toggle indices in the Settings page (NOTIFICATION_DEFAULTS):
+ *   0 = Rebalance alerts
+ *   1 = DCA execution
+ *   2 = Reward payouts
+ *   3 = Price alerts
+ * Settings persists toggle state under the `roil-settings` localStorage key
+ * as JSON; default is ON when the key or index is missing.
+ */
+const SETTINGS_LS_KEY = 'roil-settings';
+
+function isNotificationEnabled(idx: number): boolean {
+  try {
+    const raw = localStorage.getItem(SETTINGS_LS_KEY);
+    if (!raw) return true;
+    const parsed = JSON.parse(raw) as { notifications?: boolean[] };
+    if (!Array.isArray(parsed.notifications)) return true;
+    return parsed.notifications[idx] ?? true;
+  } catch {
+    return true;
+  }
+}
+
 interface UseEventStreamOptions {
   party?: string;
   onRebalance?: EventHandler;
@@ -53,9 +76,8 @@ export function useEventStream({
       try {
         const data = JSON.parse(e.data);
         onRebalanceRef.current?.(data);
-        // Check if notifications are enabled (from localStorage)
-        const notificationsEnabled = localStorage.getItem('notifications') !== 'false';
-        if (notificationsEnabled) {
+        // Rebalance alerts = NOTIFICATION_DEFAULTS[0] in Settings
+        if (isNotificationEnabled(0)) {
           addToastRef.current('success', 'Portfolio rebalanced — ledger updated');
         }
       } catch { /* ignore parse errors */ }
@@ -65,8 +87,8 @@ export function useEventStream({
       try {
         const data = JSON.parse(e.data);
         onDCARef.current?.(data);
-        const notificationsEnabled = localStorage.getItem('notifications') !== 'false';
-        if (notificationsEnabled) {
+        // DCA execution = NOTIFICATION_DEFAULTS[1] in Settings
+        if (isNotificationEnabled(1)) {
           addToastRef.current('info', 'DCA execution completed');
         }
       } catch { /* ignore */ }
