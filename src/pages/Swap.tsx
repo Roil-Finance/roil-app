@@ -10,12 +10,15 @@ import {
 } from 'lucide-react';
 import { useParty } from '@/context/PartyContext';
 import { useQuery, useMutation } from '@/hooks/useApi';
+import { usePlatformConfig } from '@/hooks/usePlatformConfig';
 import { useToast } from '@/components/Toast';
 import { TOKEN_LOGOS } from '@/config';
 import SwapConfirmModal from '@/components/SwapConfirmModal';
 
-const SWAP_PLATFORM_FEE_RATE = 0.001;    // 0.1% matches backend PLATFORM_FEE_RATE default
-const SWAP_SLIPPAGE_TOLERANCE_PCT = 2.0; // matches backend SLIPPAGE_TOLERANCE=0.02
+// Slippage tolerance stays as a UI literal because it shapes the user's
+// quote acceptance behaviour; the backend's matching value is informational
+// only (the simulator already returns post-slippage estimates).
+const SWAP_SLIPPAGE_TOLERANCE_PCT = 2.0;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -95,6 +98,10 @@ const MOCK_WHITELIST: WhitelistStatus = { isWhitelisted: true, joinedAt: '2026-0
 export default function Swap() {
   const { party } = useParty();
   const { addToast } = useToast();
+  // Backend-driven platform fee rate (falls back to the same default the
+  // backend uses) so a fee update on the server doesn't require a frontend
+  // redeploy and the SwapConfirmModal disclosure stays accurate.
+  const { platformFeeRate } = usePlatformConfig();
 
   // Whitelist status
   const { data: whitelistStatus } = useQuery<WhitelistStatus>(
@@ -633,7 +640,7 @@ export default function Swap() {
         fromAmount={numAmount}
         estimatedOutput={estimatedOutput}
         price={numAmount > 0 ? estimatedOutput / numAmount : 0}
-        platformFeeRate={SWAP_PLATFORM_FEE_RATE}
+        platformFeeRate={platformFeeRate}
         slippageTolerancePct={SWAP_SLIPPAGE_TOLERANCE_PCT}
         isExecuting={isExecuting}
       />

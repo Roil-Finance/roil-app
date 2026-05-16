@@ -62,14 +62,50 @@ async function apiFetch<T>(
   options?: RequestInit,
 ): Promise<T | null> {
   const url = path.startsWith('http') ? path : `${config.backendUrl}${path}`;
-  const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
-      ...options?.headers,
-    },
-    ...options,
-  });
+  const method = (options?.method ?? 'GET').toUpperCase();
+
+  // Single retry on 5xx for idempotent GET requests. Non-GET methods
+  // (POST/PUT/DELETE) are never retried automatically: they may have
+  // mutated state on the server even when the response code was a 5xx,
+  // so the caller must explicitly retry (typically with an
+  // Idempotency-Key header, which the backend honours).
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
+        ...options?.headers,
+      },
+      ...options,
+    });
+    if (method === 'GET' && res.status >= 500 && res.status < 600) {
+      await new Promise((r) => setTimeout(r, 500));
+      res = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
+          ...options?.headers,
+        },
+        ...options,
+      });
+    }
+  } catch (e) {
+    // Network error: retry once for GET only.
+    if (method === 'GET') {
+      await new Promise((r) => setTimeout(r, 500));
+      res = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
+          ...options?.headers,
+        },
+        ...options,
+      });
+    } else {
+      throw e;
+    }
+  }
 
   if (!res.ok) {
     const body = await res.text().catch(() => 'Unknown error');

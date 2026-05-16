@@ -10,6 +10,7 @@ import {
   X, ArrowDownToLine, ArrowUpFromLine, Wallet, CheckCircle2,
   AlertCircle, Loader2, ArrowRight, ExternalLink, Clock,
 } from 'lucide-react';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import {
   useXReserveDeposit,
   useXReserveWithdraw,
@@ -48,16 +49,37 @@ const DEPOSIT_STATUS_LABELS: Record<DepositStatus, string> = {
 
 export function XReserveModal({ isOpen, onClose, cantonParty, initialTab = 'deposit' }: Props) {
   const [tab, setTab] = useState<'deposit' | 'withdraw'>(initialTab);
+  const focusTrapRef = useFocusTrap<HTMLDivElement>(isOpen);
+
+  // Close on Escape key — pairs with the focus trap to give keyboard-only
+  // users a way out without grabbing the mouse.
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full">
+      <div
+        ref={focusTrapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="xreserve-modal-title"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <h2
+              id="xreserve-modal-title"
+              className="text-lg font-semibold text-slate-900 dark:text-white"
+            >
               USDC Bridge
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -66,6 +88,7 @@ export function XReserveModal({ isOpen, onClose, cantonParty, initialTab = 'depo
           </div>
           <button
             onClick={onClose}
+            aria-label="Close USDC bridge modal"
             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
           >
             <X className="w-5 h-5 text-slate-500" />

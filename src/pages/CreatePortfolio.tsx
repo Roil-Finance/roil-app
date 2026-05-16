@@ -746,6 +746,7 @@ export default function CreatePortfolio() {
                               const val = Math.min(100, Math.max(0, parseFloat(raw) || 0));
                               setAllocation(symbol, val);
                             }}
+                            aria-label={`Target allocation percentage for ${symbol}`}
                             className="input-field w-full text-center text-base py-1.5"
                           />
                         </div>
@@ -1010,6 +1011,7 @@ export default function CreatePortfolio() {
                               const raw = e.target.value.replace(/^0+(?=\d)/, '');
                               handleAllocationEdit(s, parseFloat(raw) || 0);
                             }}
+                            aria-label={`Edit allocation percentage for ${s}`}
                             onBlur={() => setEditingToken(null)}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') setEditingToken(null);
@@ -1076,6 +1078,7 @@ export default function CreatePortfolio() {
                           step={1}
                           value={driftThreshold}
                           onChange={(e) => handleTriggerEdit(parseInt(e.target.value) || 5)}
+                          aria-label="Rebalance drift threshold percentage"
                           onBlur={() => setEditingTrigger(false)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === 'Escape') setEditingTrigger(false);

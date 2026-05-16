@@ -112,8 +112,14 @@ export default function Dashboard() {
     const total = holdingsWithUsd.reduce((s, h) => s + h.usd, 0);
     if (total === 0) return [];
 
-    // Map of fallback colors for tokens
-    const fallbackColors = ['#059669', '#06B6D4', '#6366F1', '#D97706', '#EC4899', '#F43F5E', '#8B5CF6', '#14B8A6', '#F59E0B'];
+    // Map of fallback colors for tokens — sized to cover the full Roil
+    // instrument set (CC + USDCx + 7 wrapped assets) plus a few extras so
+    // adding a new asset never falls back to a repeated colour.
+    const fallbackColors = [
+      '#059669', '#06B6D4', '#6366F1', '#D97706', '#EC4899',
+      '#F43F5E', '#8B5CF6', '#14B8A6', '#F59E0B', '#0EA5E9',
+      '#A855F7', '#84CC16', '#EF4444', '#10B981', '#3B82F6',
+    ];
 
     return holdingsWithUsd.map((h, i) => ({
       token: h.symbol,
@@ -213,7 +219,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           label="Total Value"
-          value={isMainLoading ? <Skeleton className="h-8 w-32" /> : fmtUsd(totalValueUsd)}
+          value={isMainLoading ? <Skeleton className="h-9 w-32" /> : fmtUsd(totalValueUsd)}
           sub={
             isMainLoading ? (
               <Skeleton className="h-4 w-24" />
@@ -228,7 +234,7 @@ export default function Dashboard() {
         />
         <StatCard
           label="Active DCA"
-          value={dcaLoading ? <Skeleton className="h-8 w-12" /> : String(activeDcaCount)}
+          value={dcaLoading ? <Skeleton className="h-9 w-12" /> : String(activeDcaCount)}
           sub={
             <div>
               <span className="text-sm text-[#6B7280] dark:text-slate-400">schedules</span>
@@ -246,7 +252,7 @@ export default function Dashboard() {
           label="Reward Tier"
           value={
             rewardsLoading ? (
-              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-9 w-20" />
             ) : (
               <span style={{ color: rewardColor }}>{rewardTier.toUpperCase()}</span>
             )
@@ -270,7 +276,7 @@ export default function Dashboard() {
         />
         <StatCard
           label="Portfolio Drift"
-          value={portfolioLoading ? <Skeleton className="h-8 w-16" /> : `${drift}%`}
+          value={portfolioLoading ? <Skeleton className="h-9 w-16" /> : `${drift}%`}
           sub={
             portfolioLoading ? (
               <Skeleton className="h-5 w-24" />
