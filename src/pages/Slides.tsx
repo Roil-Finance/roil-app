@@ -919,7 +919,7 @@ function Slide10() {
         flexWrap: 'wrap' as const,
       }}>
         <a
-          href="https://github.com/Himess/roil-finance"
+          href="https://github.com/Roil-Finance/roil-finance"
           target="_blank"
           rel="noopener noreferrer"
           style={{

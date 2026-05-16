@@ -601,7 +601,7 @@ export default function LandingV2() {
               <h4 className="text-[13px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Resources</h4>
               <div className="flex flex-col gap-2.5">
                 <a href="https://docs.roil.fi" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">Documentation</a>
-                <a href="https://github.com/Himess/roil-finance" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">GitHub</a>
+                <a href="https://github.com/Roil-Finance/roil-finance" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">GitHub</a>
               </div>
             </div>
             <div>
