@@ -1,10 +1,13 @@
-// Site-wide password gate for the pre-launch period.
+// Host-aware gate for the pre-launch period. Both domains point at this same
+// project, so we split them here at the edge:
 //
-// Runs at the edge before the cache, so it covers the SPA pages, static assets,
-// and the /api functions in one place.
+//   waitlist.roil.app  -> PUBLIC, and ONLY the landing page. Any other path is
+//                         redirected to /home, so the subdomain == roil.app/home.
+//   roil.app (+ rest)  -> PRIVATE. Locked behind a password while we build.
 //
-//   Lock   the site -> set    SITE_PASSWORD in the project's env vars.
-//   Unlock the site -> remove SITE_PASSWORD (or delete this file) at launch.
+// Lock/unlock the private side with the SITE_PASSWORD env var:
+//   set it    -> roil.app asks for a password
+//   remove it -> roil.app is public too (do this at launch)
 //
 // Any username works; visitors just need the password.
 
@@ -12,10 +15,30 @@ export const config = {
   runtime: 'edge',
 };
 
-export default function middleware(request: Request): Response | undefined {
-  const expected = process.env.SITE_PASSWORD?.trim();
+const PUBLIC_HOST = 'waitlist.roil.app';
 
-  // Not configured -> the site is public. This is how we open it up at launch.
+export default function middleware(request: Request): Response | undefined {
+  const host = (request.headers.get('host') || '').toLowerCase();
+
+  // Public waitlist subdomain: open to everyone, but it only ever serves the
+  // landing page (plus the assets and the /api/waitlist endpoint it needs).
+  if (host === PUBLIC_HOST) {
+    const url = new URL(request.url);
+    const { pathname } = url;
+    const allowed =
+      pathname === '/home' ||
+      pathname.startsWith('/api/') ||
+      pathname.startsWith('/assets/') ||
+      pathname.includes('.'); // static files: /logo.jpg, /favicon.ico, ...
+    if (!allowed) {
+      url.pathname = '/home';
+      return Response.redirect(url.toString(), 307);
+    }
+    return undefined;
+  }
+
+  // Main domain and everything else: require the password (if configured).
+  const expected = process.env.SITE_PASSWORD?.trim();
   if (!expected) return undefined;
 
   const header = request.headers.get('authorization') || '';
