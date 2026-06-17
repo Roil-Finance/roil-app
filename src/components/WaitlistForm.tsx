@@ -48,7 +48,7 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
       setStatus('success');
       setMessage(
         data?.alreadyJoined
-          ? "You're already on the list — we'll be in touch!"
+          ? "You're already on the list. We'll be in touch!"
           : "You're on the list! We'll email you the moment mainnet goes live.",
       );
       setEmail('');
@@ -116,7 +116,7 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
         {status === 'error' ? (
           <span className="text-red-400">{message}</span>
         ) : (
-          <span className="text-[#6B7280]">No spam — just your invite when we launch.</span>
+          <span className="text-[#6B7280]">No spam, just your invite when we launch.</span>
         )}
       </p>
     </form>

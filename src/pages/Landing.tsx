@@ -76,8 +76,8 @@ function MorphingShape({ scrollProgress }: { scrollProgress: React.MutableRefObj
 
     // Color shift
     if (materialRef.current) {
-      const hue = 0.45 + t * 0.15; // emerald → cyan
-      materialRef.current.color.setHSL(hue, 0.7, 0.6);
+      const hue = 0.16 - t * 0.04; // golden yellow drifting to amber
+      materialRef.current.color.setHSL(hue, 0.82, 0.62);
     }
   });
 
@@ -90,7 +90,7 @@ function MorphingShape({ scrollProgress }: { scrollProgress: React.MutableRefObj
 
   return (
     <lineSegments ref={meshRef} geometry={initialGeometry}>
-      <lineBasicMaterial ref={materialRef} color="#10B981" transparent opacity={0.6} />
+      <lineBasicMaterial ref={materialRef} color="#EDE84A" transparent opacity={0.6} />
     </lineSegments>
   );
 }
@@ -125,7 +125,7 @@ function Particles() {
           args={[positions, 3]}
         />
       </bufferGeometry>
-      <pointsMaterial color="#059669" size={0.03} transparent opacity={0.4} sizeAttenuation />
+      <pointsMaterial color="#D8CF45" size={0.03} transparent opacity={0.4} sizeAttenuation />
     </points>
   );
 }
@@ -269,7 +269,6 @@ export default function Landing() {
           <a href="#features" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">Features</a>
           <a href="#how-it-works" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">How It Works</a>
           <a href="#stats" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">Stats</a>
-          <a href="#waitlist" className="hidden md:inline text-[14px] text-[#10B981] hover:text-white transition-colors">Waitlist</a>
           <a
             href="https://x.com/RoilFinance"
             target="_blank"
@@ -279,10 +278,10 @@ export default function Landing() {
             Twitter
           </a>
           <a
-            href="/login"
+            href="#waitlist"
             className="px-5 py-2.5 rounded-xl text-[14px] font-semibold bg-gradient-to-r from-[#059669] to-[#10B981] text-white hover:opacity-90 transition-opacity"
           >
-            Launch App
+            Join Waitlist
           </a>
         </div>
       </nav>
@@ -304,8 +303,8 @@ export default function Landing() {
             Management
           </h1>
           <p ref={heroSubRef} className="text-[16px] md:text-[20px] text-[#9CA3AF] mt-6 max-w-[560px] mx-auto leading-relaxed">
-            Automated portfolio rebalancing, DCA strategies, and reward tracking —
-            powered by Canton Network's privacy-first blockchain.
+            Automated portfolio rebalancing, DCA strategies, and reward tracking.
+            Powered by Canton Network's privacy-first blockchain.
           </p>
           <div ref={heroCTARef} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <a
@@ -350,13 +349,13 @@ export default function Landing() {
             <FeatureCard
               icon="&#x1F3C6;"
               title="Reward Tiers"
-              description="Earn fee rebates based on your transaction volume. Bronze to Platinum — the more you trade, the more you save."
+              description="Earn fee rebates based on your transaction volume. From Bronze to Platinum, the more you trade, the more you save."
               delay={0.3}
             />
             <FeatureCard
               icon="&#x1F512;"
               title="Privacy-First"
-              description="Built on Canton Network — sub-transaction privacy ensures your portfolio details stay confidential."
+              description="Built on Canton Network, with sub-transaction privacy that keeps your portfolio details confidential."
               delay={0.1}
             />
             <FeatureCard
@@ -440,7 +439,7 @@ export default function Landing() {
           </h2>
           <p className="text-[18px] text-[#6B7280] mt-6 max-w-[520px] mx-auto">
             Roil is launching on Canton mainnet soon. Join the waitlist and we'll email you
-            the moment it's live — plus early access for the first members.
+            the moment it goes live. First members get early access.
           </p>
           <div className="mt-10">
             <WaitlistForm source="landing" />
