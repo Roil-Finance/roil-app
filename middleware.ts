@@ -13,7 +13,7 @@ export const config = {
 };
 
 export default function middleware(request: Request): Response | undefined {
-  const expected = process.env.SITE_PASSWORD;
+  const expected = process.env.SITE_PASSWORD?.trim();
 
   // Not configured -> the site is public. This is how we open it up at launch.
   if (!expected) return undefined;
