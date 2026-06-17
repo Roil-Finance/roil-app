@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
+import WaitlistForm from '@/components/WaitlistForm';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -268,6 +269,7 @@ export default function Landing() {
           <a href="#features" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">Features</a>
           <a href="#how-it-works" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">How It Works</a>
           <a href="#stats" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">Stats</a>
+          <a href="#waitlist" className="hidden md:inline text-[14px] text-[#10B981] hover:text-white transition-colors">Waitlist</a>
           <a
             href="https://x.com/RoilFinance"
             target="_blank"
@@ -307,10 +309,10 @@ export default function Landing() {
           </p>
           <div ref={heroCTARef} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <a
-              href="/login"
+              href="#waitlist"
               className="px-8 py-4 rounded-xl text-[16px] font-semibold bg-gradient-to-r from-[#059669] to-[#10B981] text-white hover:opacity-90 transition-opacity shadow-[0_0_40px_rgba(5,150,105,0.3)]"
             >
-              Get Started
+              Join the Waitlist
             </a>
             <a
               href="#features"
@@ -417,32 +419,31 @@ export default function Landing() {
       <section id="stats" className="relative z-10 py-16 md:py-32 px-4 md:px-8">
         <div className="max-w-[900px] mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            <StatItem value="$2.4M" label="Total Value Locked" delay={0} />
-            <StatItem value="1,247" label="Active Portfolios" delay={0.1} />
-            <StatItem value="9" label="Supported Assets" delay={0.2} />
-            <StatItem value="99.9%" label="Uptime" delay={0.3} />
+            <StatItem value="9" label="Tokenized Assets" delay={0} />
+            <StatItem value="6" label="Strategy Templates" delay={0.1} />
+            <StatItem value="24/7" label="Auto-Rebalancing" delay={0.2} />
+            <StatItem value="100%" label="On-Chain" delay={0.3} />
           </div>
         </div>
       </section>
 
-      {/* ==================== CTA ==================== */}
-      <section className="relative z-10 py-16 md:py-32 px-4 md:px-8">
+      {/* ==================== WAITLIST ==================== */}
+      <section id="waitlist" className="relative z-10 py-16 md:py-32 px-4 md:px-8 scroll-mt-24">
         <div className="max-w-[700px] mx-auto text-center">
-          <h2 className="text-[32px] md:text-[48px] font-bold text-white leading-tight">
-            Ready to automate
+          <span className="inline-block rounded-full border border-[#059669]/40 bg-[#059669]/10 px-4 py-1.5 text-[13px] font-medium text-[#10B981]">
+            Mainnet coming soon
+          </span>
+          <h2 className="text-[32px] md:text-[48px] font-bold text-white leading-tight mt-6">
+            Be first when
             <br />
-            <span className="text-[#10B981]">your portfolio?</span>
+            <span className="text-[#10B981]">Roil goes live.</span>
           </h2>
-          <p className="text-[18px] text-[#6B7280] mt-6">
-            Join thousands of users managing their digital assets with Roil.
+          <p className="text-[18px] text-[#6B7280] mt-6 max-w-[520px] mx-auto">
+            Roil is launching on Canton mainnet soon. Join the waitlist and we'll email you
+            the moment it's live — plus early access for the first members.
           </p>
           <div className="mt-10">
-            <a
-              href="/login"
-              className="inline-flex px-10 py-4 rounded-xl text-[18px] font-semibold bg-gradient-to-r from-[#059669] to-[#10B981] text-white hover:opacity-90 transition-opacity shadow-[0_0_60px_rgba(5,150,105,0.3)]"
-            >
-              Launch App
-            </a>
+            <WaitlistForm source="landing" />
           </div>
         </div>
       </section>
