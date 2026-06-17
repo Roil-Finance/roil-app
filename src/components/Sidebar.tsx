@@ -79,7 +79,7 @@ export default function Sidebar() {
         {/* Bottom icons — Twitter + Help */}
         <div className="flex flex-col items-center gap-2 mb-1">
           <a
-            href="https://x.com/RoilFinance"
+            href="https://x.com/roil_app"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center rounded-xl text-[#9CA3AF] hover:text-[#111827] dark:hover:text-slate-200 hover:bg-[#ECEEF4] dark:hover:bg-slate-700 transition-colors"

@@ -432,7 +432,7 @@ export default function LandingV2() {
           <a href="#features" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">Features</a>
           <a href="#how" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">How It Works</a>
           <a
-            href="https://x.com/RoilFinance"
+            href="https://x.com/roil_app"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[14px] text-[#6B7280] hover:text-white transition-colors"
@@ -607,7 +607,7 @@ export default function LandingV2() {
             <div>
               <h4 className="text-[13px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Community</h4>
               <div className="flex flex-col gap-2.5">
-                <a href="https://x.com/RoilFinance" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">Twitter / X</a>
+                <a href="https://x.com/roil_app" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">Twitter / X</a>
               </div>
             </div>
           </div>
