@@ -270,12 +270,20 @@ export default function Landing() {
           <a href="#how-it-works" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">How It Works</a>
           <a href="#stats" className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors">Stats</a>
           <a
-            href="https://x.com/RoilFinance"
+            href="https://x.com/roil_app"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors"
           >
             Twitter
+          </a>
+          <a
+            href="https://t.me/roilannouncement"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:inline text-[14px] text-[#9CA3AF] hover:text-white transition-colors"
+          >
+            Telegram
           </a>
           <a
             href="#waitlist"
@@ -455,8 +463,11 @@ export default function Landing() {
             <span className="text-[15px] font-semibold text-white">Roil Finance</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="https://x.com/RoilFinance" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">
+            <a href="https://x.com/roil_app" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">
               Twitter
+            </a>
+            <a href="https://t.me/roilannouncement" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">
+              Telegram
             </a>
             <a href="https://docs.roil.fi" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">
               Docs
