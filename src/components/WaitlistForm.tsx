@@ -63,10 +63,10 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
       <div
         role="status"
         aria-live="polite"
-        className="mx-auto max-w-[480px] rounded-2xl border border-[#059669]/40 bg-[#059669]/10 px-6 py-5 text-center"
+        className="mx-auto max-w-[480px] rounded-2xl border border-[#D4C93A]/40 bg-[#D4C93A]/10 px-6 py-5 text-center"
       >
         <div className="text-[28px] leading-none">&#x2713;</div>
-        <p className="mt-2 text-[15px] font-medium text-[#10B981]">{message}</p>
+        <p className="mt-2 text-[15px] font-medium text-[#EDE84A]">{message}</p>
       </div>
     );
   }
@@ -101,12 +101,12 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
             if (status === 'error') setStatus('idle');
           }}
           disabled={status === 'loading'}
-          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-[16px] text-white placeholder-[#6B7280] transition-colors focus:border-[#059669]/60 focus:outline-none disabled:opacity-60"
+          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-[16px] text-white placeholder-[#6B7280] transition-colors focus:border-[#D4C93A]/60 focus:outline-none disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="rounded-xl bg-gradient-to-r from-[#059669] to-[#10B981] px-8 py-4 text-[16px] font-semibold text-white shadow-[0_0_40px_rgba(5,150,105,0.3)] transition-opacity hover:opacity-90 disabled:opacity-60"
+          className="rounded-xl bg-gradient-to-r from-[#EDE84A] to-[#D4C93A] px-8 py-4 text-[16px] font-semibold text-[#0A0A0F] shadow-[0_0_40px_rgba(237,232,74,0.3)] transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {status === 'loading' ? 'Joining…' : 'Join Waitlist'}
         </button>

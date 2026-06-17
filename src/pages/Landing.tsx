@@ -173,9 +173,9 @@ function FeatureCard({ icon, title, description, delay }: {
   }, [delay]);
 
   return (
-    <div ref={ref} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-[#059669]/40 transition-colors group">
+    <div ref={ref} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-[#D4C93A]/40 transition-colors group">
       <div className="text-4xl mb-4">{icon}</div>
-      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#10B981] transition-colors">{title}</h3>
+      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#EDE84A] transition-colors">{title}</h3>
       <p className="text-[#9CA3AF] text-[15px] leading-relaxed">{description}</p>
     </div>
   );
@@ -279,7 +279,7 @@ export default function Landing() {
           </a>
           <a
             href="#waitlist"
-            className="px-5 py-2.5 rounded-xl text-[14px] font-semibold bg-gradient-to-r from-[#059669] to-[#10B981] text-white hover:opacity-90 transition-opacity"
+            className="px-5 py-2.5 rounded-xl text-[14px] font-semibold bg-gradient-to-r from-[#EDE84A] to-[#D4C93A] text-[#0A0A0F] hover:opacity-90 transition-opacity"
           >
             Join Waitlist
           </a>
@@ -293,7 +293,7 @@ export default function Landing() {
             ref={heroTitleRef}
             className="text-[36px] md:text-[56px] lg:text-[72px] font-bold leading-[1.05] tracking-tight"
             style={{
-              background: 'linear-gradient(135deg, #FFFFFF 0%, #10B981 50%, #059669 100%)',
+              background: 'linear-gradient(135deg, #FFFFFF 0%, #EDE84A 50%, #D4C93A 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -309,7 +309,7 @@ export default function Landing() {
           <div ref={heroCTARef} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <a
               href="#waitlist"
-              className="px-8 py-4 rounded-xl text-[16px] font-semibold bg-gradient-to-r from-[#059669] to-[#10B981] text-white hover:opacity-90 transition-opacity shadow-[0_0_40px_rgba(5,150,105,0.3)]"
+              className="px-8 py-4 rounded-xl text-[16px] font-semibold bg-gradient-to-r from-[#EDE84A] to-[#D4C93A] text-[#0A0A0F] hover:opacity-90 transition-opacity shadow-[0_0_40px_rgba(237,232,74,0.3)]"
             >
               Join the Waitlist
             </a>
@@ -400,7 +400,7 @@ export default function Landing() {
               }, []);
               return (
                 <div key={item.step} ref={ref} className="flex items-start gap-4 md:gap-8">
-                  <div className="text-[40px] md:text-[64px] font-bold text-[#059669]/20 leading-none shrink-0 w-[60px] md:w-[100px]">
+                  <div className="text-[40px] md:text-[64px] font-bold text-[#D4C93A]/20 leading-none shrink-0 w-[60px] md:w-[100px]">
                     {item.step}
                   </div>
                   <div className="pt-2">
@@ -429,13 +429,13 @@ export default function Landing() {
       {/* ==================== WAITLIST ==================== */}
       <section id="waitlist" className="relative z-10 py-16 md:py-32 px-4 md:px-8 scroll-mt-24">
         <div className="max-w-[700px] mx-auto text-center">
-          <span className="inline-block rounded-full border border-[#059669]/40 bg-[#059669]/10 px-4 py-1.5 text-[13px] font-medium text-[#10B981]">
+          <span className="inline-block rounded-full border border-[#D4C93A]/40 bg-[#D4C93A]/10 px-4 py-1.5 text-[13px] font-medium text-[#EDE84A]">
             Mainnet coming soon
           </span>
           <h2 className="text-[32px] md:text-[48px] font-bold text-white leading-tight mt-6">
             Be first when
             <br />
-            <span className="text-[#10B981]">Roil goes live.</span>
+            <span className="text-[#EDE84A]">Roil goes live.</span>
           </h2>
           <p className="text-[18px] text-[#6B7280] mt-6 max-w-[520px] mx-auto">
             Roil is launching on Canton mainnet soon. Join the waitlist and we'll email you
