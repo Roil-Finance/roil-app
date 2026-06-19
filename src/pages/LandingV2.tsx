@@ -612,7 +612,7 @@ export default function LandingV2() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-white/5 text-center">
-            <span className="text-[13px] text-[#4B5563]">&copy; 2026 Roil Finance. All rights reserved.</span>
+            <span className="text-[13px] text-[#4B5563]">&copy; 2026 Roil App. All rights reserved.</span>
           </div>
         </div>
       </footer>

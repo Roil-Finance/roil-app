@@ -104,7 +104,7 @@ export async function registerPasskey(
   const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
     challenge: crypto.getRandomValues(new Uint8Array(32)),
     rp: {
-      name: 'Roil Finance',
+      name: 'Roil App',
       id: window.location.hostname,
     },
     user: {

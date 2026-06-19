@@ -460,7 +460,7 @@ export default function Landing() {
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <img src="/logo.jpg" alt="Roil" className="w-8 h-8 rounded-lg" />
-            <span className="text-[15px] font-semibold text-white">Roil Finance</span>
+            <span className="text-[15px] font-semibold text-white">Roil App</span>
           </div>
           <div className="flex items-center gap-6">
             <a href="https://x.com/roil_app" target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#6B7280] hover:text-white transition-colors">
@@ -473,7 +473,7 @@ export default function Landing() {
               Docs
             </a>
             <span className="text-[14px] text-[#6B7280]">
-              &copy; 2026 Roil Finance
+              &copy; 2026 Roil App
             </span>
           </div>
         </div>

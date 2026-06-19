@@ -314,7 +314,7 @@ export default function WalletSetup({ onComplete, onCancel }: WalletSetupProps) 
           </div>
           <h2 className="text-[24px] font-[800] text-[#111827]">Set Up Your Wallet</h2>
           <p className="mt-1.5 text-sm text-[#6B7280]">
-            Your Canton Network identity for Roil Finance
+            Your Canton Network identity for Roil App
           </p>
         </div>
 

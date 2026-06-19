@@ -541,7 +541,7 @@ export default function WalletPage() {
           <KeyRound className="w-12 h-12 text-[#9CA3AF] mx-auto mb-4" />
           <h1 className="text-[26px] font-bold text-[#111827] dark:text-slate-100 mb-2">No Wallet Found</h1>
           <p className="text-[#6B7280] dark:text-slate-400 text-sm max-w-md">
-            Create a wallet or sign up to get started with Roil Finance.
+            Create a wallet or sign up to get started with Roil App.
           </p>
         </div>
         <a
