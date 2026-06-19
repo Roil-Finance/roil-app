@@ -1,18 +1,71 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Public Turnstile site key. When unset, the widget is skipped (soft mode) and the
+// backend's other anti-spam layers still apply.
+const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
 
 /**
- * Pre-mainnet email capture. Posts to the same-origin /api/waitlist function
- * (covered by CSP connect-src 'self', so no header change needed).
+ * Pre-mainnet email capture. Posts to the same-origin /api/waitlist function.
+ * Cloudflare Turnstile (invisible) gates the submit when VITE_TURNSTILE_SITE_KEY is set.
  */
 export default function WaitlistForm({ source = 'landing' }: { source?: string }) {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // honeypot — must stay empty
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState('');
+  const [token, setToken] = useState('');
+
+  const widgetRef = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string | null>(null);
+
+  // Load + render the Turnstile widget once, only when a site key is configured.
+  useEffect(() => {
+    if (!SITE_KEY) return;
+    let cancelled = false;
+
+    function render() {
+      const ts = (window as unknown as { turnstile?: any }).turnstile;
+      if (cancelled || !ts || !widgetRef.current || widgetId.current !== null) return;
+      widgetId.current = ts.render(widgetRef.current, {
+        sitekey: SITE_KEY,
+        callback: (t: string) => setToken(t),
+        'expired-callback': () => setToken(''),
+        'error-callback': () => setToken(''),
+      });
+    }
+
+    if ((window as unknown as { turnstile?: any }).turnstile) {
+      render();
+    } else {
+      const existing = document.querySelector('script[data-turnstile]');
+      if (existing) {
+        existing.addEventListener('load', render);
+      } else {
+        const s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.async = true;
+        s.defer = true;
+        s.setAttribute('data-turnstile', '1');
+        s.onload = render;
+        document.head.appendChild(s);
+      }
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function resetWidget() {
+    const ts = (window as unknown as { turnstile?: any }).turnstile;
+    if (ts && widgetId.current !== null) {
+      ts.reset(widgetId.current);
+    }
+    setToken('');
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -22,6 +75,12 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
     if (!EMAIL_RE.test(trimmed)) {
       setStatus('error');
       setMessage('Please enter a valid email address.');
+      return;
+    }
+
+    if (SITE_KEY && !token) {
+      setStatus('error');
+      setMessage('Please complete the verification and try again.');
       return;
     }
 
@@ -37,7 +96,7 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmed, referral, source, website }),
+        body: JSON.stringify({ email: trimmed, referral, source, website, turnstileToken: token }),
       });
       const data = await res.json().catch(() => ({}));
 
@@ -55,6 +114,7 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
     } catch (err) {
       setStatus('error');
       setMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      resetWidget();
     }
   }
 
@@ -111,6 +171,9 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
           {status === 'loading' ? 'Joining…' : 'Join Waitlist'}
         </button>
       </div>
+
+      {/* Turnstile widget mounts here when a site key is configured. */}
+      {SITE_KEY && <div ref={widgetRef} className="mt-3 flex justify-center" />}
 
       <p aria-live="polite" className="min-h-[20px] pt-3 text-[14px]">
         {status === 'error' ? (
