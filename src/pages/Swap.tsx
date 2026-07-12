@@ -45,6 +45,17 @@ interface WhitelistStatus {
   dailyLimit?: number;
 }
 
+interface CantexFeesResponse {
+  available: boolean;
+  reason?: string;
+  tradeSizeUsd?: number;
+  adminFeeUsd?: number;
+  liquidityFeeUsd?: number;
+  networkFeeUsd?: number;
+  totalFeeUsd?: number;
+  effectiveFeePct?: number | null;
+}
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -141,6 +152,22 @@ export default function Swap() {
     // Wallet is "unlocked" if party is set (demo simplification)
     setIsWalletLocked(!party);
   }, [party]);
+
+  // Live Cantex fee breakdown for the current input. Re-fetched on every
+  // change of (from, to, amount). We don't gate the swap on this: if the
+  // sidecar is down or the pair isn't routable, `available` is false and
+  // the modal falls back to its empirical estimate (still correct enough
+  // to render a useful effective-fee % most of the time).
+  const numAmountForFees = parseFloat(amount) || 0;
+  const cantexFeesPath =
+    numAmountForFees > 0
+      ? `/api/swap/cantex-fees?from=${encodeURIComponent(fromToken)}&to=${encodeURIComponent(toToken)}&amount=${numAmountForFees}`
+      : null;
+  const { data: cantexFees } = useQuery<CantexFeesResponse>(cantexFeesPath, [
+    fromToken,
+    toToken,
+    numAmountForFees,
+  ]);
 
   // Computed values
   const numAmount = parseFloat(amount) || 0;
@@ -643,6 +670,26 @@ export default function Swap() {
         platformFeeRate={platformFeeRate}
         slippageTolerancePct={SWAP_SLIPPAGE_TOLERANCE_PCT}
         isExecuting={isExecuting}
+        tradeSizeUsd={cantexFees?.available ? cantexFees.tradeSizeUsd : amountUsd}
+        // Prefer the live `/api/swap/cantex-fees` response when the sidecar
+        // is reachable; otherwise fall back to the empirical estimate from
+        // the 2026-05-19 MainNet measurement (admin 0.005% + liquidity
+        // 0.045% on output, ~$0.15 flat network). The fallback is good
+        // enough to render the modal — small numbers but right order of
+        // magnitude.
+        dexFeeUsd={
+          cantexFees?.available
+            ? {
+                admin: cantexFees.adminFeeUsd ?? 0,
+                liquidity: cantexFees.liquidityFeeUsd ?? 0,
+                network: cantexFees.networkFeeUsd ?? 0,
+              }
+            : {
+                admin: estimatedOutput * (ORACLE_PRICES[toToken] ?? 1) * 0.00005,
+                liquidity: estimatedOutput * (ORACLE_PRICES[toToken] ?? 1) * 0.00045,
+                network: 0.15,
+              }
+        }
       />
     </div>
   );

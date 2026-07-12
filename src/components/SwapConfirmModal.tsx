@@ -20,6 +20,24 @@ interface Props {
   platformFeeRate: number;
   slippageTolerancePct: number;
   isExecuting: boolean;
+  /**
+   * Trade size in USD. Used to compute the effective fee % shown in the
+   * high-fee banner. We don't have a clean way to derive this from
+   * `fromAmount` alone (would need every token's USD price right here), so
+   * the caller passes it in — it already has `getPrice` / oracle access.
+   */
+  tradeSizeUsd?: number;
+  /**
+   * DEX-side fees estimated from the live Cantex quote (or, when the live
+   * quote isn't wired yet, from observed empirical values: admin 0.005%,
+   * liquidity 0.045%, network ~0.10 USD per swap). All amounts in USD. The
+   * banner triggers when (sum / tradeSizeUsd) > 5%.
+   */
+  dexFeeUsd?: {
+    admin: number;
+    liquidity: number;
+    network: number;
+  };
 }
 
 export default function SwapConfirmModal({
@@ -34,6 +52,8 @@ export default function SwapConfirmModal({
   platformFeeRate,
   slippageTolerancePct,
   isExecuting,
+  tradeSizeUsd,
+  dexFeeUsd,
 }: Props) {
   const confirmRef = useRef<HTMLButtonElement | null>(null);
 
@@ -52,6 +72,21 @@ export default function SwapConfirmModal({
   const minOut = estimatedOutput * (1 - slippageTolerancePct / 100);
   const feeAmount = estimatedOutput * platformFeeRate;
   const netOutput = estimatedOutput - feeAmount;
+
+  // Effective-fee % across the *whole* cost stack (platform + DEX fees).
+  // Only shown when the caller passes the data — otherwise the banner is
+  // omitted (e.g. on networks where the sidecar isn't wired yet).
+  const dexFeeTotalUsd =
+    (dexFeeUsd?.admin ?? 0) + (dexFeeUsd?.liquidity ?? 0) + (dexFeeUsd?.network ?? 0);
+  const platformFeeUsdEstimate =
+    tradeSizeUsd !== undefined ? tradeSizeUsd * platformFeeRate : 0;
+  const totalFeeUsd = dexFeeTotalUsd + platformFeeUsdEstimate;
+  const effectiveFeePct =
+    tradeSizeUsd && tradeSizeUsd > 0 ? (totalFeeUsd / tradeSizeUsd) * 100 : null;
+  // 5% is "you are losing meaningful money to fees" — a soft nudge, not a
+  // hard block. The user can still confirm; we only inform.
+  const showHighFeeBanner =
+    effectiveFeePct !== null && effectiveFeePct > 5;
 
   return (
     <div
@@ -84,12 +119,51 @@ export default function SwapConfirmModal({
           <Row label="You receive (est.)" value={`${estimatedOutput.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${toToken}`} />
           <Row label="Price" value={`1 ${fromToken} = ${price.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${toToken}`} />
           <Row label={`Platform fee (${(platformFeeRate * 100).toFixed(2)}%)`} value={`${feeAmount.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${toToken}`} />
+          {dexFeeUsd && (
+            <>
+              <Row
+                label="Cantex admin fee"
+                value={`$${dexFeeUsd.admin.toLocaleString(undefined, { maximumFractionDigits: 4, minimumFractionDigits: 2 })}`}
+              />
+              <Row
+                label="Liquidity provider fee"
+                value={`$${dexFeeUsd.liquidity.toLocaleString(undefined, { maximumFractionDigits: 4, minimumFractionDigits: 2 })}`}
+              />
+              <Row
+                label="Canton network fee"
+                value={`$${dexFeeUsd.network.toLocaleString(undefined, { maximumFractionDigits: 4, minimumFractionDigits: 2 })}`}
+              />
+            </>
+          )}
           <Row label="Net output" value={`${netOutput.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${toToken}`} emphasize />
           <Row
             label={`Min output (slippage ${slippageTolerancePct}%)`}
             value={`${minOut.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${toToken}`}
           />
+          {effectiveFeePct !== null && (
+            <Row
+              label="Effective fee on this trade"
+              value={`${effectiveFeePct.toFixed(2)}%`}
+              emphasize={showHighFeeBanner}
+            />
+          )}
         </div>
+
+        {showHighFeeBanner && (
+          <div
+            role="alert"
+            className="flex items-start gap-2 text-xs text-[#7C2D12] bg-[#FED7AA] dark:bg-amber-900/40 dark:text-amber-200 rounded-lg p-3 mb-3"
+          >
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div>
+              <strong>Fees are a large share of this trade.</strong> Canton's network
+              fee (~$0.10–0.20 per swap) is roughly fixed regardless of trade size,
+              so small trades pay it as a high percentage. Consider batching multiple
+              small buys into a single larger swap, or waiting until you have at least
+              ~$30–50 to swap at once.
+            </div>
+          </div>
+        )}
 
         <div className="flex items-start gap-2 text-xs text-[#92400E] bg-[#FEF3C7] rounded-lg p-3 mb-4">
           <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />

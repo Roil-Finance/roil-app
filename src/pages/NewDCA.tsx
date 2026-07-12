@@ -5,10 +5,13 @@ import { useCreateDCA } from '@/hooks/useDCA';
 import { useParty } from '@/context/PartyContext';
 import { TOKEN_LOGOS, QUICK_AMOUNTS } from '@/config';
 
-type Frequency = 'Hourly' | 'Daily' | 'Weekly' | 'Monthly';
+// Hourly is intentionally absent — the Daml `DCASchedule` template rejects
+// it at the `ensure` level (uneconomic at Cantex's 10 CC ticket minimum and
+// the ~$0.10 per-swap Canton network fee — see main/daml/DCA.daml).
+type Frequency = 'Daily' | 'Weekly' | 'Monthly';
 type DayOfWeek = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri';
 
-const FREQUENCIES: Frequency[] = ['Hourly', 'Daily', 'Weekly', 'Monthly'];
+const FREQUENCIES: Frequency[] = ['Daily', 'Weekly', 'Monthly'];
 const DAYS: DayOfWeek[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 const TOKEN_PRICES: Record<string, string> = {
@@ -19,13 +22,11 @@ const TOKEN_PRICES: Record<string, string> = {
 
 function getProjected(amount: number, frequency: Frequency) {
   const perWeek =
-    frequency === 'Hourly'
-      ? amount * 168
-      : frequency === 'Daily'
-        ? amount * 7
-        : frequency === 'Weekly'
-          ? amount
-          : amount / 4.33;
+    frequency === 'Daily'
+      ? amount * 7
+      : frequency === 'Weekly'
+        ? amount
+        : amount / 4.33;
 
   const monthly = perWeek * 4.33;
   const threeMonth = monthly * 3;
